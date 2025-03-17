@@ -1,0 +1,80 @@
+ÿ%                                                                                                                                                                                   test                                                                                                                                                                                                                                            ÿ%                                                                                                                                                                                   test\_%                                                                                                                                                                                                                                         2020-05-12 11:25:12 2152 [Note] Event Scheduler: Loaded 0 events
+2020-05-12 11:25:12 2152 [Note] D:\GoogleDrive\Downloads\USBWebserver/mysql/bin/mysqld_usbwv8.exe: ready for connections.
+Version: '5.6.13'  socket: ''  port: 3307  MySQL Community Server (GPL)
+2020-05-12 11:27:50 14852 [Note] Event Scheduler: Loaded 0 events
+2020-05-12 11:27:50 14852 [Note] D:\GoogleDrive\Downloads\USBWebserver/mysql/bin/mysqld_usbwv8.exe: ready for connections.
+Version: '5.6.13'  socket: ''  port: 3307  MySQL Community Server (GPL)
+2021-05-24 19:11:06 12984 [Note] Event Scheduler: Loaded 0 events
+2021-05-24 19:11:06 12984 [Note] D:\GoogleDrive\Downloads\USBWebserver/mysql/bin/mysqld_usbwv8.exe: ready for connections.
+Version: '5.6.13'  socket: ''  port: 3307  MySQL Community Server (GPL)
+2021-08-04 21:03:12 17260 [Note] Event Scheduler: Loaded 0 events
+2021-08-04 21:03:12 17260 [Note] D:\GoogleDrive\Downloads\USBWebserver/mysql/bin/mysqld_usbwv8.exe: ready for connections.
+Version: '5.6.13'  socket: ''  port: 3307  MySQL Community Server (GPL)
+2023-06-05 00:45:50 2628 [Note] Event Scheduler: Loaded 0 events
+2023-06-05 00:45:50 2628 [Note] F:\USBWebserver/mysql/bin/mysqld_usbwv8.exe: ready for connections.
+Version: '5.6.13'  socket: ''  port: 3307  MySQL Community Server (GPL)
+2023-06-05 01:03:12 2628 [ERROR] InnoDB: Failed to find tablespace for table '"biblioteca2"."autores"' in the cache. Attempting to load the tablespace with space id 132.
+2023-06-05 01:03:12 2628 [ERROR] InnoDB: In file '.\biblioteca2\autores.ibd', tablespace id and flags are 193 and 0, but in the InnoDB data dictionary they are 132 and 0. Have you moved InnoDB .ibd files around without using the commands DISCARD TABLESPACE and IMPORT TABLESPACE? Please refer to http://dev.mysql.com/doc/refman/5.6/en/innodb-troubleshooting-datadict.html for how to resolve the issue.
+2023-06-05 01:03:12 4168  InnoDB: Operating system error number 203 in a file operation.
+InnoDB: Some operating system error numbers are described at
+InnoDB: http://dev.mysql.com/doc/refman/5.6/en/operating-system-error-codes.html
+2023-06-05 01:03:12 2628 [ERROR] InnoDB: Could not find a valid tablespace file for 'biblioteca2/autores'. See http://dev.mysql.com/doc/refman/5.6/en/innodb-troubleshooting-datadict.html for how to resolve the issue.
+2023-06-05 01:03:12 4168  InnoDB: Assertion failure in thread 16744 in file row0mysql.cc line 4517
+InnoDB: Failing assertion: !table->ibd_file_missing
+InnoDB: We intentionally generate a memory trap.
+InnoDB: Submit a detailed bug report to http://bugs.mysql.com.
+InnoDB: If you get repeated assertion failures or crashes, even
+InnoDB: immediately after the mysqld startup, there may be
+InnoDB: corruption in the InnoDB tablespace. Please refer to
+InnoDB: http://dev.mysql.com/doc/refman/5.6/en/forcing-innodb-recovery.html
+InnoDB: about forcing recovery.
+04:03:12 UTC - mysqld got exception 0x80000003 ;
+This could be because you hit a bug. It is also possible that this binary
+or one of the libraries it was linked against is corrupt, improperly built,
+or misconfigured. This error can also be caused by malfunctioning hardware.
+We will try our best to scrape up some info that will hopefully help
+diagnose the problem, but since we have already crashed, 
+something is definitely wrong and this may fail.
+
+key_buffer_size=8388608
+read_buffer_size=131072
+max_used_connections=1
+max_threads=151
+thread_count=1
+connection_count=1
+It is possible that mysqld could use up to 
+key_buffer_size + (read_buffer_size + sort_buffer_size)*max_threads = 67589 K  bytes of memory
+Hope that's ok; if not, decrease some variables in the equation.
+
+Thread pointer: 0x261d0b08
+Attempting backtrace. You can use the following information to find out
+where mysqld died. If you see no messages after this, something went
+terribly wrong...
+ce57d0    mysqld_usbwv8.exe!my_thread_name()
+f1dd9d    mysqld_usbwv8.exe!my_mb_ctype_mb()
+d11435    mysqld_usbwv8.exe!xor_string()
+a999dc    mysqld_usbwv8.exe!?ha_end@@YAHXZ()
+ad32e4    mysqld_usbwv8.exe!?plugin_foreach_with_mask@@YA_NPAVTHD@@P6AD0PAUst_plugin_int@@PAX@ZHI2@Z()
+a99a07    mysqld_usbwv8.exe!?ha_drop_database@@YAXPAD@Z()
+b6befe    mysqld_usbwv8.exe!?mysql_rm_db@@YA_NPAVTHD@@PAD_N2@Z()
+acc2c7    mysqld_usbwv8.exe!?mysql_execute_command@@YAHPAVTHD@@@Z()
+ace22b    mysqld_usbwv8.exe!?mysql_parse@@YAXPAVTHD@@PADIPAVParser_state@@@Z()
+acefa2    mysqld_usbwv8.exe!?dispatch_command@@YA_NW4enum_server_command@@PAVTHD@@PADI@Z()
+acfe3a    mysqld_usbwv8.exe!?do_command@@YA_NPAVTHD@@@Z()
+b423e9    mysqld_usbwv8.exe!?do_handle_one_connection@@YAXPAVTHD@@@Z()
+b4248d    mysqld_usbwv8.exe!handle_one_connection()
+e907ab    mysqld_usbwv8.exe!xor_string()
+ceb1d6    mysqld_usbwv8.exe!win_pthread_mutex_trylock()
+f21070    mysqld_usbwv8.exe!my_mb_ctype_mb()
+f210fa    mysqld_usbwv8.exe!my_mb_ctype_mb()
+76ed00c9    KERNEL32.DLL!BaseThreadInitThunk()
+776d7b4e    ntdll.dll!RtlGetAppContainerNamedObjectPath()
+776d7b1e    ntdll.dll!RtlGetAppContainerNamedObjectPath()
+
+Trying to get some variables.
+Some pointers may be invalid and cause the dump to abort.
+Query (262a64a8): DROP DATABASE `biblioteca2`Connection ID (thread ID): 96
+Status: NOT_KILLED
+
+The manual page at http://dev.mysql.com/doc/mysql/en/crashing.html contains
+information that should help you find out what is causing the crash.

@@ -1,0 +1,54 @@
+Fase 1: Planejamento e Configuração
+Período: 24/02/2025 – 10/03/2025
+
+	Configurar o ambiente de desenvolvimento e o repositório Git.
+	Definir a estrutura geral do projeto (pastas, tecnologias: HTML, CSS, JavaScript, Python, SQL).
+	Levantar requisitos e esboçar fluxos para cada página (login, personagens, itens, mundos, histórias).
+
+---------------------------------------------------------------------------------------------------------------------------
+Fase 2: Sistema de Registro e Configuração do Banco de Dados
+Período: 11/03/2025 – 31/03/2025
+
+Criar a base do banco de dados com tabelas para usuários, personagens, itens, mundos e histórias.
+Implementar o sistema de registro e login com funcionalidade básica (sem estilização avançada).
+
+---------------------------------------------------------------------------------------------------------------------------
+Fase 3: Desenvolvimento do Backend e Integração com o Banco
+Período: 01/04/2025 – 15/05/2025
+
+Desenvolver APIs ou scripts em Python para manipulação dos dados (CRUD) referentes a cada módulo.
+Realizar testes unitários e garantir a integração correta com o banco de dados.
+
+---------------------------------------------------------------------------------------------------------------------------
+Fase 4: Desenvolvimento das Páginas Principais (Frontend – Primeira Versão)
+Período: 16/05/2025 – 15/07/2025
+
+Página de Personagens: Implementar criação, visualização, edição e exclusão de personagens.
+Página de Itens: Desenvolver a funcionalidade de gerenciamento do inventário.
+Página de Mundos: Estruturar a área para criação e gerenciamento de world building.
+Página de Histórias: Criar a interface para registro e organização das narrativas.
+Realizar a integração entre frontend e backend (inicialmente com design básico).
+
+---------------------------------------------------------------------------------------------------------------------------
+Fase 5: Aprimoramento da Interface (HTML/CSS/JavaScript)
+Período: 16/07/2025 – 31/07/2025
+
+Aplicar estilos e aprimorar a usabilidade de todas as páginas.
+Garantir responsividade e uma experiência de usuário consistente.
+
+---------------------------------------------------------------------------------------------------------------------------
+Fase 6: Integração Final e Testes Funcionais
+Período: 01/08/2025 – 15/09/2025
+
+Realizar testes integrados de todas as funcionalidades (testes de fluxo, performance e segurança).
+Corrigir bugs e ajustar detalhes na comunicação entre frontend e backend.
+Receber feedback (se possível) e iterar melhorias.
+
+---------------------------------------------------------------------------------------------------------------------------
+Fase 7: Documentação, Deploy e Preparação para a Apresentação
+Período: 16/09/2025 – 15/10/2025
+
+Elaborar a documentação técnica do projeto (arquitetura, funcionalidades, código e testes).
+Realizar o deploy da aplicação em ambiente de produção ou servidor de testes.
+Preparar a apresentação final do TCC (slides, demonstração prática, etc.).
+Observação: Garanta que todas as correções e ajustes finais estejam concluídos até a terceira semana de outubro.
