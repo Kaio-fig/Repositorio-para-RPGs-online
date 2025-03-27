@@ -1,4 +1,5 @@
-[Thu Mar 20 23:55:23.454129 2025] [mpm_winnt:notice] [pid 24944:tid 788] AH00455: Apache/2.4.6 (Win32) PHP/5.4.17 configured -- resuming normal operations
-[Thu Mar 20 23:55:23.455130 2025] [mpm_winnt:notice] [pid 24944:tid 788] AH00456: Apache Lounge VC10 Server built: Jul 16 2013 11:15:41
-[Thu Mar 20 23:55:23.455130 2025] [core:notice] [pid 24944:tid 788] AH00094: Command line: 'C:\\Users\\Kaio\\Documents\\USBWebserver/apache2/bin/httpd_usbwv8.exe -d C:/Users/Kaio/Documents/USBWebserver/apache2'
-[Thu Mar 20 23:55:23.458131 2025] [mpm_winnt:notice] [pid 24944:tid 788] AH00418: Parent: Created child process 15832
+[Wed Mar 26 14:44:56.863242 2025] [mpm_winnt:notice] [pid 16728:tid 824] AH00455: Apache/2.4.6 (Win32) PHP/5.4.17 configured -- resuming normal operations
+[Wed Mar 26 14:44:56.864242 2025] [mpm_winnt:notice] [pid 16728:tid 824] AH00456: Apache Lounge VC10 Server built: Jul 16 2013 11:15:41
+[Wed Mar 26 14:44:56.864242 2025] [core:notice] [pid 16728:tid 824] AH00094: Command line: 'C:\\Users\\Kaio\\Documents\\USBWebserver/apache2/bin/httpd_usbwv8.exe -d C:/Users/Kaio/Documents/USBWebserver/apache2'
+[Wed Mar 26 14:44:56.867243 2025] [mpm_winnt:notice] [pid 16728:tid 824] AH00418: Parent: Created child process 6272
+[Wed Mar 26 14:44:57.345352 2025] [mpm_winnt:notice] [pid 6272:tid 804] AH00354: Child: Starting 64 worker threads.

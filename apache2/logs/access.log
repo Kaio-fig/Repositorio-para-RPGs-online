@@ -1,0 +1,11 @@
+::1 - - [26/Mar/2025:14:45:00 -0300] "GET / HTTP/1.1" 200 203
+::1 - - [26/Mar/2025:14:45:00 -0300] "GET /favicon.ico HTTP/1.1" 404 209
+::1 - - [26/Mar/2025:14:45:01 -0300] "GET /Tcc-S.I/ HTTP/1.1" 200 925
+::1 - - [26/Mar/2025:14:45:01 -0300] "GET /Tcc-S.I/static/style.css HTTP/1.1" 200 3819
+::1 - - [26/Mar/2025:14:45:03 -0300] "GET /Tcc-S.I/templates/login.php HTTP/1.1" 200 4821
+::1 - - [26/Mar/2025:14:45:03 -0300] "GET /img/pattern_japanese-pattern-2_1_2_0-0_0_1__ffffff00_000000.png HTTP/1.1" 404 261
+::1 - - [26/Mar/2025:14:46:36 -0300] "POST /Tcc-S.I/conection/login_process.php HTTP/1.1" 200 16
+::1 - - [26/Mar/2025:14:46:40 -0300] "POST /Tcc-S.I/conection/login_process.php HTTP/1.1" 302 19
+::1 - - [26/Mar/2025:14:46:40 -0300] "GET /Tcc-S.I/templates/dashboard.php HTTP/1.1" 200 307
+::1 - - [26/Mar/2025:14:46:48 -0300] "GET /Tcc-S.I/templates/login.php HTTP/1.1" 200 4821
+::1 - - [26/Mar/2025:14:46:48 -0300] "GET /img/pattern_japanese-pattern-2_1_2_0-0_0_1__ffffff00_000000.png HTTP/1.1" 404 261
