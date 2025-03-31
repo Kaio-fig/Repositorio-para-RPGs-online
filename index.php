@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arca do Aventureiro</title>
+    <link rel="stylesheet" href="static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+    <body>
+        <main>
+            <header>
+                <div class="container">
+                    <nav>
+                        <a href="index.html" class="logo">Arca do Aventureiro</a>
+                        <ul class="nav-links">
+                            <li><a class="a" href="index.html">Início</a></li>
+                            <li><a class="a" href="#features">Recursos</a></li>
+                            <li><a class="a" href="#">Explorar</a></li>
+                            <li><a class="a" href="#">Sobre</a></li>
+                            <li><a class="a" href="templates/login.php" class="btn btn-secondary">Login</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </header>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Seu Repositório de RPG de Mesa</h1>
+                    <h3>Compartilhe mundos, armazene personagens, descubra itens e viva histórias de suas campanhas de RPG</h3>
+                    <div class="hero-buttons">
+                        <a href="templates/login.php" class="btn btn-primary">Comece Agora</a>
+                        <a href="#features" class="btn btn-secondary">Saiba Mais</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="static/ambiente.jpg" alt="Mesa de RPG">
+                </div>
+            </section>
+
+            <section id="features" class="features">
+                <h2>Recursos Incríveis</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Mundos</h3>
+                        <img style="object-fit: fill; width: 300px; height: 200px;" src="static/Baleia.jpg"> <!--https://critico6.blogspot.com/2019/02/tormenta-rpg-tabelas-aleatorias-para-o.html-->
+                        <p>Crie e compartilhe mundos fantásticos com mapas, lore e histórias.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Personagens</h3>
+                        <img style="object-fit: fill; width: 300px; height: 200px;" src="static/personagens.jpg"> <!--https://www.caixinhaquantica.com.br/melhores-rpg-de-mesa-conhecer/-->
+                        <p>Gerencie fichas de personagens com estatísticas, histórias e equipamentos.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <h3>Itens</h3>
+                        <img style="object-fit: fill; width: 300px; height: 200px;" src="static/items.jpg">
+                        <p>Catálogo de itens mágicos, armas, armaduras e tesouros para suas aventuras.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Histórias</h3>
+                        <img style="object-fit: fill; width: 300px; height: 200px;" src="static/historia.jpg">
+                        <p>Documente suas campanhas, sessões e narrativas para preservar suas histórias.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="testimonials">
+                <h2>O que os Mestres dizem</h2>
+                <div class="testimonial-slider">
+                    <div class="testimonial">
+                        <p>"Este repositório revolucionou minhas campanhas! Agora posso acessar tudo de qualquer lugar."</p>
+                        <div class="testimonial-author">
+                            <img src="static/Abner.webp" alt="Mestre Abner">
+                            <span>Mestre João</span>
+                        </div>
+                    </div>
+                    <div class="testimonial">
+                        <p>"Finalmente um lugar para organizar meus mundos e compartilhar com meus jogadores."</p>
+                        <div class="testimonial-author">
+                            <img src="static/Mestra.jpg" alt="Mestra Ana">
+                            <span>Mestra Ana</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta">
+                <h2>Pronto para começar sua aventura?</h2>
+                <p>Junte-se a milhares de mestres e jogadores que já estão organizando suas campanhas.</p>
+                <a href="conection/registro_process.php" class="btn btn-primary">Crie sua conta gratuita</a>
+            </section>
+        </main>
+    </body>
+</html>
