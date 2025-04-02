@@ -83,6 +83,11 @@ a {
     margin: 0 auto;
 }
 
+.content-img{
+    object-fit: fill; 
+    width: 100%;
+    height: 35%;
+}
 /* Header */
 header {
     background-color: white;
@@ -153,9 +158,9 @@ nav {
 .hero-buttons {
     margin: 0;
     position: absolute;
-    left: 10%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    left: 3%;
+ 
+    
 }
 
 .hero-image {
