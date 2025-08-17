@@ -14,480 +14,326 @@
             <p>Automatizada para Agentes da Ordem</p>
         </header>
         
-        <div class="ficha-container">
-            <div class="panel">
-                <h2><i class="fas fa-user"></i> Dados do Personagem</h2>
-                
-                <div class="class-selector">
-                    <div class="class-option selected" data-class="combatente">
-                        <h3><i class="fas fa-fist-raised"></i> Combatente</h3>
-                        <p>Especialista em combate direto</p>
-                    </div>
-                    <div class="class-option" data-class="especialista">
-                        <h3><i class="fas fa-tools"></i> Especialista</h3>
-                        <p>Mestre em perícias</p>
-                    </div>
-                    <div class="class-option" data-class="ocultista">
-                        <h3><i class="fas fa-hat-wizard"></i> Ocultista</h3>
-                        <p>Manipulador do paranormal</p>
-                    </div>
+        <!-- Painel Esquerdo: Token e Nome -->
+        <div class="left-panel">
+            <div class="token-container">
+                <div class="token-preview" id="token-preview">
+                    <i class="fas fa-user-circle"></i>
                 </div>
-                
-                <div class="nex-control">
-                    <label>NEX:</label>
-                    <input type="range" id="nex" min="5" max="99" step="5" value="5">
-                    <div class="nex-display" id="nex-display">5%</div>
-                </div>
-                
-                <input type="text" id="nome" placeholder="Nome do Personagem">
-                <input type="text" id="jogador" placeholder="Nome do Jogador">
-                
-                <div class="attributes">
-                    <div class="attribute">
-                        <label>FORÇA</label>
-                        <input type="number" id="for" min="0" max="5" value="1">
-                        <div class="modifier" id="for-mod">+1</div>
-                    </div>
-                    <div class="attribute">
-                        <label>AGILIDADE</label>
-                        <input type="number" id="agi" min="0" max="5" value="1">
-                        <div class="modifier" id="agi-mod">+1</div>
-                    </div>
-                    <div class="attribute">
-                        <label>INTELECTO</label>
-                        <input type="number" id="int" min="0" max="5" value="1">
-                        <div class="modifier" id="int-mod">+1</div>
-                    </div>
-                    <div class="attribute">
-                        <label>VIGOR</label>
-                        <input type="number" id="vig" min="0" max="5" value="1">
-                        <div class="modifier" id="vig-mod">+1</div>
-                    </div>
-                    <div class="attribute">
-                        <label>PRESENÇA</label>
-                        <input type="number" id="pre" min="0" max="5" value="1">
-                        <div class="modifier" id="pre-mod">+1</div>
-                    </div>
-                </div>
-                
-                <div class="vitals">
-                    <div class="vital">
-                        <label>PONTOS DE VIDA (PV)</label>
-                        <div class="value" id="pv">16</div>
-                        <div class="max" id="pv-max">Máx: 16</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="pv-progress" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="vital">
-                        <label>PONTOS DE ESFORÇO (PE)</label>
-                        <div class="value" id="pe">4</div>
-                        <div class="max" id="pe-max">Máx: 4</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="pe-progress" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="vital">
-                        <label>SANIDADE (SAN)</label>
-                        <div class="value" id="san">19</div>
-                        <div class="max" id="san-max">Máx: 19</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="san-progress" style="width: 100%"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="combat-stats">
-                    <div class="combat-stat">
-                        <label>DEFESA</label>
-                        <div class="value" id="defesa">12</div>
-                    </div>
-                    <div class="combat-stat">
-                        <label>DESLOCAMENTO</label>
-                        <div class="value" id="deslocamento">9m</div>
-                    </div>
-                    <div class="combat-stat">
-                        <label>PROFICIÊNCIA</label>
-                        <div class="value" id="proficiencia">+2</div>
-                    </div>
-                </div>
+                <input type="file" id="token-upload" accept="image/*" class="token-upload">
+                <button class="btn-save" onclick="document.getElementById('token-upload').click()">
+                    <i class="fas fa-upload"></i> Importar Token
+                </button>
             </div>
             
-            <div class="panel">
-                <h2><i class="fas fa-scroll"></i> Perícias</h2>
-                
-                <div class="skills-grid">
-                    <div class="skill-category">
-                        <h3>Físicas</h3>
-                        <div class="skill">
-                            <span>Acrobacia (AGI)</span>
-                            <input type="number" id="acrobacia" value="1">
+            <div class="character-name">
+                <input type="text" id="char-name" placeholder="Nome do Personagem">
+            </div>
+        </div>
+        
+        <!-- Painel Direito: Abas e Conteúdo -->
+        <div class="right-panel">
+            <div class="tab-controls">
+                <label class="tab-control active" for="tab-status">
+                    <input type="checkbox" id="tab-status" name="tab" checked> 
+                    <i class="fas fa-heart"></i> Status
+                </label>
+                <label class="tab-control" for="tab-powers">
+                    <input type="checkbox" id="tab-powers" name="tab"> 
+                    <i class="fas fa-fire"></i> Poderes e Rituais
+                </label>
+                <label class="tab-control" for="tab-equipment">
+                    <input type="checkbox" id="tab-equipment" name="tab"> 
+                    <i class="fas fa-shield-alt"></i> Equipamento
+                </label>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Aba Status -->
+                <div id="status-tab" class="tab-pane active">
+                    <h2>Atributos e Perícias</h2>
+                    
+                    <div class="attributes-grid">
+                        <div class="attribute">
+                            <label>FORÇA</label>
+                            <input type="number" id="for" min="0" max="5" value="1">
+                            <div class="modifier" id="for-mod">+1</div>
                         </div>
-                        <div class="skill">
-                            <span>Atletismo (FOR)</span>
-                            <input type="number" id="atletismo" value="1">
+                        <div class="attribute">
+                            <label>AGILIDADE</label>
+                            <input type="number" id="agi" min="0" max="5" value="1">
+                            <div class="modifier" id="agi-mod">+1</div>
                         </div>
-                        <div class="skill">
-                            <span>Furtividade (AGI)</span>
-                            <input type="number" id="furtividade" value="1">
+                        <div class="attribute">
+                            <label>INTELECTO</label>
+                            <input type="number" id="int" min="0" max="5" value="1">
+                            <div class="modifier" id="int-mod">+1</div>
                         </div>
-                        <div class="skill">
-                            <span>Pilotagem (AGI)</span>
-                            <input type="number" id="pilotagem" value="1">
+                        <div class="attribute">
+                            <label>VIGOR</label>
+                            <input type="number" id="vig" min="0" max="5" value="1">
+                            <div class="modifier" id="vig-mod">+1</div>
                         </div>
-                        <div class="skill">
-                            <span>Pontaria (AGI)</span>
-                            <input type="number" id="pontaria" value="1">
+                        <div class="attribute">
+                            <label>PRESENÇA</label>
+                            <input type="number" id="pre" min="0" max="5" value="1">
+                            <div class="modifier" id="pre-mod">+1</div>
                         </div>
                     </div>
                     
-                    <div class="skill-category">
-                        <h3>Mentais</h3>
-                        <div class="skill">
-                            <span>Atualidades (INT)</span>
-                            <input type="number" id="atualidades" value="1">
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                            <h3>Físicas</h3>
+                            <div class="skill">
+                                <span>Acrobacia (AGI)</span>
+                                <input type="number" id="acrobacia" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Atletismo (FOR)</span>
+                                <input type="number" id="atletismo" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Furtividade (AGI)</span>
+                                <input type="number" id="furtividade" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Pilotagem (AGI)</span>
+                                <input type="number" id="pilotagem" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Pontaria (AGI)</span>
+                                <input type="number" id="pontaria" value="1">
+                            </div>
                         </div>
-                        <div class="skill">
-                            <span>Ciências (INT)</span>
-                            <input type="number" id="ciencias" value="1">
+                        
+                        <div class="skill-category">
+                            <h3>Mentais</h3>
+                            <div class="skill">
+                                <span>Atualidades (INT)</span>
+                                <input type="number" id="atualidades" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Ciências (INT)</span>
+                                <input type="number" id="ciencias" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Crime (INT)</span>
+                                <input type="number" id="crime" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Investigação (INT)</span>
+                                <input type="number" id="investigacao" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Medicina (INT)</span>
+                                <input type="number" id="medicina" value="1">
+                            </div>
                         </div>
-                        <div class="skill">
-                            <span>Crime (INT)</span>
-                            <input type="number" id="crime" value="1">
-                        </div>
-                        <div class="skill">
-                            <span>Investigacao (INT)</span>
-                            <input type="number" id="investigacao" value="1">
-                        </div>
-                        <div class="skill">
-                            <span>Medicina (INT)</span>
-                            <input type="number" id="medicina" value="1">
-                        </div>
-                    </div>
-                    
-                    <div class="skill-category">
-                        <h3>Sociais</h3>
-                        <div class="skill">
-                            <span>Diplomacia (PRE)</span>
-                            <input type="number" id="diplomacia" value="1">
-                        </div>
-                        <div class="skill">
-                            <span>Enganação (PRE)</span>
-                            <input type="number" id="enganacao" value="1">
-                        </div>
-                        <div class="skill">
-                            <span>Intimidação (PRE)</span>
-                            <input type="number" id="intimidacao" value="1">
-                        </div>
-                        <div class="skill">
-                            <span>Percepção (PRE)</span>
-                            <input type="number" id="percepcao" value="1">
-                        </div>
-                        <div class="skill">
-                            <span>Vontade (PRE)</span>
-                            <input type="number" id="vontade" value="1">
+                        
+                        <div class="skill-category">
+                            <h3>Sociais</h3>
+                            <div class="skill">
+                                <span>Diplomacia (PRE)</span>
+                                <input type="number" id="diplomacia" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Enganação (PRE)</span>
+                                <input type="number" id="enganacao" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Intimidação (PRE)</span>
+                                <input type="number" id="intimidacao" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Percepção (PRE)</span>
+                                <input type="number" id="percepcao" value="1">
+                            </div>
+                            <div class="skill">
+                                <span>Vontade (PRE)</span>
+                                <input type="number" id="vontade" value="1">
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="abilities">
-                    <div class="section-title">
-                        <h2><i class="fas fa-fire"></i> Poderes de Classe</h2>
-                        <div class="counter" id="poderes-counter">1/1</div>
-                    </div>
+                <!-- Aba Poderes e Rituais -->
+                <div id="powers-tab" class="tab-pane">
+                    <h2>Poderes de Classe e Rituais</h2>
                     
-                    <div class="ability-list" id="poderes-list">
+                    <div class="abilities-list">
                         <div class="ability">
                             <h3>Ataque Especial</h3>
                             <p>Gaste 2 PE para receber +5 em um ataque</p>
                         </div>
-                    </div>
-                    <button class="btn" id="add-poder"><i class="fas fa-plus"></i> Adicionar Poder</button>
-                </div>
-                
-                <div class="rituals">
-                    <div class="section-title">
-                        <h2><i class="fas fa-magic"></i> Rituais</h2>
-                        <div class="counter" id="rituais-counter">0/0</div>
+                        <div class="ability">
+                            <h3>Golpe Pesado</h3>
+                            <p>Seu ataque causa +1 dado de dano</p>
+                        </div>
+                        <div class="ability">
+                            <h3>Combate Defensivo</h3>
+                            <p>Ganhe +5 em Defesa</p>
+                        </div>
+                        <div class="ability">
+                            <h3>Escudo Mental</h3>
+                            <p>Protege sua mente contra efeitos paranormais</p>
+                        </div>
+                        <div class="ability">
+                            <h3>Amaldiçoar Arma</h3>
+                            <p>Ritual: Arma causa dano paranormal adicional</p>
+                        </div>
+                        <div class="ability">
+                            <h3>Definhar</h3>
+                            <p>Ritual: Enfraquece inimigos próximos</p>
+                        </div>
+                        <div class="ability">
+                            <h3>Perturbação</h3>
+                            <p>Ritual: Cria ilusões para confundir oponentes</p>
+                        </div>
+                        <div class="ability">
+                            <h3>Arma Atroz</h3>
+                            <p>Ritual: Cria uma arma feita de energia paranormal</p>
+                        </div>
                     </div>
                     
-                    <div class="ability-list" id="rituais-list">
-                        <!-- Rituais serão adicionados aqui -->
+                    <div class="add-item">
+                        <button class="btn-save">
+                            <i class="fas fa-plus"></i> Adicionar Novo Poder
+                        </button>
                     </div>
-                    <button class="btn" id="add-ritual"><i class="fas fa-plus"></i> Adicionar Ritual</button>
                 </div>
+                
+                <!-- Aba Equipamento -->
+                <div id="equipment-tab" class="tab-pane">
+                    <h2>Equipamentos e Itens</h2>
+                    
+                    <div class="equipment-grid">
+                        <div class="equipment-category">
+                            <h3>Armas</h3>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome da arma" value="Pistola 9mm">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome da arma" value="Faca de Combate">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome da arma">
+                            </div>
+                        </div>
+                        
+                        <div class="equipment-category">
+                            <h3>Armaduras</h3>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome da armadura" value="Colete Balístico">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome da armadura">
+                            </div>
+                        </div>
+                        
+                        <div class="equipment-category">
+                            <h3>Itens Paranormais</h3>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome do item" value="Amuleto de Proteção">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome do item">
+                            </div>
+                        </div>
+                        
+                        <div class="equipment-category">
+                            <h3>Itens Gerais</h3>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome do item" value="Kit Médico">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome do item" value="Lanterna">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome do item" value="Rádio Comunicador">
+                            </div>
+                            <div class="equipment-item">
+                                <input type="text" placeholder="Nome do item">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="add-item">
+                        <button class="btn-save">
+                            <i class="fas fa-plus"></i> Adicionar Novo Item
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="save-button">
+                <button class="btn-save" id="save-btn">
+                    <i class="fas fa-save"></i> Salvar Alterações
+                </button>
             </div>
         </div>
     </div>
     
     <script>
-        // Dados do sistema
-        const classData = {
-            combatente: {
-                name: "Combatente",
-                pvBase: 16,
-                peBase: 2,
-                pvPerLevel: 4,
-                pePerLevel: 1,
-                powers: [
-                    "Ataque Especial", "Golpe Pesado", "Combate Defensivo", 
-                    "Ataque de Oportunidade", "Durão", "Mira Apurada"
-                ]
-            },
-            especialista: {
-                name: "Especialista",
-                pvBase: 12,
-                peBase: 3,
-                pvPerLevel: 3,
-                pePerLevel: 1,
-                powers: [
-                    "Mochila de Utilidades", "Perito", "Infiltrador", 
-                    "Investigador", "Médico de Campo", "Atirador de Elite"
-                ]
-            },
-            ocultista: {
-                name: "Ocultista",
-                pvBase: 8,
-                peBase: 4,
-                pvPerLevel: 2,
-                pePerLevel: 2,
-                powers: [
-                    "Escudo Mental", "Expansão de Conhecimento", "Potencial Aprimorado", 
-                    "Sensitivo", "Intuição Paranormal", "Conexão Paranormal"
-                ],
-                rituals: [
-                    "Amaldiçoar Arma", "Definhar", "Perturbação", 
-                    "Arma Atroz", "Sangramento Profano", "Eletrocussão"
-                ]
-            }
-        };
-        
         // Elementos DOM
-        const classOptions = document.querySelectorAll('.class-option');
-        const nexSlider = document.getElementById('nex');
-        const nexDisplay = document.getElementById('nex-display');
+        const tokenPreview = document.getElementById('token-preview');
+        const tokenUpload = document.getElementById('token-upload');
+        const tabControls = document.querySelectorAll('.tab-control');
+        const tabPanes = document.querySelectorAll('.tab-pane');
         const atributos = ['for', 'agi', 'int', 'vig', 'pre'];
-        const stats = ['pv', 'pe', 'san', 'defesa', 'deslocamento', 'proficiencia'];
-        const counters = {
-            poderes: document.getElementById('poderes-counter'),
-            rituais: document.getElementById('rituais-counter')
-        };
-        const lists = {
-            poderes: document.getElementById('poderes-list'),
-            rituais: document.getElementById('rituais-list')
-        };
-        const addButtons = {
-            poderes: document.getElementById('add-poder'),
-            rituais: document.getElementById('add-ritual')
-        };
         
-        // Estado atual
-        let currentClass = 'combatente';
-        let currentNex = 5;
-        let atributosValues = { for: 1, agi: 1, int: 1, vig: 1, pre: 1 };
-        let selectedPowers = [];
-        let selectedRituals = [];
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            // Configurar eventos
-            setupEventListeners();
-            
-            // Atualizar a ficha inicial
-            updateCharacterSheet();
+        // Upload de token
+        tokenUpload.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    tokenPreview.innerHTML = `<img src="${e.target.result}" alt="Token do Personagem">`;
+                }
+                
+                reader.readAsDataURL(e.target.files[0]);
+            }
         });
         
-        function setupEventListeners() {
-            // Seleção de classe
-            classOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    classOptions.forEach(o => o.classList.remove('selected'));
-                    option.classList.add('selected');
-                    currentClass = option.dataset.class;
-                    updateCharacterSheet();
-                });
-            });
-            
-            // Controle de NEX
-            nexSlider.addEventListener('input', () => {
-                currentNex = parseInt(nexSlider.value);
-                nexDisplay.textContent = `${currentNex}%`;
-                updateCharacterSheet();
-            });
-            
-            // Atributos
-            atributos.forEach(atr => {
-                document.getElementById(atr).addEventListener('input', () => {
-                    atributosValues[atr] = parseInt(document.getElementById(atr).value) || 0;
-                    updateCharacterSheet();
-                });
-            });
-            
-            // Botões para adicionar habilidades
-            addButtons.poderes.addEventListener('click', () => addPower());
-            addButtons.rituais.addEventListener('click', () => addRitual());
-        }
-        
-        function updateCharacterSheet() {
-            // Atualizar modificadores de atributos
-            atributos.forEach(atr => {
-                const mod = Math.floor((atributosValues[atr] - 1) / 2);
-                document.getElementById(`${atr}-mod`).textContent = mod >= 0 ? `+${mod}` : mod;
-            });
-            
-            // Calcular valores básicos
-            const classInfo = classData[currentClass];
-            
-            // Nível = NEX / 5 (arredondado para baixo)
-            const nivel = Math.floor(currentNex / 5);
-            
-            // PV = Base + (VIG * 2) + (Nível * PV por nível)
-            const pv = classInfo.pvBase + (atributosValues.vig * 2) + (nivel * classInfo.pvPerLevel);
-            document.getElementById('pv').textContent = pv;
-            document.getElementById('pv-max').textContent = `Máx: ${pv}`;
-            document.getElementById('pv-progress').style.width = '100%';
-            
-            // PE = Base + PRE + (Nível * PE por nível)
-            const pe = classInfo.peBase + atributosValues.pre + (nivel * classInfo.pePerLevel);
-            document.getElementById('pe').textContent = pe;
-            document.getElementById('pe-max').textContent = `Máx: ${pe}`;
-            document.getElementById('pe-progress').style.width = '100%';
-            
-            // SAN = 20 - Nível
-            const san = 20 - nivel;
-            document.getElementById('san').textContent = san;
-            document.getElementById('san-max').textContent = `Máx: ${san}`;
-            document.getElementById('san-progress').style.width = '100%';
-            
-            // Defesa = 10 + AGI
-            document.getElementById('defesa').textContent = 10 + atributosValues.agi;
-            
-            // Deslocamento = 9m (padrão)
-            document.getElementById('deslocamento').textContent = '9m';
-            
-            // Proficiência = +2 (inicial)
-            document.getElementById('proficiencia').textContent = '+2';
-            
-            // Atualizar contadores de habilidades
-            const maxPowers = 1 + nivel;
-            counters.poderes.textContent = `${selectedPowers.length}/${maxPowers}`;
-            
-            // Para ocultistas, calcular rituais
-            let maxRituals = 0;
-            if (currentClass === 'ocultista') {
-                maxRituals = 2 + Math.floor(currentNex / 15);
-            }
-            counters.rituais.textContent = `${selectedRituals.length}/${maxRituals}`;
-            
-            // Atualizar botões
-            addButtons.poderes.disabled = selectedPowers.length >= maxPowers;
-            addButtons.rituais.disabled = selectedRituals.length >= maxRituals || currentClass !== 'ocultista';
-        }
-        
-        function addPower() {
-            const classInfo = classData[currentClass];
-            const nivel = Math.floor(currentNex / 5);
-            const maxPowers = 1 + nivel;
-            
-            if (selectedPowers.length < maxPowers) {
-                // Escolher um poder aleatório disponível
-                const availablePowers = classInfo.powers.filter(power => !selectedPowers.includes(power));
+        // Controle das abas
+        tabControls.forEach(control => {
+            control.addEventListener('click', function() {
+                const tabId = this.querySelector('input').id.replace('tab-', '') + '-tab';
                 
-                if (availablePowers.length > 0) {
-                    const randomPower = availablePowers[Math.floor(Math.random() * availablePowers.length)];
-                    selectedPowers.push(randomPower);
-                    
-                    // Adicionar à lista
-                    const powerElement = document.createElement('div');
-                    powerElement.className = 'ability';
-                    powerElement.innerHTML = `
-                        <h3>${randomPower}</h3>
-                        <p>Poder de ${classInfo.name} - ${getPowerDescription(randomPower)}</p>
-                    `;
-                    lists.poderes.appendChild(powerElement);
-                    
-                    // Atualizar contador
-                    updateCharacterSheet();
-                }
-            }
-        }
-        
-        function addRitual() {
-            if (currentClass === 'ocultista') {
-                const nivel = Math.floor(currentNex / 5);
-                const maxRituals = 2 + Math.floor(currentNex / 15);
+                // Ativar/desativar aba
+                this.classList.toggle('active');
                 
-                if (selectedRituals.length < maxRituals) {
-                    // Escolher um ritual aleatório disponível
-                    const availableRituals = classData.ocultista.rituals.filter(ritual => !selectedRituals.includes(ritual));
-                    
-                    if (availableRituals.length > 0) {
-                        const randomRitual = availableRituals[Math.floor(Math.random() * availableRituals.length)];
-                        selectedRituals.push(randomRitual);
-                        
-                        // Adicionar à lista
-                        const ritualElement = document.createElement('div');
-                        ritualElement.className = 'ability';
-                        ritualElement.innerHTML = `
-                            <h3>${randomRitual}</h3>
-                            <p>Ritual de ${getRitualCircle(currentNex)} círculo - ${getRitualDescription(randomRitual)}</p>
-                        `;
-                        lists.rituais.appendChild(ritualElement);
-                        
-                        // Atualizar contador
-                        updateCharacterSheet();
-                    }
-                }
-            }
-        }
+                // Ativar/desativar painel
+                const pane = document.getElementById(tabId);
+                pane.classList.toggle('active');
+            });
+        });
         
-        function getPowerDescription(power) {
-            const descriptions = {
-                "Ataque Especial": "Gaste 2 PE para receber +5 em um ataque",
-                "Golpe Pesado": "Seu ataque causa +1 dado de dano",
-                "Combate Defensivo": "Ganhe +5 em Defesa",
-                "Ataque de Oportunidade": "Ataca inimigos que se movem perto de você",
-                "Durão": "Reduz dano recebido pela metade",
-                "Mira Apurada": "Ataques à distância causam dano crítico em 19-20",
-                "Mochila de Utilidades": "Carrega itens adicionais que podem ser úteis",
-                "Perito": "Recebe +5 em duas perícias à escolha",
-                "Infiltrador": "Move-se silenciosamente e abre fechaduras",
-                "Investigador": "Encontra pistas e analisa evidências com maior eficiência",
-                "Médico de Campo": "Cura aliados mesmo durante o combate",
-                "Atirador de Elite": "Ataques à distância causam dano extra",
-                "Escudo Mental": "Protege sua mente contra efeitos paranormais",
-                "Expansão de Conhecimento": "Aprende um ritual adicional",
-                "Potencial Aprimorado": "Rituais causam +2 de dano ou duram +2 rodadas",
-                "Sensitivo": "Sente a presença do paranormal ao redor",
-                "Intuição Paranormal": "Prevê perigos paranormais antes que aconteçam",
-                "Conexão Paranormal": "Recupera PE mais rapidamente"
-            };
+        // Atualizar modificadores de atributos
+        atributos.forEach(atr => {
+            const input = document.getElementById(atr);
+            const mod = document.getElementById(`${atr}-mod`);
             
-            return descriptions[power] || "Descrição não disponível";
-        }
+            input.addEventListener('input', function() {
+                const value = parseInt(this.value) || 0;
+                const modifier = Math.floor((value - 1) / 2);
+                mod.textContent = modifier >= 0 ? `+${modifier}` : modifier;
+            });
+        });
         
-        function getRitualDescription(ritual) {
-            const descriptions = {
-                "Amaldiçoar Arma": "Arma causa dano paranormal adicional",
-                "Definhar": "Enfraquece inimigos próximos",
-                "Perturbação": "Cria ilusões para confundir oponentes",
-                "Arma Atroz": "Cria uma arma feita de energia paranormal",
-                "Sangramento Profano": "Causa sangramento contínuo no alvo",
-                "Eletrocussão": "Descarga elétrica que atinge múltiplos alvos"
-            };
+        // Botão de salvar
+        document.getElementById('save-btn').addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
             
-            return descriptions[ritual] || "Descrição não disponível";
-        }
-        
-        function getRitualCircle(nex) {
-            if (nex < 15) return "Primeiro";
-            if (nex < 30) return "Segundo";
-            if (nex < 45) return "Terceiro";
-            if (nex < 60) return "Quarto";
-            return "Quinto";
-        }
+            // Simular salvamento
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Salvo com sucesso!';
+                
+                // Resetar após 2 segundos
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+                }, 2000);
+            }, 1000);
+        });
     </script>
 </body>
 </html>
