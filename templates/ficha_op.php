@@ -437,7 +437,7 @@ $itens_paranormais_json = json_encode($itens_paranormais);
         const currentCharacter = {
             id: <?php echo $personagem ? intval($personagem['id']) : 0; ?>,
             name: "<?php echo $personagem ? addslashes($personagem['nome']) : ''; ?>",
-           nex: <?php echo isset($personagem['nex']) ? intval($personagem['nex']) : 0; ?>
+            nex: <?php echo isset($personagem['nex']) ? intval($personagem['nex']) : 0; ?>
         };
 
         // Elementos DOM usados de fato
@@ -491,11 +491,42 @@ $itens_paranormais_json = json_encode($itens_paranormais);
                 }
             });
 
+
+            // Controle de abas (Status, Poderes, Equipamentos)
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+
+                    // Remove active de todos
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+
+                    // Ativa o botão clicado e o conteúdo correspondente
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
             // Botões de adicionar equipamentos
             addWeaponBtn?.addEventListener('click', () => openEquipmentModal('weapons', 'Armas'));
             addArmorBtn?.addEventListener('click', () => openEquipmentModal('armors', 'Proteções'));
             addParanormalBtn?.addEventListener('click', () => openEquipmentModal('paranormal', 'Itens Paranormais'));
             addGeneralBtn?.addEventListener('click', () => openEquipmentModal('general', 'Itens Gerais'));
+
+
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const filter = this.dataset.filter;
+                    filterEquipmentOptions(filter);
+                });
+            });
+
+
 
             // Fechar modais
             closeModal.forEach(btn => {
@@ -522,28 +553,85 @@ $itens_paranormais_json = json_encode($itens_paranormais);
             selectedEquipment = null;
             equipmentDetails.innerHTML = '<h3>Detalhes do Item</h3><p>Selecione um item para ver os detalhes</p>';
 
+            // Preencher com todos por padrão
             filterEquipmentOptions(type);
         }
 
+
         function filterEquipmentOptions(type) {
             equipmentOptions.innerHTML = '';
-            if (!equipmentData[type]) {
+
+            // Mapeamento entre dataset e o objeto
+            const typeMap = {
+                weapons: 'weapons',
+                armors: 'armors',
+                paranormal: 'paranormal',
+                general: 'general',
+                all: 'all'
+            };
+
+            const key = typeMap[type] || 'all';
+            let items = [];
+
+            if (key === 'all') {
+                items = [
+                    ...(equipmentData.weapons || []),
+                    ...(equipmentData.armors || []),
+                    ...(equipmentData.paranormal || []),
+                    ...(equipmentData.general || [])
+                ];
+            } else {
+                items = equipmentData[key] || [];
+            }
+
+            if (!items.length) {
                 equipmentOptions.innerHTML = '<p>Nenhum item disponível.</p>';
                 return;
             }
 
-            equipmentData[type].forEach(item => {
+            items.forEach(item => {
+                if (!item || !item.nome) return;
+
                 const option = document.createElement('div');
                 option.className = 'equipment-option';
-                option.dataset.type = type;
+                option.dataset.type = key;
                 option.dataset.id = item.id;
 
-                option.innerHTML = `<h4>${item.nome}</h4><p><strong>Categoria:</strong> ${item.categoria}</p>`;
-                option.addEventListener('click', () => selectEquipment(item, type));
+                let details = '';
+                if (key === 'weapons') {
+                    details = `
+                <p><strong>Dano:</strong> ${item.dano || '-'}</p>
+                <p><strong>Crítico:</strong> ${item.crit || '-'}</p>
+                <p><strong>Categoria:</strong> ${item.categoria || '-'}</p>
+                <p><strong>Espaços:</strong> ${item.espaco || '-'}</p>
+            `;
+                } else if (key === 'armors') {
+                    details = `
+                <p><strong>Defesa:</strong> ${item.defesa || '-'}</p>
+                <p><strong>Categoria:</strong> ${item.categoria || '-'}</p>
+                <p><strong>Espaços:</strong> ${item.espaco || '-'}</p>
+            `;
+                } else if (key === 'paranormal') {
+                    details = `
+                <p><strong>Efeito:</strong> ${item.efeito || '-'}</p>
+                <p><strong>Categoria:</strong> ${item.categoria || '-'}</p>
+                <p><strong>Espaços:</strong> ${item.espaco || '-'}</p>
+            `;
+                } else if (key === 'general') {
+                    details = `
+                <p><strong>Bônus:</strong> ${item.bonus || 'Item utilitário'}</p>
+                <p><strong>Categoria:</strong> ${item.categoria || '-'}</p>
+                <p><strong>Espaços:</strong> ${item.espaco || '-'}</p>
+            `;
+                }
 
+                option.innerHTML = `<h4>${item.nome}</h4>${details}`;
+                option.addEventListener('click', () => selectEquipment(item, key));
                 equipmentOptions.appendChild(option);
             });
         }
+
+
 
         function selectEquipment(item, type) {
             document.querySelectorAll('.equipment-option').forEach(opt => {
