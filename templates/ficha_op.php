@@ -45,8 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO personagens (user_id, nome, sistema, nex, vida, pe, san, imagem)
                 VALUES ('$user_id', '$nome', '$sistema', '$nex', '$vida', '$pe', '$san', '$imagem')";
     }
-
-    
 }
 
 // Carregar itens do banco de dados
@@ -81,62 +79,62 @@ $itens_paranormais_json = json_encode($itens_paranormais);
             <?php endif; ?>
         </header>
 
-    <!-- Painel Esquerdo: Token e Nome -->
+        <!-- Painel Esquerdo: Token e Nome -->
 
-<div class="left-panel">
-    <div class="token-container">
-        <div class="token-preview" id="token-preview">
-            <?php if ($personagem && $personagem['imagem'] != 'default.jpg'): ?>
-                <img src="../uploads/<?php echo $personagem['imagem']; ?>" alt="Token do Personagem">
-            <?php else: ?>
-                <i class="fas fa-user-circle"></i>
-            <?php endif; ?>
+        <div class="left-panel">
+            <div class="token-container">
+                <div class="token-preview" id="token-preview">
+                    <?php if ($personagem && $personagem['imagem'] != 'default.jpg'): ?>
+                        <img src="../uploads/<?php echo $personagem['imagem']; ?>" alt="Token do Personagem">
+                    <?php else: ?>
+                        <i class="fas fa-user-circle"></i>
+                    <?php endif; ?>
+                </div>
+                <input type="file" id="token-upload" accept="image/*" class="token-upload">
+                <button class="btn-save" onclick="document.getElementById('token-upload').click()">
+                    <i class="fas fa-upload"></i> Importar Token
+                </button>
+            </div>
+
+            <div class="character-name">
+                <input type="text" id="char-name" placeholder="Nome do Personagem"
+                    value="<?php echo $personagem ? htmlspecialchars($personagem['nome']) : ''; ?>">
+                <br><br>
+                <!-- Seleção de NEX -->
+                <select name="nex" id="nex" class="nex-select" required>
+                    <option value="">Selecione um NEX</option>
+                    <option value="1">NEX – 5%</option>
+                    <option value="2">NEX – 10%</option>
+                    <option value="3">NEX – 15%</option>
+                    <option value="4">NEX – 20%</option>
+                    <option value="5">NEX – 25%</option>
+                    <option value="6">NEX – 30%</option>
+                    <option value="7">NEX – 35%</option>
+                    <option value="8">NEX – 40%</option>
+                    <option value="9">NEX – 45%</option>
+                    <option value="10">NEX – 50%</option>
+                    <option value="11">NEX – 55%</option>
+                    <option value="12">NEX – 60%</option>
+                    <option value="13">NEX – 65%</option>
+                    <option value="14">NEX – 70%</option>
+                    <option value="15">NEX – 75%</option>
+                    <option value="16">NEX – 80%</option>
+                    <option value="17">NEX – 85%</option>
+                    <option value="18">NEX – 90%</option>
+                    <option value="19">NEX – 95%</option>
+                    <option value="20">NEX – 99%</option>
+                </select>
+
+                <!-- Vida -->
+                <input type="number" name="vida" id="vida" placeholder="Vida" required>
+                <br><br>
+                <!-- Pontos de Esforço -->
+                <input type="number" name="pe" id="pe" placeholder="PE" required>
+                <br><br>
+                <!-- Sanidade -->
+                <input type="number" name="san" id="san" placeholder="Sanidade" required>
+            </div>
         </div>
-        <input type="file" id="token-upload" accept="image/*" class="token-upload">
-        <button class="btn-save" onclick="document.getElementById('token-upload').click()">
-            <i class="fas fa-upload"></i> Importar Token
-        </button>
-    </div>
-
-    <div class="character-name">
-        <input type="text" id="char-name" placeholder="Nome do Personagem"
-            value="<?php echo $personagem ? htmlspecialchars($personagem['nome']) : ''; ?>">
-        <br><br>
-        <!-- Seleção de NEX -->
-        <select name="nex" id="nex" class="nex-select" required>
-            <option value="">Selecione um NEX</option>
-            <option value="1">NEX – 5%</option>
-            <option value="2">NEX – 10%</option>
-            <option value="3">NEX – 15%</option>
-            <option value="4">NEX – 20%</option>
-            <option value="5">NEX – 25%</option>
-            <option value="6">NEX – 30%</option>
-            <option value="7">NEX – 35%</option>
-            <option value="8">NEX – 40%</option>
-            <option value="9">NEX – 45%</option>
-            <option value="10">NEX – 50%</option>
-            <option value="11">NEX – 55%</option>
-            <option value="12">NEX – 60%</option>
-            <option value="13">NEX – 65%</option>
-            <option value="14">NEX – 70%</option>
-            <option value="15">NEX – 75%</option>
-            <option value="16">NEX – 80%</option>
-            <option value="17">NEX – 85%</option>
-            <option value="18">NEX – 90%</option>
-            <option value="19">NEX – 95%</option>
-            <option value="20">NEX – 99%</option>
-        </select>
-        
-        <!-- Vida -->
-        <input type="number" name="vida" id="vida" placeholder="Vida" required>
-        <br><br>
-        <!-- Pontos de Esforço -->
-        <input type="number" name="pe" id="pe" placeholder="PE" required>
-        <br><br>
-        <!-- Sanidade -->
-        <input type="number" name="san" id="san" placeholder="Sanidade" required>
-    </div>
-</div>
         <!-- Painel Direito: Abas e Conteúdo -->
         <div class="right-panel">
             <div class="tab-controls">
@@ -428,27 +426,24 @@ $itens_paranormais_json = json_encode($itens_paranormais);
     </div>
 
     <script>
-        // Dados de equipamentos do banco (convertidos de PHP para JavaScript)
+        // Dados iniciais (do PHP para JS)
         const equipmentData = {
-            weapons: <?php echo $armas_json; ?>,
-            armors: <?php echo $protecoes_json; ?>,
-            paranormal: <?php echo $itens_paranormais_json; ?>,
-            general: <?php echo $itens_gerais_json; ?>
+            weapons: <?php echo $armas_json ?: '[]'; ?>,
+            armors: <?php echo $protecoes_json ?: '[]'; ?>,
+            paranormal: <?php echo $itens_paranormais_json ?: '[]'; ?>,
+            general: <?php echo $itens_gerais_json ?: '[]'; ?>
         };
 
-        // Dados do personagem atual
         const currentCharacter = {
-            id: <?php echo $personagem ? $personagem['id'] : 0; ?>,
+            id: <?php echo $personagem ? intval($personagem['id']) : 0; ?>,
             name: "<?php echo $personagem ? addslashes($personagem['nome']) : ''; ?>",
-            nex: <?php echo $personagem ? $personagem['nivel'] * 5 : 0; ?>
+           nex: <?php echo isset($personagem['nex']) ? intval($personagem['nex']) : 0; ?>
         };
 
-        // Elementos DOM
+        // Elementos DOM usados de fato
         const tokenPreview = document.getElementById('token-preview');
         const tokenUpload = document.getElementById('token-upload');
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabPanes = document.querySelectorAll('.tab-pane');
-        const atributos = ['for', 'agi', 'int', 'vig', 'pre'];
+
         const equipmentModal = document.getElementById('equipment-modal');
         const modificationsModal = document.getElementById('modifications-modal');
         const modalTitle = document.getElementById('modal-title');
@@ -456,16 +451,15 @@ $itens_paranormais_json = json_encode($itens_paranormais);
         const equipmentOptions = document.getElementById('equipment-options');
         const modificationsOptions = document.getElementById('modifications-options');
         const equipmentDetails = document.getElementById('equipment-details');
-        const filterBtns = document.querySelectorAll('.filter-btn');
         const closeModal = document.querySelectorAll('.close-modal');
         const selectEquipmentBtn = document.getElementById('select-equipment');
         const saveModificationsBtn = document.getElementById('save-modifications');
+
         const addWeaponBtn = document.getElementById('add-weapon');
         const addArmorBtn = document.getElementById('add-armor');
         const addParanormalBtn = document.getElementById('add-paranormal');
         const addGeneralBtn = document.getElementById('add-general');
 
-        // Listas de equipamentos do personagem
         const weaponsList = document.getElementById('weapons-list');
         const armorsList = document.getElementById('armors-list');
         const paranormalList = document.getElementById('paranormal-list');
@@ -475,202 +469,89 @@ $itens_paranormais_json = json_encode($itens_paranormais);
         let currentEquipmentType = "";
         let selectedEquipment = null;
         let currentModifications = [];
-        let selectedItemForModification = null;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            // Configurar eventos
             setupEventListeners();
-
-            // Atualizar a ficha inicial
-            updateCharacterSheet();
-
-            // Carregar equipamentos do personagem se existir
             if (currentCharacter.id > 0) {
                 loadCharacterEquipment();
             }
         });
 
+        // Eventos
         function setupEventListeners() {
             // Upload de token
-            tokenUpload.addEventListener('change', function(e) {
+            tokenUpload?.addEventListener('change', function(e) {
                 if (e.target.files && e.target.files[0]) {
                     const reader = new FileReader();
-
                     reader.onload = function(e) {
                         tokenPreview.innerHTML = `<img src="${e.target.result}" alt="Token do Personagem">`;
-                    }
-
+                    };
                     reader.readAsDataURL(e.target.files[0]);
                 }
             });
 
-            // Controle das abas
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-
-                    // Desativar todas as abas
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabPanes.forEach(p => p.classList.remove('active'));
-
-                    // Ativar aba clicada
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-
-            // Atualizar modificadores de atributos
-            atributos.forEach(atr => {
-                const input = document.getElementById(atr);
-                const mod = document.getElementById(`${atr}-mod`);
-
-                input.addEventListener('input', function() {
-                    const value = parseInt(this.value) || 0;
-                    const modifier = Math.floor((value - 1) / 2);
-                    mod.textContent = modifier >= 0 ? `+${modifier}` : modifier;
-                });
-            });
-
-            // Botões para adicionar equipamentos
-            addWeaponBtn.addEventListener('click', () => openEquipmentModal('weapon', 'Armas'));
-            addArmorBtn.addEventListener('click', () => openEquipmentModal('armor', 'Proteções'));
-            addParanormalBtn.addEventListener('click', () => openEquipmentModal('paranormal', 'Itens Paranormais'));
-            addGeneralBtn.addEventListener('click', () => openEquipmentModal('general', 'Itens Gerais'));
-
-            // Filtros do modal
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-
-                    const filter = this.dataset.filter;
-                    filterEquipmentOptions(filter);
-                });
-            });
+            // Botões de adicionar equipamentos
+            addWeaponBtn?.addEventListener('click', () => openEquipmentModal('weapons', 'Armas'));
+            addArmorBtn?.addEventListener('click', () => openEquipmentModal('armors', 'Proteções'));
+            addParanormalBtn?.addEventListener('click', () => openEquipmentModal('paranormal', 'Itens Paranormais'));
+            addGeneralBtn?.addEventListener('click', () => openEquipmentModal('general', 'Itens Gerais'));
 
             // Fechar modais
             closeModal.forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', () => {
                     equipmentModal.style.display = 'none';
                     modificationsModal.style.display = 'none';
                 });
             });
 
-            // Selecionar equipamento
-            selectEquipmentBtn.addEventListener('click', addSelectedEquipment);
+            // Selecionar equipamento e aplicar modificações
+            selectEquipmentBtn?.addEventListener('click', addSelectedEquipment);
+            saveModificationsBtn?.addEventListener('click', applyModifications);
 
-            // Aplicar modificações
-            saveModificationsBtn.addEventListener('click', applyModifications);
-
-            // Botão de salvar
-            document.getElementById('save-btn').addEventListener('click', saveCharacter);
+            // Botão de salvar ficha
+            document.getElementById('save-btn')?.addEventListener('click', saveCharacter);
         }
 
-        function updateCharacterSheet() {
-            // Atualizar modificadores de atributos
-            atributos.forEach(atr => {
-                const mod = Math.floor((parseInt(document.getElementById(atr).value) - 1) / 2);
-                document.getElementById(`${atr}-mod`).textContent = mod >= 0 ? `+${mod}` : mod;
-            });
-        }
-
+        // Fluxo de equipamentos
         function openEquipmentModal(type, title) {
             currentEquipmentType = type;
             modalTitle.textContent = `Selecionar ${title}`;
             equipmentModal.style.display = 'flex';
 
-            // Resetar seleção
             selectedEquipment = null;
             equipmentDetails.innerHTML = '<h3>Detalhes do Item</h3><p>Selecione um item para ver os detalhes</p>';
 
-            // Preencher opções
-            filterEquipmentOptions('all');
+            filterEquipmentOptions(type);
         }
 
-        function filterEquipmentOptions(filter) {
+        function filterEquipmentOptions(type) {
             equipmentOptions.innerHTML = '';
+            if (!equipmentData[type]) {
+                equipmentOptions.innerHTML = '<p>Nenhum item disponível.</p>';
+                return;
+            }
 
-            // Determinar quais tipos mostrar
-            const typesToShow = filter === 'all' ? ['weapons', 'armors', 'paranormal', 'general'] : [filter];
+            equipmentData[type].forEach(item => {
+                const option = document.createElement('div');
+                option.className = 'equipment-option';
+                option.dataset.type = type;
+                option.dataset.id = item.id;
 
-            typesToShow.forEach(type => {
-                if (equipmentData[type]) {
-                    equipmentData[type].forEach(item => {
-                        const option = document.createElement('div');
-                        option.className = 'equipment-option';
-                        option.dataset.type = type;
-                        option.dataset.id = item.id;
+                option.innerHTML = `<h4>${item.nome}</h4><p><strong>Categoria:</strong> ${item.categoria}</p>`;
+                option.addEventListener('click', () => selectEquipment(item, type));
 
-                        let details = '';
-                        if (type === 'weapons') {
-                            details = `<p><strong>Dano:</strong> ${item.dano}</p>
-                                       <p><strong>Crítico:</strong> ${item.crit}</p>
-                                       <p><strong>Alcance:</strong> ${item.alcance || '-'}</p>`;
-                        } else if (type === 'armors') {
-                            details = `<p><strong>Defesa:</strong> ${item.defesa}</p>`;
-                        } else if (type === 'paranormal') {
-                            details = `<p><strong>Efeito:</strong> ${item.efeito}</p>`;
-                        } else if (type === 'general') {
-                            details = `<p><strong>Bônus:</strong> ${item.bonus || 'Item utilitário'}</p>`;
-                        }
-
-                        option.innerHTML = `
-                            <h4>${item.nome}</h4>
-                            <p><strong>Categoria:</strong> ${item.categoria}</p>
-                            <p><strong>Espaços:</strong> ${item.espaco}</p>
-                            ${details}
-                        `;
-
-                        option.addEventListener('click', () => selectEquipment(item, type));
-                        equipmentOptions.appendChild(option);
-                    });
-                }
+                equipmentOptions.appendChild(option);
             });
         }
 
         function selectEquipment(item, type) {
-            // Remover seleção anterior
             document.querySelectorAll('.equipment-option').forEach(opt => {
                 opt.style.border = '1px solid var(--border-color)';
             });
-
-            // Destacar seleção atual
             event.currentTarget.style.border = '2px solid var(--primary-color)';
 
-            // Mostrar detalhes
-            let detailsHTML = `
-                <h3>${item.nome}</h3>
-                <p><strong>Categoria:</strong> ${item.categoria}</p>
-                <p><strong>Espaços:</strong> ${item.espaco}</p>
-            `;
-
-            if (type === 'weapons') {
-                detailsHTML += `
-                    <p><strong>Dano:</strong> ${item.dano}</p>
-                    <p><strong>Crítico:</strong> ${item.crit}</p>
-                    <p><strong>Alcance:</strong> ${item.alcance || '-'}</p>
-                    <p><strong>Tipo:</strong> ${item.tipo || '-'}</p>
-                `;
-            } else if (type === 'armors') {
-                detailsHTML += `<p><strong>Defesa:</strong> ${item.defesa}</p>`;
-            } else if (type === 'paranormal') {
-                detailsHTML += `<p><strong>Efeito:</strong> ${item.efeito}</p>`;
-                if (item.elemento) {
-                    detailsHTML += `<p><strong>Elemento:</strong> ${item.elemento}</p>`;
-                }
-            } else if (type === 'general') {
-                detailsHTML += `<p><strong>Bônus:</strong> ${item.bonus || 'Item utilitário'}</p>`;
-                if (item.tipo) {
-                    detailsHTML += `<p><strong>Tipo:</strong> ${item.tipo}</p>`;
-                }
-            }
-
-            if (item.descricao) {
-                detailsHTML += `<p><strong>Descrição:</strong> ${item.descricao}</p>`;
-            }
-
-            equipmentDetails.innerHTML = detailsHTML;
+            equipmentDetails.innerHTML = `<h3>${item.nome}</h3><p><strong>Categoria:</strong> ${item.categoria}</p>`;
             selectedEquipment = {
                 ...item,
                 sourceType: type
@@ -682,127 +563,73 @@ $itens_paranormais_json = json_encode($itens_paranormais);
                 alert('Por favor, selecione um item primeiro.');
                 return;
             }
-
-            // Fechar modal de equipamentos
             equipmentModal.style.display = 'none';
-
-            // Abrir modal de modificações
             openModificationsModal();
         }
 
         function openModificationsModal() {
             modificationsTitle.textContent = `Modificações para ${selectedEquipment.nome}`;
             modificationsModal.style.display = 'flex';
-
-            // Resetar modificações selecionadas
             currentModifications = [];
             document.getElementById('selected-mods-list').innerHTML = '';
 
-            // Carregar modificações disponíveis para este tipo de item
             loadModifications(selectedEquipment.sourceType);
         }
 
         function loadModifications(itemType) {
-            // Fazer requisição para buscar modificações do banco
             fetch(`../conection/get_modifications.php?tipo=${itemType}`)
-                .then(response => response.json())
-                .then(modifications => {
-                    displayModifications(modifications);
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar modificações:', error);
-                    modificationsOptions.innerHTML = '<p>Nenhuma modificação disponível.</p>';
-                });
+                .then(r => r.json())
+                .then(displayModifications)
+                .catch(() => modificationsOptions.innerHTML = '<p>Erro ao carregar modificações.</p>');
         }
 
         function displayModifications(modifications) {
             modificationsOptions.innerHTML = '';
-
-            if (modifications.length === 0) {
-                modificationsOptions.innerHTML = '<p>Nenhuma modificação disponível para este tipo de item.</p>';
+            if (!modifications.length) {
+                modificationsOptions.innerHTML = '<p>Nenhuma modificação disponível.</p>';
                 return;
             }
 
             modifications.forEach(mod => {
                 const option = document.createElement('div');
                 option.className = 'modification-option';
-                option.dataset.id = mod.id;
-
                 option.innerHTML = `
-                    <h4>${mod.nome}</h4>
-                    <p><strong>Efeito:</strong> ${mod.efeito}</p>
-                    <p><strong>Categoria Extra:</strong> +${mod.categoria_extra}</p>
-                    ${mod.descricao ? `<p><strong>Descrição:</strong> ${mod.descricao}</p>` : ''}
-                    <button class="btn-add-mod">Adicionar</button>
-                `;
-
-                const addButton = option.querySelector('.btn-add-mod');
-                addButton.addEventListener('click', () => addModification(mod));
-
+            <h4>${mod.nome}</h4>
+            <p><strong>Efeito:</strong> ${mod.efeito}</p>
+            <button class="btn-add-mod">Adicionar</button>
+        `;
+                option.querySelector('.btn-add-mod').addEventListener('click', () => addModification(mod));
                 modificationsOptions.appendChild(option);
             });
         }
 
         function addModification(modification) {
-            // Adicionar modificação à lista
             currentModifications.push(modification);
-
-            // Atualizar lista de modificações selecionadas
             updateSelectedModificationsList();
         }
 
         function updateSelectedModificationsList() {
             const list = document.getElementById('selected-mods-list');
             list.innerHTML = '';
-
             currentModifications.forEach((mod, index) => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    ${mod.nome} (+${mod.categoria_extra} categoria)
-                    <button class="btn-remove-mod" data-index="${index}">Remover</button>
-                `;
-
-                const removeButton = listItem.querySelector('.btn-remove-mod');
-                removeButton.addEventListener('click', () => removeModification(index));
-
-                list.appendChild(listItem);
+                const li = document.createElement('li');
+                li.innerHTML = `${mod.nome} <button class="btn-remove-mod" data-index="${index}">Remover</button>`;
+                li.querySelector('.btn-remove-mod').addEventListener('click', () => {
+                    currentModifications.splice(index, 1);
+                    updateSelectedModificationsList();
+                });
+                list.appendChild(li);
             });
-        }
-
-        function removeModification(index) {
-            currentModifications.splice(index, 1);
-            updateSelectedModificationsList();
         }
 
         function applyModifications() {
-            // Calcular categoria final
             let categoriaFinal = selectedEquipment.categoria;
-            let primeiraModParanormal = true;
-
-            currentModifications.forEach(mod => {
-                if (mod.categoria_extra >= 2) {
-                    // Modificação paranormal
-                    if (primeiraModParanormal) {
-                        categoriaFinal += 2;
-                        primeiraModParanormal = false;
-                    } else {
-                        categoriaFinal += 1;
-                    }
-                } else {
-                    // Modificação normal
-                    categoriaFinal += 1;
-                }
-            });
-
-            // Adicionar item à lista do personagem
+            currentModifications.forEach(mod => categoriaFinal += mod.categoria_extra || 1);
             addItemToCharacter(selectedEquipment, currentModifications, categoriaFinal);
-
-            // Fechar modal
             modificationsModal.style.display = 'none';
         }
 
         function addItemToCharacter(item, modifications, categoriaFinal) {
-            // Fazer requisição para adicionar item ao personagem
             const formData = new FormData();
             formData.append('personagem_id', currentCharacter.id);
             formData.append('item_id', item.id);
@@ -814,214 +641,97 @@ $itens_paranormais_json = json_encode($itens_paranormais);
                     method: 'POST',
                     body: formData
                 })
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        // Recarregar equipamentos do personagem
                         loadCharacterEquipment();
-                        alert('Item adicionado com sucesso!');
+                        alert('Item adicionado!');
                     } else {
-                        alert('Erro ao adicionar item: ' + data.message);
+                        alert('Erro: ' + data.message);
                     }
                 })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Erro ao adicionar item.');
-                });
+                .catch(() => alert('Erro ao adicionar item.'));
         }
 
         function loadCharacterEquipment() {
-            if (currentCharacter.id === 0) return;
-
-            // Fazer requisição para carregar equipamentos do personagem
+            if (!currentCharacter.id) return;
             fetch(`../conection/get_character_equipment.php?personagem_id=${currentCharacter.id}`)
-                .then(response => response.json())
-                .then(equipment => {
-                    displayCharacterEquipment(equipment);
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar equipamentos:', error);
-                });
+                .then(r => r.json())
+                .then(displayCharacterEquipment)
+                .catch(() => console.error('Erro ao carregar equipamentos.'));
         }
 
         function displayCharacterEquipment(equipment) {
-            // Limpar listas
             weaponsList.innerHTML = '';
             armorsList.innerHTML = '';
             paranormalList.innerHTML = '';
             generalList.innerHTML = '';
 
-            // Agrupar equipamentos por tipo
-            const weapons = equipment.filter(item => item.tipo_item === 'arma');
-            const armors = equipment.filter(item => item.tipo_item === 'protecao');
-            const paranormal = equipment.filter(item => item.tipo_item === 'paranormal');
-            const general = equipment.filter(item => item.tipo_item === 'geral');
-
-            // Preencher listas
-            fillEquipmentList(weapons, weaponsList, 'arma');
-            fillEquipmentList(armors, armorsList, 'protecao');
-            fillEquipmentList(paranormal, paranormalList, 'paranormal');
-            fillEquipmentList(general, generalList, 'geral');
+            fillEquipmentList(equipment.filter(i => i.tipo_item === 'arma'), weaponsList);
+            fillEquipmentList(equipment.filter(i => i.tipo_item === 'protecao'), armorsList);
+            fillEquipmentList(equipment.filter(i => i.tipo_item === 'paranormal'), paranormalList);
+            fillEquipmentList(equipment.filter(i => i.tipo_item === 'geral'), generalList);
         }
 
-        function fillEquipmentList(items, listElement, type) {
-            if (items.length === 0) {
-                listElement.innerHTML = '<p>Nenhum item adicionado.</p>';
+        function fillEquipmentList(items, listElement) {
+            if (!items.length) {
+                listElement.innerHTML = '<p>Nenhum item.</p>';
                 return;
             }
-
             items.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'equipment-item';
-
-                let details = `Categoria: ${item.categoria_final} | Espaços: ${item.espaco}`;
-                if (type === 'arma') {
-                    details = `Dano: ${item.dano} | Crítico: ${item.crit} | ${details}`;
-                } else if (type === 'protecao') {
-                    details = `Defesa: ${item.defesa} | ${details}`;
-                } else if (type === 'paranormal') {
-                    details = `Efeito: ${item.efeito} | ${details}`;
-                } else if (type === 'geral') {
-                    details = `Bônus: ${item.bonus} | ${details}`;
-                }
-
-                itemElement.innerHTML = `
-                    <span>${item.nome}</span>
-                    <span>${details}</span>
-                    <div class="equipment-actions">
-                        <button class="btn-edit" data-id="${item.id}" data-type="${type}">Editar</button>
-                        <button class="btn-remove" data-id="${item.id}" data-type="${type}">Remover</button>
-                    </div>
-                `;
-
-                // Adicionar event listeners para os botões
-                const editBtn = itemElement.querySelector('.btn-edit');
-                const removeBtn = itemElement.querySelector('.btn-remove');
-
-                editBtn.addEventListener('click', () => editEquipmentItem(item.id, type));
-                removeBtn.addEventListener('click', () => removeEquipmentItem(item.id, type));
-
-                listElement.appendChild(itemElement);
+                const div = document.createElement('div');
+                div.className = 'equipment-item';
+                div.innerHTML = `
+            <span>${item.nome}</span>
+            <button class="btn-remove" data-id="${item.id}">Remover</button>
+        `;
+                div.querySelector('.btn-remove').addEventListener('click', () => removeEquipmentItem(item.id));
+                listElement.appendChild(div);
             });
         }
 
-        function editEquipmentItem(itemId, itemType) {
-            // Implementar edição de item
-            alert(`Editar item ${itemId} do tipo ${itemType}`);
+        function removeEquipmentItem(itemId) {
+            if (!confirm('Remover este item?')) return;
+            const formData = new FormData();
+            formData.append('item_id', itemId);
+            fetch('../conection/remove_item_personagem.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        loadCharacterEquipment();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                });
         }
 
-        function removeEquipmentItem(itemId, itemType) {
-            if (confirm('Tem certeza que deseja remover este item?')) {
-                // Fazer requisição para remover item
-                const formData = new FormData();
-                formData.append('item_id', itemId);
-                formData.append('tipo_item', itemType);
-
-                fetch('../conection/remove_item_personagem.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Recarregar equipamentos
-                            loadCharacterEquipment();
-                            alert('Item removido com sucesso!');
-                        } else {
-                            alert('Erro ao remover item: ' + data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro:', error);
-                        alert('Erro ao remover item.');
-                    });
-            }
-        }
-
+        // Salvar ficha (AJAX)
         function saveCharacter() {
-    // Coletar todos os dados do formulário
-    const formData = new FormData();
-    
-    // Dados básicos do personagem
-    formData.append('personagem_id', currentCharacter.id);
-    formData.append('nome', document.getElementById('char-name').value);
-    formData.append('nex', document.getElementById('nex').value);
-    formData.append('vida', document.getElementById('vida').value);
-    formData.append('pe', document.getElementById('pe').value);
-    formData.append('san', document.getElementById('san').value);
-    
-    // Atributos
-    formData.append('forca', document.getElementById('for').value);
-    formData.append('agilidade', document.getElementById('agi').value);
-    formData.append('intelecto', document.getElementById('int').value);
-    formData.append('vigor', document.getElementById('vig').value);
-    formData.append('presenca', document.getElementById('pre').value);
-    
-    // Perícias
-    const pericias = {
-        'acrobacia': document.getElementById('acrobacia').value,
-        'atletismo': document.getElementById('atletismo').value,
-        'furtividade': document.getElementById('furtividade').value,
-        'pilotagem': document.getElementById('pilotagem').value,
-        'pontaria': document.getElementById('pontaria').value,
-        'atualidades': document.getElementById('atualidades').value,
-        'ciencias': document.getElementById('ciencias').value,
-        'crime': document.getElementById('crime').value,
-        'investigacao': document.getElementById('investigacao').value,
-        'medicina': document.getElementById('medicina').value,
-        'diplomacia': document.getElementById('diplomacia').value,
-        'enganacao': document.getElementById('enganacao').value,
-        'intimidacao': document.getElementById('intimidacao').value,
-        'percepcao': document.getElementById('percepcao').value,
-        'vontade': document.getElementById('vontade').value
-    };
-    formData.append('pericias', JSON.stringify(pericias));
-    
-    // Imagem (se houver upload)
-    const tokenFile = document.getElementById('token-upload').files[0];
-    if (tokenFile) {
-        formData.append('imagem', tokenFile);
-    }
-    
-    // Mostrar loading
-    const saveBtn = document.getElementById('save-btn');
-    const originalText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-    saveBtn.disabled = true;
-    
-    // Enviar para o servidor
-    fetch('../conection/save_character.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Personagem salvo com sucesso!');
-            // Atualizar ID se for um novo personagem
-            if (data.personagem_id) {
-                currentCharacter.id = data.personagem_id;
-                // Atualizar URL se necessário
-                if (window.history && window.history.replaceState) {
-                    const newUrl = window.location.href.split('?')[0] + '?id=' + data.personagem_id;
-                    window.history.replaceState({}, '', newUrl);
-                }
-            }
-        } else {
-            alert('Erro ao salvar: ' + data.message);
+            const formData = new FormData(document.getElementById('ficha-form'));
+            fetch('../conection/save_character.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Personagem salvo!');
+                        if (data.personagem_id) {
+                            currentCharacter.id = data.personagem_id;
+                            const newUrl = window.location.href.split('?')[0] + '?id=' + data.personagem_id;
+                            window.history.replaceState({}, '', newUrl);
+                        }
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                })
+                .catch(() => alert('Erro ao salvar.'));
         }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert('Erro ao conectar com o servidor.');
-    })
-    .finally(() => {
-        // Restaurar botão
-        saveBtn.innerHTML = originalText;
-        saveBtn.disabled = false;
-    });
-}
     </script>
+
 </body>
 
 </html>
