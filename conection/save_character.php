@@ -111,7 +111,6 @@ if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
 // ----------------- Monta dados para INSERT/UPDATE dinâmico ----------------- //
 $to_save = [
     'nome'       => $nome,
-    'nex'        => $nex,
     'vida'       => $vida,
     'pe'         => $pe,
     'san'        => $san,
