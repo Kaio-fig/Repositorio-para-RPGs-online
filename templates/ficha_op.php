@@ -8,6 +8,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 require_once '../conection/db_connect.php';
+$conn->set_charset("utf8mb4");
+
 require_once '../conection/item_functions.php';
 
 // Pega id do personagem (se existir, é edição)
@@ -32,32 +34,85 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($id > 0) {
         // Atualizar personagem existente
         $sql = "UPDATE personagens 
-                SET nome='$nome',
-                    sistema='$sistema',
-                    nivel='$nivel',
-                    vida='$vida',
-                    pe='$pe',
-                    san='$san',
-                    imagem='$imagem'
-                WHERE id='$id'";
+            SET nome = ?, 
+                sistema = ?, 
+                nivel = ?, 
+                vida = ?, 
+                pe = ?, 
+                san = ?, 
+                defesa = ?, 
+                origem = ?, 
+                classe = ?, 
+                habilidades = ?, 
+                rituais = ?, 
+                equipamento = ?, 
+                imagem = ?
+            WHERE id = ?";
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            die("Erro na preparação: " . $conn->error);
+        }
+
+        $stmt->bind_param(
+            "ssiiiissssssi",
+            $nome,
+            $sistema,
+            $nivel,
+            $vida,
+            $pe,
+            $san,
+            $defesa,
+            $origem,
+            $classe,
+            $habilidades,   // pode ser JSON ou texto simples
+            $rituais,       // idem
+            $equipamento,   // idem
+            $imagem,
+            $id
+        );
+
+        $ok = $stmt->execute();
+        if (!$ok) {
+            die("Erro ao atualizar: " . $stmt->error);
+        }
     } else {
         // Criar novo personagem
-        $sql = "INSERT INTO personagens (user_id, nome, sistema, nivel, vida, pe, san, imagem)
-                VALUES ('$user_id', '$nome', '$sistema', '$nivel', '$vida', '$pe', '$san', '$imagem')";
+        $sql = "INSERT INTO personagens 
+            (user_id, nome, sistema, nivel, vida, pe, san, defesa, origem, classe, habilidades, rituais, equipamento, imagem) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            die("Erro na preparação: " . $conn->error);
+        }
+
+        $stmt->bind_param(
+            "issiiiissssss",
+            $user_id,
+            $nome,
+            $sistema,
+            $nivel,
+            $vida,
+            $pe,
+            $san,
+            $defesa,
+            $origem,
+            $classe,
+            $habilidades,   // pode ser JSON ou texto simples
+            $rituais,       // idem
+            $equipamento,   // idem
+            $imagem
+        );
+
+        $ok = $stmt->execute();
+        if (!$ok) {
+            die("Erro ao inserir: " . $stmt->error);
+        }
+
+        $id = $stmt->insert_id; // pega o ID recém-criado
     }
 }
-
-// Carregar itens do banco de dados
-$armas = getArmas();
-$protecoes = getProtecoes();
-$itens_gerais = getItensGerais();
-$itens_paranormais = getItensParanormais();
-
-// Converter para JSON para uso no JavaScript
-$armas_json = json_encode($armas);
-$protecoes_json = json_encode($protecoes);
-$itens_gerais_json = json_encode($itens_gerais);
-$itens_paranormais_json = json_encode($itens_paranormais);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -141,10 +196,10 @@ $itens_paranormais_json = json_encode($itens_paranormais);
             <!-- Painel Direito: Abas e Conteúdo -->
             <div class="right-panel">
                 <div class="tab-controls">
-                    <div class="tab-btn active" data-tab="status-tab">
+                    <div class="tab-btn " data-tab="status-tab">
                         <i class="fas fa-heart"></i> Status
                     </div>
-                    <div class="tab-btn" data-tab="powers-tab">
+                    <div class="tab-btn active" data-tab="powers-tab">
                         <i class="fas fa-fire"></i> Poderes e Rituais
                     </div>
                     <div class="tab-btn" data-tab="equipment-tab">
@@ -154,7 +209,7 @@ $itens_paranormais_json = json_encode($itens_paranormais);
 
                 <div class="tab-content">
                     <!-- Aba Status -->
-                    <div id="status-tab" class="tab-pane active">
+                    <div id="status-tab" class="tab-pane ">
                         <h2>Atributos e Perícias</h2>
 
                         <div class="attributes-grid">
@@ -261,10 +316,31 @@ $itens_paranormais_json = json_encode($itens_paranormais);
                     </div>
 
                     <!-- Aba Poderes e Rituais -->
-                    <div id="powers-tab" class="tab-pane">
+                    <div id="powers-tab" class="tab-pane active">
                         <h2>Poderes de Classe e Rituais</h2>
+                        <label for="origem">Origem</label>
+                        <select name="origem_id" id="origem_id" class="form-control" required>
+                            <option value="">-- Selecione uma origem --</option>
+                            <?php
+                            $sql = "SELECT id, nome FROM origens ORDER BY nome ASC";
+                            $result = $conn->query($sql);
+                            if ($result && $result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    // Se já existe personagem, mantém a origem selecionada
+                                    $selected = ($personagem && $personagem['origem_id'] == $row['id']) ? "selected" : "";
+                                    $flags = defined('ENT_SUBSTITUTE') ? (ENT_QUOTES | ENT_SUBSTITUTE) : ENT_QUOTES;
 
-                        <div class="abilities-list">
+                                    echo "<option value='{$row['id']}' {$selected}>" . htmlspecialchars($row['nome'], $flags, 'UTF-8') . "</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+                        <div class="abilities-list" id="abilities-list">
+                            <!-- primeira habilidade = poder da origem (será atualizada pelo JS) -->
+                            <div class="ability origin-ability">
+                                <h3>Origem: <span id="origin-name">—</span></h3>
+                                <p id="origin-power">Selecione uma origem para ver o poder correspondente.</p>
+                            </div>
                             <div class="ability">
                                 <h3>Ataque Especial</h3>
                                 <p>Gaste 2 PE para receber +5 em um ataque</p>
@@ -511,6 +587,66 @@ $itens_paranormais_json = json_encode($itens_paranormais);
                     this.classList.add('active');
                     document.getElementById(tabId).classList.add('active');
                 });
+            });
+
+            //aba de poderes 
+            document.addEventListener('DOMContentLoaded', function() {
+                var origemSelect = document.getElementById('origem');
+                var originName = document.getElementById('origin-name');
+                var originPower = document.getElementById('origin-power');
+                var originPreview = document.getElementById('origin-power-preview');
+
+                function setOriginDisplay(name, power) {
+                    originName.textContent = name || '—';
+                    // usar textContent para evitar injeção / preservar segurança
+                    originPower.textContent = power || 'Nenhum poder definido para esta origem.';
+                }
+
+                function showPreviewForOption(opt) {
+                    if (!originPreview) return;
+                    var power = (opt && opt.dataset && opt.dataset.power) ? opt.dataset.power : '';
+                    if (power) {
+                        originPreview.textContent = power;
+                        originPreview.style.display = 'block';
+                    } else {
+                        originPreview.style.display = 'none';
+                    }
+                }
+
+                // Ao alterar seleção
+                if (origemSelect) {
+                    origemSelect.addEventListener('change', function() {
+                        var opt = this.options[this.selectedIndex];
+                        var name = opt ? opt.textContent.trim() : '';
+                        var power = (opt && opt.dataset) ? opt.dataset.power : '';
+                        setOriginDisplay(name, power);
+                        // opcional: aqui você pode também atualizar hidden inputs, etc.
+                    });
+
+                    // Hover (mouseenter): mostrar preview do poder da opção selecionada
+                    origemSelect.addEventListener('mouseenter', function() {
+                        var opt = this.options[this.selectedIndex];
+                        showPreviewForOption(opt);
+                    });
+                    origemSelect.addEventListener('mouseleave', function() {
+                        if (originPreview) originPreview.style.display = 'none';
+                    });
+
+                    // Focus também mostra preview (útil em teclado)
+                    origemSelect.addEventListener('focus', function() {
+                        var opt = this.options[this.selectedIndex];
+                        showPreviewForOption(opt);
+                    });
+                    origemSelect.addEventListener('blur', function() {
+                        if (originPreview) originPreview.style.display = 'none';
+                    });
+
+                    // Se já existir valor selecionado ao carregar a página, initialize
+                    if (origemSelect.value) {
+                        var initOpt = origemSelect.options[origemSelect.selectedIndex];
+                        setOriginDisplay(initOpt ? initOpt.textContent.trim() : '', (initOpt && initOpt.dataset) ? initOpt.dataset.power : '');
+                    }
+                }
             });
             // Botões de adicionar equipamentos
             addWeaponBtn?.addEventListener('click', () => openEquipmentModal('weapons', 'Armas'));

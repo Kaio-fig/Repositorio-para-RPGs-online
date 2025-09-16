@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 09-Set-2025 às 11:43
+-- Data de Criação: 15-Set-2025 às 21:32
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -21,6 +21,36 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `arca_do_aventureiro` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `arca_do_aventureiro`;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `classes`
+--
+
+CREATE TABLE IF NOT EXISTS `classes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) NOT NULL,
+  `pv_inicial_formula` varchar(50) NOT NULL,
+  `pv_por_nex_formula` varchar(50) NOT NULL,
+  `pe_inicial_formula` varchar(50) NOT NULL,
+  `pe_por_nex_formula` varchar(50) NOT NULL,
+  `san_inicial` int(11) NOT NULL,
+  `san_por_nex` int(11) NOT NULL,
+  `pericias_fixas` varchar(255) NOT NULL,
+  `pericias_bonus_formula` varchar(100) NOT NULL,
+  `proficiencias` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=4 ;
+
+--
+-- Extraindo dados da tabela `classes`
+--
+
+INSERT INTO `classes` (`id`, `nome`, `pv_inicial_formula`, `pv_por_nex_formula`, `pe_inicial_formula`, `pe_por_nex_formula`, `san_inicial`, `san_por_nex`, `pericias_fixas`, `pericias_bonus_formula`, `proficiencias`) VALUES
+(1, 'Combatente', '20+VIG', '4+VIG', '2+PRE', '2+PRE', 12, 3, 'Luta ou Pontaria; Fortitude ou Reflexos', 'Intelecto +1', 'Armas simples, armas táticas e proteções leves'),
+(2, 'Especialista', '16+VIG', '3+VIG', '3+PRE', '3+PRE', 16, 4, 'Nenhuma fixa', 'Intelecto +7', 'Armas simples e proteções leves'),
+(3, 'Ocultista', '12+VIG', '2+VIG', '4+PRE', '4+PRE', 20, 5, 'Ocultismo e Vontade', 'Intelecto +3', 'Armas simples');
 
 -- --------------------------------------------------------
 
@@ -213,28 +243,67 @@ INSERT INTO `op_protecoes` (`id`, `nome`, `defesa`, `categoria`, `espaco`, `tipo
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `origens`
+--
+
+CREATE TABLE IF NOT EXISTS `origens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `poder_base` text NOT NULL,
+  `pericia1` varchar(100) NOT NULL,
+  `pericia2` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=27 ;
+
+--
+-- Extraindo dados da tabela `origens`
+--
+
+INSERT INTO `origens` (`id`, `nome`, `poder_base`, `pericia1`, `pericia2`) VALUES
+(1, 'Acadêmico', 'Saber é Poder: Você pode gastar 2 PE para receber +5 em um teste que use Intelecto.', 'Ciências', 'Investigação'),
+(2, 'Agente de Saúde', 'Técnica Medicinal: Sempre que cura um personagem, você adiciona seu Intelecto no total de PV curados.', 'Intuição', 'Medicina'),
+(3, 'Amnésico', 'Vislumbres do Passado: Uma vez por sessão, faça um teste de Intelecto (DT 10) para reconhecer pessoas ou lugares familiares. Se passar, recebe 1d4 PE temporários e uma informação útil.', 'À escolha do mestre', 'À escolha do mestre'),
+(4, 'Artista', 'Magnum Opus: Uma vez por missão, pode determinar que um personagem envolvido em uma cena de interação o reconheça. Recebe +5 em testes de Presença e perícias baseadas em Presença contra ele.', 'Artes', 'Enganação'),
+(5, 'Atleta', '110%: Quando faz um teste de perícia usando Força ou Agilidade (exceto Luta e Pontaria), pode gastar 2 PE para receber +5 no teste.', 'Acrobacia', 'Atletismo'),
+(6, 'Chef', 'Ingrediente Secreto: Em cenas de interlúdio, quando cozinha um prato especial, você e aliados que comerem recebem o benefício de dois pratos. Benefícios se acumulam se repetidos.', 'Fortitude', 'Profissão (cozinheiro)'),
+(7, 'Criminoso', 'O Crime Compensa: No final de uma missão, escolha um item encontrado. Na próxima missão, pode incluí-lo no inventário sem contar no limite de itens.', 'Crime', 'Furtividade'),
+(8, 'Cultista Arrependido', 'Traços do Outro Lado: Você possui um poder paranormal à sua escolha, mas começa o jogo com metade da Sanidade inicial da sua classe.', 'Ocultismo', 'Religião'),
+(9, 'Desgarrado', 'Calejado: Você recebe +1 PV para cada 5% de NEX.', 'Fortitude', 'Sobrevivência'),
+(10, 'Engenheiro', 'Ferramenta Favorita: Um item de sua escolha (não arma) conta como uma categoria abaixo para fins de uso. Pode reduzir o custo de categoria do item.', 'Profissão', 'Tecnologia'),
+(11, 'Executivo', 'Processo Otimizado: Você recebe +5 em testes de Diplomacia para negociações e pode gastar 1 PE para reduzir pela metade o tempo de um teste estendido.', 'Diplomacia', 'Profissão'),
+(12, 'Investigador', 'Faro para Pistas: Uma vez por cena, quando fizer um teste para procurar pistas, pode gastar 1 PE para receber +5 no teste.', 'Investigação', 'Percepção'),
+(13, 'Lutador', 'Mão Pesada: Quando usa Força para testes de ataque desarmado ou com armas simples, pode gastar 1 PE para causar +1d6 de dano.', 'Luta', 'Reflexos'),
+(14, 'Magnata', 'Patrocinador da Ordem: Seu limite de crédito é sempre considerado um acima do atual.', 'Diplomacia', 'Pilotagem'),
+(15, 'Mercenário', 'Posição de Combate: Ao rolar Iniciativa, pode gastar 1 PE para rolar novamente e ficar com o melhor resultado.', 'Iniciativa', 'Intimidação'),
+(16, 'Militar', 'Para Bellum: Recebe +2 em rolagens de dano com armas de fogo.', 'Pontaria', 'Tática'),
+(17, 'Operário', 'Ferramenta de Trabalho: Você recebe +5 em testes de Força para manipular objetos pesados. Pode improvisar armas de categoria inferior usando ferramentas.', 'Fortitude', 'Profissão'),
+(18, 'Policial', 'Patrulha: Você recebe +2 em Defesa.', 'Percepção', 'Pontaria'),
+(19, 'Religioso', 'Acalentar: Você recebe +5 em testes de Religião para acalmar. Quando acalma uma pessoa, ela recupera 1d6 + sua Presença em Sanidade.', 'Religião', 'Vontade'),
+(20, 'Servidor Público', 'Espírito Cívico: Sempre que faz um teste para ajudar, pode gastar 1 PE para aumentar o bônus concedido em +2.', 'Intuição', 'Vontade'),
+(21, 'Teórico da Conspiração', 'Eu Já Sabia: Você não se abala tanto com entidades anômalas. Recebe resistência a dano mental igual ao seu Intelecto.', 'Investigação', 'Ocultismo'),
+(22, 'T.I.', 'Motor de Busca: Sempre que tiver acesso à internet, pode gastar 2 PE para substituir um teste de perícia qualquer por um de Tecnologia.', 'Investigação', 'Tecnologia'),
+(23, 'Trabalhador Rural', 'Desbravador: Quando faz um teste de Adestramento ou Sobrevivência, pode gastar 2 PE para receber +5 no teste. Você não sofre penalidade em deslocamento por terreno difícil.', 'Adestramento', 'Sobrevivência'),
+(24, 'Trambiqueiro', 'Impostor: Uma vez por cena, pode gastar 2 PE para substituir um teste de perícia qualquer por um teste de Enganação.', 'Crime', 'Enganação'),
+(25, 'Universitário', 'Dedicação: Você recebe +1 PE e mais 1 PE adicional a cada NEX ímpar (15%, 25%...). Seu limite de PE por turno aumenta em 1 (máx. 2 em NEX 5%, máx. 3 em NEX 10% e assim por diante).', 'Atualidades', 'Investigação'),
+(26, 'Vítima', 'Cicatrizes Psicológicas: Você recebe +1 de Sanidade para cada 5% de NEX.', 'Reflexos', 'Vontade');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `personagens`
 --
 
-CREATE TABLE IF NOT EXISTS personagens (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL, -- id do dono
-    sistema VARCHAR(50) NOT NULL, -- Ex: "Ordem Paranormal"
-    nome VARCHAR(100) NOT NULL,
-    nivel INT NOT NULL DEFAULT 1,
-    origem VARCHAR(100) DEFAULT NULL,
-    classe VARCHAR(100) DEFAULT NULL,
-    vida INT NOT NULL DEFAULT 0,
-    pe INT NOT NULL DEFAULT 0,
-    san INT NOT NULL DEFAULT 0,
-    defesa INT NOT NULL DEFAULT 0,
-    pericias TEXT,         -- lista JSON com 30 pericias
-    habilidades TEXT,      -- lista JSON
-    rituais TEXT,          -- lista JSON
-    equipamento TEXT,      -- lista JSON
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
+CREATE TABLE IF NOT EXISTS `personagens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `sistema` varchar(50) NOT NULL,
+  `nivel` int(11) NOT NULL DEFAULT '1',
+  `imagem` varchar(255) DEFAULT 'default.jpg',
+  `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
