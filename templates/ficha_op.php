@@ -206,8 +206,16 @@ $pericias_agrupadas = [
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn-acao" style="margin-top: 20px; width: 100%;">Salvar Personagem</button>
+            <div class="botoes-rodape">
+                <a href="meus_personagens.php" class="btn-acao btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar para Meus Personagens
+                </a>
+                <button type="submit" class="btn-acao">
+                    <i class="fas fa-save"></i> Salvar Personagem
+                </button>
+            </div>
         </form>
+    </div>
     </div>
 
     <script>
