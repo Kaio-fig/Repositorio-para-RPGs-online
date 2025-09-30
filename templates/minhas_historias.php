@@ -1,241 +1,176 @@
+<?php
+// Iniciar sessão e verificar login
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit();
+}
+
+// Conexão com o banco de dados
+require_once '../conection/db_connect.php';
+
+// Processar exclusão de história
+if (isset($_GET['excluir'])) {
+    $historia_id = intval($_GET['excluir']);
+    $user_id = $_SESSION['user_id'];
+
+    // Verifica se a história pertence ao usuário antes de deletar
+    $stmt_check = $conn->prepare("SELECT id FROM historias WHERE id = ? AND user_id = ?");
+    $stmt_check->bind_param("ii", $historia_id, $user_id);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+
+    if ($result_check->num_rows > 0) {
+        $stmt_delete = $conn->prepare("DELETE FROM historias WHERE id = ?");
+        $stmt_delete->bind_param("i", $historia_id);
+        $stmt_delete->execute();
+        header('Location: minhas_historias.php?excluido=1');
+        exit;
+    }
+}
+
+// Buscar todas as histórias do usuário logado
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT * FROM historias WHERE user_id = ? ORDER BY titulo ASC");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$historias = $result->fetch_all(MYSQLI_ASSOC);
+
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Histórias - A Saga de Vorlak</title>
+    <title>Minhas Histórias - Arca do Aventureiro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Estilo consistente com as outras páginas "Meus..." */
         :root {
             --primary-color: #6a1b9a;
             --secondary-color: #9c27b0;
             --dark-color: #2c2c2c;
             --light-color: #f5f5f5;
-            --border-color: #e9ecef;
+            --danger-color: #f44336;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f9f9f9; color: var(--dark-color); }
-        .container { max-width: 1000px; margin: 30px auto; padding: 20px; }
+        body { background-color: #f9f9f9; color: var(--dark-color); padding: 20px; }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; padding: 20px 0; margin-bottom: 30px; }
+        h1 { font-size: 2.5rem; color: var(--primary-color); }
+        .btn {
+            display: inline-block; padding: 10px 20px; border-radius: 5px;
+            font-weight: 600; transition: all 0.3s ease;
+            margin: 5px; text-decoration: none; color: white;
+            border: none; cursor: pointer;
+        }
+        .btn i { margin-right: 8px; }
+        .btn-primary { background-color: var(--primary-color); }
+        .btn-primary:hover { background-color: #7b1fa2; transform: translateY(-2px); }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #5a6268; transform: translateY(-2px); }
+        .btn-danger { background-color: var(--danger-color); color: white; }
         
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { font-size: 2.8rem; color: var(--primary-color); }
-        header p { font-size: 1.1rem; color: #6c757d; }
-
-        /* Estilo das Abas de Navegação */
-        .tabs-nav {
-            display: flex;
-            border-bottom: 2px solid var(--border-color);
-            margin-bottom: 30px;
-        }
-        .tab-button {
-            padding: 15px 25px;
-            cursor: pointer;
-            border: none;
-            background-color: transparent;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #6c757d;
-            position: relative;
-            transition: color 0.3s;
-        }
-        .tab-button.active {
-            color: var(--primary-color);
-        }
-        .tab-button.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--primary-color);
-        }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* Estilo dos Blocos e Conteúdo */
-        .bloco {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-        }
-        .bloco h2 {
-            font-size: 1.8rem;
-            color: var(--dark-color);
-            margin-bottom: 20px;
-        }
-        .bloco p, .bloco li {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #333;
-        }
-        
-        /* Layout para Personagens */
-        .personagens-grid {
+        .historias-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
         }
-
-        /* Estilo do Acordeão (para Feitos e Ilhas) */
-        .accordion-item {
-            border-bottom: 1px solid var(--border-color);
-        }
-        .accordion-item:last-child {
-            border-bottom: none;
-        }
-        .accordion-header {
-            padding: 20px;
-            cursor: pointer;
+        .historia-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .historia-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12); }
+        
+        .historia-imagem {
+            height: 180px;
+            background-color: #e9ecef;
+            display: flex;
             align-items: center;
-            font-size: 1.3rem;
-            font-weight: 600;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 4rem;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
-        .accordion-header::after {
-            content: '\f078'; /* Ícone de seta para baixo (Font Awesome) */
-            font-family: 'Font Awesome 6 Free';
-            transition: transform 0.3s;
+        .historia-imagem img { width: 100%; height: 100%; object-fit: cover; }
+
+        .historia-info {
+            padding: 20px;
+            flex-grow: 1;
         }
-        .accordion-item.active .accordion-header::after {
-            transform: rotate(180deg);
+        .historia-info h3 { color: var(--primary-color); margin-bottom: 5px; font-size: 1.5rem; }
+        .historia-info .sistema {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 15px;
         }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+        .historia-info .sinopse { font-size: 1rem; color: #333; line-height: 1.6; }
+
+        .historia-footer {
+            padding: 15px 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
-        .accordion-content div {
-            padding: 0 20px 20px 20px;
-        }
+        .alert { padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <header>
-            <h1>A Saga de Vorlak</h1>
-            <p>Uma crônica de Tormenta 20</p>
+            <h1><i class="fas fa-book-open"></i> Minhas Histórias</h1>
+            <p>Gerencie suas crônicas e campanhas</p>
         </header>
 
-        <nav class="tabs-nav">
-            <button class="tab-button active" data-tab="personagens">Personagens</button>
-            <button class="tab-button" data-tab="feitos">Feitos Lendários</button>
-            <button class="tab-button" data-tab="ilhas">Exploração</button>
-        </nav>
+        <?php if (isset($_GET['excluido'])): ?>
+            <div class="alert alert-success">História excluída com sucesso!</div>
+        <?php endif; ?>
 
-        <div id="personagens" class="tab-content active">
-            <div class="personagens-grid">
-                <div class="bloco">
-                    <h2>Vorlak</h2>
-                    <p>vlk-006 era um experimento de um laboratório clandestino. Vagas memórias de testes físicos e térmicos o assombram, junto da voz de um doutor que o acusava de ser uma falha por não se tornar "obediente". Com a ordem para sacrificá-lo, a cobaia sobreviveu e, descartado em meio a dejetos, sentiu medo pela primeira vez. Adotando o nome Vorlak, sobreviveu de pequenos delitos até ser salvo por Antônio Barbosa, capitão dos Piratas do Coração do Mar, encontrando um novo propósito em sua tripulação.</p>
-                </div>
-                <div class="bloco">
-                    <h2>Jane Barbosa</h2>
-                    <p>Abandonada na infância e resgatada por Antônio Barbosa, Jane foi criada entre piratas. Influenciada pelas lendas de sua avó adotiva, Magali, sobre o Kraken que matou seu avô Hector, ela cresceu com o mar em suas veias. O medo do Kraken e a responsabilidade com sua tripulação moldaram seu caráter, escondendo um grande coração sob uma fachada de pirata destemida. Foi ela quem acolheu Vorlak na tripulação, inicialmente como um simples pescador.</p>
-                </div>
-            </div>
-             <div class="bloco">
-                <h2>Lore Juntos</h2>
-                <p>A parceria entre Jane e Vorlak se forjou quando, após ela ganhar sua primeira canhoneira, foram atacados de surpresa e lutaram lado a lado para defender o navio. Com o tempo, Vorlak tornou-se seu conselheiro. Em um naufrágio devastador, onde viu sua tripulação ser massacrada, Vorlak foi salvo por Jane das profundezas. Naquele momento, ele jurou devoção eterna e que nunca mais sentiria medo, passando a obedecer suas ordens inquestionavelmente e a focar em sua força para protegê-la e a sua nova família.</p>
-            </div>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="historia.php" class="btn btn-primary"><i class="fas fa-plus"></i> Criar Nova História</a>
+            <a href="dashboard.php" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
         </div>
 
-        <div id="feitos" class="tab-content">
-            <div class="bloco">
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <div class="accordion-header">O Tesouro do Homem Morto</div>
-                        <div class="accordion-content">
-                            <div><p>Em uma de suas primeiras aventuras, a tripulação encontrou um mapa para um tesouro amaldiçoado. Ao chegarem na caverna, a cobiça pelo ouro fez com que parte da tripulação ignorasse as ordens de Jane para recuar quando esqueletos amaldiçoados se levantaram. Vorlak e Jane lutaram para sair, enquanto aqueles que ficaram pelo tesouro se juntaram aos mortos, amaldiçoados pela eternidade.</p></div>
+        <?php if (count($historias) > 0): ?>
+            <div class="historias-grid">
+                <?php foreach ($historias as $historia): ?>
+                    <div class="historia-card">
+                        <div class="historia-imagem">
+                            <?php if ($historia['imagem_historia'] && $historia['imagem_historia'] != 'default_historia.jpg'): ?>
+                                <img src="../uploads/<?= htmlspecialchars($historia['imagem_historia']) ?>" alt="Imagem da História">
+                            <?php else: ?>
+                                <i class="fas fa-feather-alt"></i>
+                            <?php endif; ?>
+                        </div>
+                        <div class="historia-info">
+                            <h3><?= htmlspecialchars($historia['titulo']) ?></h3>
+                            <p class="sistema"><?= htmlspecialchars($historia['sistema_jogo']) ?></p>
+                            <p class="sinopse"><?= htmlspecialchars($historia['sinopse']) ?></p>
+                        </div>
+                        <div class="historia-footer">
+                            <a href="ficha_historia.php?id=<?= $historia['id'] ?>" class="btn btn-secondary" style="color: #2c2c2c;">Editar</a>
+                            <a href="minhas_historias.php?excluir=<?= $historia['id'] ?>" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta história?')">Excluir</a>
                         </div>
                     </div>
-                    <div class="accordion-item">
-                        <div class="accordion-header">A Invasão ao Corvo</div>
-                        <div class="accordion-content">
-                            <div><p>Anos depois, para salvar os Piratas do Coração da escassez, Jane planejou um ataque ousado ao nobre Reino Corvo sob o disfarce de uma negociação comercial. A situação escalou, e ao ouvir o grito de Jane, Vorlak invadiu a mansão onde ela estava, salvando-a e iniciando um massacre. A ordem de Jane foi simples: "Mate-os, Vorlak". O resultado foi um nobre capturado, trocado por suprimentos que garantiram a prosperidade da tripulação por quase um ano.</p></div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <div class="accordion-header">O Megalodon</div>
-                        <div class="accordion-content">
-                            <div><p>Durante uma caça a uma cachalote, a tripulação se deparou com uma criatura mística: o Megalodon. Em uma batalha épica, o galeão foi quase destruído. Seguindo uma ordem audaciosa de Jane, Vorlak a arremessou para dentro da boca da criatura. De dentro para fora, Jane rasgou a garganta do monstro, finalizando-o. A cabeça do Megalodon agora adorna a proa do navio, um troféu e uma ameaça aos seus rivais.</p></div>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
-        </div>
-
-        <div id="ilhas" class="tab-content">
-             <div class="bloco">
-                <div class="accordion">
-                    <div class="accordion-item">
-                        <div class="accordion-header">A Ilha das Correntes e os Ossos Negros</div>
-                        <div class="accordion-content">
-                            <div><p>A jornada os levou primeiro à traiçoeira Ilha das Correntes, um cemitério de navios onde encontraram um mapa de pedra. Este os guiou até a Ilha dos Ossos Negros, um lugar macabro dominado pela Praga. Lá, entre torres de ossos e relíquias amaldiçoadas, descobriram que a ilha era um ponto de origem do próprio elemento da Praga, encontrando um mapa incompleto para outros locais misteriosos.</p></div>
-                        </div>
-                    </div>
-                     <div class="accordion-item">
-                        <div class="accordion-header">A Ilha das Estrelas</div>
-                        <div class="accordion-content">
-                            <div><p>Guiados por um mapa prateado, chegaram a um lugar onírico onde o mar e o céu eram um só. No coração da ilha, em cavernas submersas, encontraram uma piscina onde o conhecimento do cosmos se manifestava em luzes e padrões indecifráveis. Partiram sem respostas, mas marcados pela visão de algo maior que eles.</p></div>
-                        </div>
-                    </div>
-                     <div class="accordion-item">
-                        <div class="accordion-header">A Ilha do Ferro Morto</div>
-                        <div class="accordion-content">
-                            <div><p>Uma ilha que rejeitava o tempo e a podridão, repleta de navios naufragados perfeitamente preservados. No centro, um altar feito de um metal desconhecido pulsava com um calor brando. Saquearam relíquias que pareciam novas, mas pertenciam a eras esquecidas, partindo com a sensação de que a própria ilha os observava.</p></div>
-                        </div>
-                    </div>
-                </div>
+        <?php else: ?>
+            <div style="text-align: center; padding: 40px; background: white; border-radius: 10px;">
+                <h3>Nenhuma história encontrada</h3>
+                <p>Você ainda não criou nenhuma história. Clique no botão "Criar Nova História" para começar sua primeira aventura!</p>
             </div>
-        </div>
-
+        <?php endif; ?>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Lógica para as Abas Principais
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    button.classList.add('active');
-                    document.getElementById(button.dataset.tab).classList.add('active');
-                });
-            });
-
-            // Lógica para o Acordeão (Feitos e Ilhas)
-            const accordionItems = document.querySelectorAll('.accordion-item');
-
-            accordionItems.forEach(item => {
-                const header = item.querySelector('.accordion-header');
-                header.addEventListener('click', () => {
-                    // Fecha todos os outros itens para manter apenas um aberto
-                    accordionItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.classList.remove('active');
-                            otherItem.querySelector('.accordion-content').style.maxHeight = null;
-                        }
-                    });
-
-                    // Abre ou fecha o item clicado
-                    item.classList.toggle('active');
-                    const content = item.querySelector('.accordion-content');
-                    if (item.classList.contains('active')) {
-                        content.style.maxHeight = content.scrollHeight + "px";
-                    } else {
-                        content.style.maxHeight = null;
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>

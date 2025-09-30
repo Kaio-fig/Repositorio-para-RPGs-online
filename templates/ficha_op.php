@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 // Autenticação
 // if (!isset($_SESSION['user_id'])) { header("Location: ../login.php"); exit(); }
@@ -43,38 +46,49 @@ if ($is_new) {
 // Classes (podem vir do banco também, mas por serem poucas, mantemos aqui)
 // --- DADOS DO UNIVERSO (BUSCANDO DO BANCO DE DADOS) ---
 // Busca todas as classes com seus dados de cálculo
+// --- DADOS DO UNIVERSO (BUSCANDO DO BANCO DE DADOS) ---
+// Busca Classes
 $classes = [];
 $sql_classes = "SELECT id, nome, pv_inicial, pv_por_nivel, pe_inicial, pe_por_nivel, san_inicial, san_por_nivel FROM classes";
 $resultado_classes = $conn->query($sql_classes);
-
-if ($resultado_classes && $resultado_classes->num_rows > 0) {
+if ($resultado_classes) {
     while ($linha = $resultado_classes->fetch_assoc()) {
         $classes[$linha['id']] = $linha;
     }
 }
 
-// O código que busca as origens continua o mesmo...
-$origens = [];
-// ... (resto do código PHP)
-
-// Busca todas as origens diretamente da tabela 'origens'
+// Busca Origens
 $origens = [];
 $sql_origens = "SELECT id, nome, poder_nome, poder_desc FROM origens ORDER BY nome ASC";
 $resultado_origens = $conn->query($sql_origens);
-
-if ($resultado_origens && $resultado_origens->num_rows > 0) {
+if ($resultado_origens) {
     while ($linha = $resultado_origens->fetch_assoc()) {
         $origens[$linha['id']] = $linha;
     }
 }
 
-// Placeholder para poderes de classe/trilha (idealmente viriam do banco)
+// Busca TODAS as Trilhas
+$trilhas = [];
+$sql_trilhas = "SELECT id, classe_id, nome FROM trilhas ORDER BY nome ASC";
+$resultado_trilhas = $conn->query($sql_trilhas);
+if ($resultado_trilhas) {
+    while ($linha = $resultado_trilhas->fetch_assoc()) {
+        $trilhas[] = $linha;
+    }
+}
+
+// Busca TODOS os Poderes de Trilha
+$poderes_trilha = [];
+$sql_poderes = "SELECT id, trilha_id, nex_requerido, nome, descricao FROM poderes_trilha";
+$resultado_poderes = $conn->query($sql_poderes);
+if ($resultado_poderes) {
+    while ($linha = $resultado_poderes->fetch_assoc()) {
+        $poderes_trilha[] = $linha;
+    }
+}
+// Poderes de classe gerais (ainda podem ficar aqui ou ir para o banco também)
 $todos_os_poderes = [
-    ['id' => 101, 'nome' => 'Ataque Especial', 'desc' => 'Gaste 2 PE para +5 em um teste de ataque.', 'classe_id' => 1, 'nex_requerido' => 15],
-    ['id' => 201, 'nome' => 'Perito', 'desc' => 'Escolha uma perícia. Você recebe +5 nela.', 'classe_id' => 2, 'nex_requerido' => 15],
-    ['id' => 301, 'nome' => 'Fortalecimento Ritual', 'desc' => 'Seus rituais recebem +2 na DT.', 'classe_id' => 3, 'nex_requerido' => 15],
-    ['id' => 901, 'nome' => 'Coração de Monstro', 'desc' => '(Sangue) +1 de Vida para cada 5% de NEX.', 'tipo' => 'paranormal'],
-    ['id' => 902, 'nome' => 'Visão do Oculto', 'desc' => '(Conhecimento) Pode usar Ocultismo mesmo sem treinamento.', 'tipo' => 'paranormal'],
+    ['id' => 101, 'nome' => 'Ataque Especial', 'desc' => 'Ao fazer um ataque, você pode gastar 1 PE para receber +5 no teste de ataque ou na rolagem de dano.', 'classe_id' => 1, 'nex_requerido' => 15],
 ];
 
 // Perícias agrupadas
@@ -190,19 +204,58 @@ $pericias_agrupadas = [
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div id="dt-rituais-container" style="display: none;">DT Rituais: <span id="dt-rituais-span"></span></div>
-                        </div>
-                        <h2>Poderes e Habilidades</h2>
-                        <div class="lista-poderes">
-                            <div class="poder-item">
-                                <h4>Poder de Origem</h4>
-                                <p id="poder-origem-display">Selecione uma origem.</p>
+
+                            <div>
+                                <label for="trilha-select">Trilha</label>
+                                <select id="trilha-select" name="trilha_id" disabled>
+                                    <option value="0">Apenas em NEX 10%+</option>
+                                </select>
                             </div>
+                            <div id="dt-rituais-container" style="display: none;">DT Rituais: <span id="dt-rituais-span"></span></div>
                         </div>
                         <button type="button" class="btn-acao" id="btn-adicionar-poder">Adicionar Poder</button>
                     </div>
 
-                    <div id="tab-equipamento" class="tab-content">
+                    <div id="tab-poderes" class="tab-content">
+
+                        <div class="info-poderes">
+                            <div>
+                                <label for="classe-select">Classe</label>
+                                <select id="classe-select" name="classe_id">
+                                    <?php foreach ($classes as $id => $classe): ?>
+                                        <option value="<?= $id ?>" <?= ($personagem['classe_id'] == $id) ? 'selected' : '' ?>>
+                                            <?= $classe['nome'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="origem-select">Origem</label>
+                                <select id="origem-select" name="origem_id">
+                                    <option value="0">Selecione...</option>
+                                    <?php foreach ($origens as $id => $origem): ?>
+                                        <option value="<?= $id ?>" <?= ($personagem['origem_id'] == $id) ? 'selected' : '' ?>>
+                                            <?= $origem['nome'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="trilha-select">Trilha</label>
+                                <select id="trilha-select" name="trilha_id" disabled>
+                                    <option value="0">Apenas em NEX 10%+</option>
+                                </select>
+                            </div>
+
+                            <div id="dt-rituais-container" style="display: none;">
+                                DT Rituais: <span id="dt-rituais-span"></span>
+                            </div>
+                        </div>
+
+                        <h2>Poderes e Habilidades</h2>
+                        <div class="lista-poderes">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -220,21 +273,24 @@ $pericias_agrupadas = [
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DADOS DO PHP PARA O JS ---
+            // --- DADOS DO PHP PARA O JS (COM SINTAXE ANTIGA E SEGURA) ---
             const classesData = <?= json_encode(isset($classes) ? $classes : []) ?>;
             const origens = <?= json_encode(isset($origens) ? $origens : []) ?>;
+            const todasAsTrilhas = <?= json_encode(isset($trilhas) ? $trilhas : []) ?>;
+            const todosOsPoderesDeTrilha = <?= json_encode(isset($poderes_trilha) ? $poderes_trilha : []) ?>;
 
-            // ... (lógica de upload e abas - sem alterações) ...
+            // --- ELEMENTOS GLOBAIS ---
+            const form = document.getElementById('ficha-form');
+            if (!form) return;
+            const inputsParaMonitorar = form.querySelectorAll('input.atributo-input, select.atributo-input, #classe-select, #origem-select, #trilha-select');
+
+            // --- LÓGICA DE UPLOAD E PREVIEW DA IMAGEM ---
             const btnImportar = document.getElementById('btn-importar-imagem');
             const inputImagem = document.getElementById('input-imagem');
             const previewImagem = document.getElementById('preview-imagem');
             const containerImagem = document.getElementById('container-imagem');
-            if (btnImportar) btnImportar.addEventListener('click', () => {
-                if (inputImagem) inputImagem.click();
-            });
-            if (containerImagem) containerImagem.addEventListener('click', () => {
-                if (inputImagem) inputImagem.click();
-            });
+            if (btnImportar && inputImagem) btnImportar.addEventListener('click', () => inputImagem.click());
+            if (containerImagem && inputImagem) containerImagem.addEventListener('click', () => inputImagem.click());
             if (inputImagem) {
                 inputImagem.addEventListener('change', event => {
                     const file = event.target.files[0];
@@ -247,9 +303,8 @@ $pericias_agrupadas = [
                     }
                 });
             }
-            const form = document.getElementById('ficha-form');
-            if (!form) return;
-            const inputsParaMonitorar = form.querySelectorAll('input.atributo-input, select.atributo-input, #classe-select, #origem-select');
+
+            // --- LÓGICA DAS ABAS ---
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
             if (tabButtons && tabContents) {
@@ -264,7 +319,8 @@ $pericias_agrupadas = [
                 });
             }
 
-            // --- FUNÇÃO PARA ATUALIZAR O PODER DA ORIGEM (sem alterações) ---
+            // --- FUNÇÕES DE ATUALIZAÇÃO DA INTERFACE ---
+
             function atualizarPoderOrigem() {
                 const origemSelect = document.getElementById('origem-select');
                 const displayContainer = document.getElementById('poder-origem-display');
@@ -283,16 +339,63 @@ $pericias_agrupadas = [
                 }
             }
 
-            // --- FUNÇÃO MASTER DE CÁLCULO (VERSÃO DEFINITIVA) ---
-            // --- FUNÇÃO MASTER DE CÁLCULO (COM DEBUG) ---
-            function calcularTudo() {
-                console.log("--- INICIANDO CÁLCULO ---");
+            function atualizarTrilhasDisponiveis() {
+                const classeId = parseInt(document.getElementById('classe-select').value) || 0;
+                const nex = parseInt(document.getElementById('nex').value) || 0;
+                const trilhaSelect = document.getElementById('trilha-select');
+                if (!trilhaSelect) return;
 
-                // Pega os valores atuais da ficha
+                trilhaSelect.innerHTML = '<option value="0">Nenhuma Trilha</option>';
+
+                if (classeId > 0 && nex >= 10) {
+                    trilhaSelect.disabled = false;
+
+                    // CORREÇÃO: Usando '==' para uma comparação menos estrita entre o ID numérico e o ID em texto que pode vir do banco
+                    const trilhasDisponiveis = todasAsTrilhas.filter(trilha => trilha.classe_id == classeId);
+
+                    if (trilhasDisponiveis.length === 0) {
+                        trilhaSelect.innerHTML = '<option value="0">Nenhuma trilha para esta classe</option>';
+                    } else {
+                        trilhasDisponiveis.forEach(trilha => {
+                            const option = document.createElement('option');
+                            option.value = trilha.id;
+                            option.textContent = trilha.nome;
+                            trilhaSelect.appendChild(option);
+                        });
+                    }
+                } else {
+                    trilhaSelect.disabled = true;
+                    trilhaSelect.innerHTML = '<option value="0">Apenas em NEX 10%+</option>';
+                }
+            }
+
+            function atualizarPoderesDaTrilha() {
+                const nex = parseInt(document.getElementById('nex').value) || 0;
+                const trilhaId = parseInt(document.getElementById('trilha-select').value) || 0;
+                const listaPoderesFicha = document.querySelector('#tab-poderes .lista-poderes');
+                if (!listaPoderesFicha) return;
+
+                listaPoderesFicha.querySelectorAll('.poder-trilha-item').forEach(item => item.remove());
+
+                if (trilhaId > 0) {
+                    const poderesGanhos = todosOsPoderesDeTrilha.filter(poder => {
+                        return poder.trilha_id == trilhaId && poder.nex_requerido <= nex;
+                    });
+
+                    poderesGanhos.forEach(poder => {
+                        const poderDiv = document.createElement('div');
+                        poderDiv.className = 'poder-item poder-trilha-item';
+                        poderDiv.innerHTML = `<h4>${poder.nome} (NEX ${poder.nex_requerido}%)</h4><p>${poder.descricao}</p>`;
+                        listaPoderesFicha.appendChild(poderDiv);
+                    });
+                }
+            }
+
+            // --- FUNÇÃO MASTER DE CÁLCULO ---
+            function calcularTudo() {
                 const nex = parseInt(document.getElementById('nex').value) || 0;
                 const classeId = parseInt(document.getElementById('classe-select').value) || 0;
                 const origemId = parseInt(document.getElementById('origem-select').value) || 0;
-                console.log(`Valores lidos: NEX=${nex}, ClasseID=${classeId}, OrigemID=${origemId}`);
 
                 const atributos = {};
                 ['forca', 'agilidade', 'intelecto', 'vigor', 'presenca'].forEach(attr => {
@@ -300,11 +403,8 @@ $pericias_agrupadas = [
                 });
 
                 const classeAtual = classesData[classeId];
-                // A LINHA ABAIXO É A MAIS IMPORTANTE PARA O NOSSO DEBUG
-                console.log("Dados da Classe Atual que o JS está vendo:", classeAtual);
 
                 if (!classeAtual) {
-                    console.error("ERRO: Dados da classe não encontrados! Interrompendo cálculo.");
                     document.getElementById('vida-display').textContent = '--';
                     document.getElementById('pe-display').textContent = '--';
                     document.getElementById('sanidade-display').textContent = '--';
@@ -312,55 +412,44 @@ $pericias_agrupadas = [
                 }
 
                 const niveis = Math.floor(nex / 5);
+                const niveisAposPrimeiro = niveis > 1 ? niveis - 1 : 0;
 
-                // --- CÁLCULO DOS STATUS ---
-
-                console.log("Valores para cálculo de PE:", {
-                    pe_inicial: classeAtual.pe_inicial,
-                    pe_por_nivel: classeAtual.pe_por_nivel,
-                    niveis: niveis,
-                    presenca: atributos.presenca
-                });
-
-                // CÁLCULO DE VIDA
-                let vidaMax = parseInt(classeAtual.pv_inicial) + (parseInt(classeAtual.pv_por_nivel) * (niveis - 1)) + (atributos.vigor * niveis);
-                if (origemId === 9) {
+                let vidaMax = parseInt(classeAtual.pv_inicial) + (atributos.vigor * niveis) + (parseInt(classeAtual.pv_por_nivel) * niveisAposPrimeiro);
+                if (origemId == 9) {
                     vidaMax += niveis;
                 }
 
-                // CÁLCULO DE PONTOS DE ESFORÇO (PE)
-                let peMax = parseInt(classeAtual.pe_inicial) + (parseInt(classeAtual.pe_por_nivel) * (niveis - 1)) + (atributos.presenca * niveis);
+                let peMax = parseInt(classeAtual.pe_inicial) + atributos.presenca + (parseInt(classeAtual.pe_por_nivel) * niveisAposPrimeiro);
 
-                // CÁLCULO DE SANIDADE
-                let sanidadeMax = parseInt(classeAtual.san_inicial) + (parseInt(classeAtual.san_por_nivel) * (niveis - 1));
-                if (origemId === 24) {
+                let sanidadeMax = parseInt(classeAtual.san_inicial) + (parseInt(classeAtual.san_por_nivel) * niveisAposPrimeiro);
+                if (origemId == 24) {
                     sanidadeMax += niveis;
                 }
 
-                // CÁLCULO DE DEFESA
                 let defesaTotal = 10 + atributos.agilidade;
-                if (origemId === 16) {
+                if (origemId == 16) {
                     defesaTotal += 2;
                 }
 
-                console.log(`Resultados: Vida=${vidaMax}, PE=${peMax}, Sanidade=${sanidadeMax}`);
-
-                // Atualiza os displays na tela
                 document.getElementById('vida-display').textContent = vidaMax;
                 document.getElementById('pe-display').textContent = peMax;
                 document.getElementById('sanidade-display').textContent = sanidadeMax;
                 document.getElementById('defesa-display').textContent = defesaTotal;
 
                 const dtRituaisContainer = document.getElementById('dt-rituais-container');
-                if (classeId === 3) { // Ocultista
-                    if (dtRituaisContainer) dtRituaisContainer.style.display = 'block';
-                    document.getElementById('dt-rituais-span').textContent = 10 + atributos.presenca + Math.floor(nex / 10);
-                } else {
-                    if (dtRituaisContainer) dtRituaisContainer.style.display = 'none';
+                if (dtRituaisContainer) {
+                    if (classeId === 3) {
+                        dtRituaisContainer.style.display = 'block';
+                        document.getElementById('dt-rituais-span').textContent = 10 + atributos.presenca + Math.floor(nex / 10);
+                    } else {
+                        dtRituaisContainer.style.display = 'none';
+                    }
                 }
 
+                // Chama as funções de atualização
                 atualizarPoderOrigem();
-                console.log("--- CÁLCULO FINALIZADO ---");
+                atualizarTrilhasDisponiveis();
+                atualizarPoderesDaTrilha();
             }
 
             // --- EVENT LISTENERS E INICIALIZAÇÃO ---
@@ -370,7 +459,9 @@ $pericias_agrupadas = [
                 });
             }
 
-            calcularTudo();
+
+
+            calcularTudo(); // Roda tudo uma vez no carregamento
         });
     </script>
 </body>
