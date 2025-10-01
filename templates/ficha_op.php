@@ -480,7 +480,7 @@ $patentes = [
 
                 // CÁLCULO DE PE
                 // Fórmula: PE Inicial + Presença + (PE por Nível x (Níveis acima do 1º))
-                let peMax = parseInt(classeAtual.pe_inicial) + atributos.presenca + (parseInt(classeAtual.pe_por_nivel) * niveisAposPrimeiro);
+                let peMax = parseInt(classeAtual.pe_inicial) + (atributos.presenca * niveis) + (parseInt(classeAtual.pe_por_nivel) * niveisAposPrimeiro);
 
                 // CÁLCULO DE SANIDADE
                 // Fórmula: SAN Inicial + (SAN por Nível x (Níveis acima do 1º))
@@ -497,6 +497,9 @@ $patentes = [
 
                 // CÁLCULOS DE INVENTÁRIO
                 document.getElementById('espacos-total-display').textContent = 5 * atributos.forca;
+                    if (atributos.forca == 0) {
+                        document.getElementById('espacos-total-display').textContent = 2
+                    }
 
                 // Atualiza os limites de categoria com base na patente selecionada
                 const limites = patentesData[patenteSelecionada];
