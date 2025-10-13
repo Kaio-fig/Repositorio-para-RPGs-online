@@ -406,6 +406,7 @@ $patentes = [
             const modalPoderesClasse = document.getElementById('modal-poderes-classe');
             const modalTranscender = document.getElementById('modal-transcender');
             let transcendCount = 0;
+            var poderesParanormaisSelecionados = [];
             let classeIdAnterior = parseInt(document.getElementById('classe-select').value) || 0;
 
             // --- LÓGICA DE UPLOAD E ABAS ---
@@ -517,12 +518,10 @@ $patentes = [
                 if (classeId !== classeIdAnterior) {
                     const listaPoderesFicha = document.querySelector('#tab-poderes .lista-poderes');
                     if (listaPoderesFicha) {
-                        // Removes both manually added class powers and paranormal powers
                         listaPoderesFicha.querySelectorAll('.poder-classe-adicionado, .poder-paranormal-item').forEach(item => item.remove());
                     }
-                    // Resets the transcend counter for the new class
                     transcendCount = 0;
-                    // Updates the state variable to the new class
+                    poderesParanormaisSelecionados = []; // Limpa os poderes paranormais selecionados
                     classeIdAnterior = classeId;
                 }
 
@@ -608,10 +607,11 @@ $patentes = [
                 poderDiv.className = 'poder-item poder-paranormal-item';
                 poderDiv.innerHTML = `<h4>${poderInfo.nome} (Paranormal)</h4><p>${poderInfo.descricao}</p>`;
                 listaPoderesFicha.appendChild(poderDiv);
+                poderesParanormaisSelecionados.push(parseInt(poderId));
 
                 transcendCount++;
                 fecharModalTranscender();
-                calcularTudo(); // Recalcula tudo para aplicar a penalidade
+                calcularTudo(); // Recalcula tudo para aplicar a penalidade E OS NOVOS BÔNUS
             }
 
             window.adicionarPoderDeClasse = function(poderId) {
@@ -670,10 +670,16 @@ $patentes = [
                 if (trilhaId === 5) { // Tropa de Choque (Casca Grossa)
                     vidaMax += niveis;
                 }
+                if (poderesParanormaisSelecionados.includes(3)) { // poder sangue de ferro
+                    vidaMax += (niveis * 2);
+                }
 
                 // CÁLCULO DE PE
                 // Fórmula: PE Inicial + Presença + (PE por Nível x (Níveis acima do 1º))
                 let peMax = parseInt(classeAtual.pe_inicial) + (atributos.presenca * niveis) + (parseInt(classeAtual.pe_por_nivel) * niveisAposPrimeiro);
+                if (poderesParanormaisSelecionados.includes(13)) { // poder potencial aprimorado
+                    peMax += niveis;
+                }
 
                 // CÁLCULO DE SANIDADE COM PENALIDADE DE TRANSCENDER
                 let sanidadeMax = parseInt(classeAtual.san_inicial) + (parseInt(classeAtual.san_por_nivel) * (niveisAposPrimeiro - transcendCount));
@@ -690,10 +696,27 @@ $patentes = [
                 }
 
                 // CÁLCULOS DE INVENTÁRIO
-                document.getElementById('espacos-total-display').textContent = 5 * atributos.forca;
-                if (atributos.forca == 0) {
-                    document.getElementById('espacos-total-display').textContent = 2
+                // Verifica se o personagem tem o poder de trilha "Inventário Otimizado" (ID 37)
+                const poderesGanhos = todosOsPoderesDeTrilha.filter(function(p) {
+                    return p.trilha_id == trilhaId && p.nex_requerido <= nex;
+                });
+                const temInventarioOtimizado = poderesGanhos.some(function(p) {
+                    return p.id == 37;
+                });
+
+                let espacosTotal;
+                if (temInventarioOtimizado) {
+                    // Se tiver o poder, a fórmula do Técnico é (Força + Intelecto) * 5
+                    espacosTotal = (atributos.forca + atributos.intelecto) * 5;
+                } else {
+                    // Senão, usa a fórmula padrão com a sintaxe if/else compatível
+                    if (atributos.forca == 0) {
+                        espacosTotal = 2;
+                    } else {
+                        espacosTotal = 5 + atributos.forca;
+                    }
                 }
+                document.getElementById('espacos-total-display').textContent = espacosTotal;
 
                 // Atualiza os limites de categoria com base na patente selecionada
                 const limites = patentesData[patenteSelecionada];
@@ -718,7 +741,7 @@ $patentes = [
                         dtRituaisContainer.style.display = 'block';
 
                         // Calcula a DT base
-                        let dtRituais = 10 + atributos.presenca + Math.floor(nex / 10);
+                        let dtRituais = 10 + atributos.presenca + Math.floor(nex / 5);
 
                         // Bônus da Trilha Graduado (Rituais Eficientes)
                         if (trilhaId === 13 && nex >= 65) {
