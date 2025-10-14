@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 14-Out-2025 às 01:05
+-- Data de Criação: 14-Out-2025 às 13:25
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -374,6 +374,7 @@ CREATE TABLE IF NOT EXISTS `personagens_op` (
   `nex` int(11) NOT NULL DEFAULT '5',
   `origem_id` int(11) DEFAULT NULL,
   `classe_id` int(11) DEFAULT NULL,
+  `trilha_id` int(11) DEFAULT NULL,
   `patente` varchar(50) DEFAULT NULL,
   `pontos_prestigio` int(11) DEFAULT '0',
   `vida_max` int(11) DEFAULT '0',
@@ -386,7 +387,6 @@ CREATE TABLE IF NOT EXISTS `personagens_op` (
   `presenca` int(11) NOT NULL DEFAULT '1',
   `defesa` int(11) NOT NULL DEFAULT '11',
   `inventario_espacos` int(11) NOT NULL DEFAULT '7',
-  `trilha` varchar(100) DEFAULT NULL,
   `poderes_classe` text,
   `poderes_paranormais` text,
   `rituais` text,
@@ -395,7 +395,23 @@ CREATE TABLE IF NOT EXISTS `personagens_op` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `fk_origem` (`origem_id`),
-  KEY `fk_classe` (`classe_id`)
+  KEY `fk_classe` (`classe_id`),
+  KEY `fk_trilha` (`trilha_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `personagens_op_poderes`
+--
+
+CREATE TABLE IF NOT EXISTS `personagens_op_poderes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `personagem_id` int(11) NOT NULL,
+  `poder_id` int(11) NOT NULL,
+  `tipo_poder` enum('classe','paranormal') NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `personagem_id` (`personagem_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -665,8 +681,8 @@ ALTER TABLE `historias`
 -- Limitadores para a tabela `inventario_op`
 --
 ALTER TABLE `inventario_op`
-  ADD CONSTRAINT `fk_inventario_op_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_inventario_op_item` FOREIGN KEY (`item_id`) REFERENCES `itens_op` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_inventario_op_item` FOREIGN KEY (`item_id`) REFERENCES `itens_op` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inventario_op_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `mundos`
@@ -690,9 +706,16 @@ ALTER TABLE `pericias`
 -- Limitadores para a tabela `personagens_op`
 --
 ALTER TABLE `personagens_op`
+  ADD CONSTRAINT `fk_trilha` FOREIGN KEY (`trilha_id`) REFERENCES `trilhas` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_classe` FOREIGN KEY (`classe_id`) REFERENCES `classes` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_origem` FOREIGN KEY (`origem_id`) REFERENCES `origens` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_user_op` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `personagens_op_poderes`
+--
+ALTER TABLE `personagens_op_poderes`
+  ADD CONSTRAINT `fk_poder_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `poderes_classe`
