@@ -124,6 +124,20 @@ if ($resultado_poderes_paranormais) {
     }
 }
 
+$poderes_salvos = ['classe' => [], 'paranormal' => []];
+if (!$is_new) {
+    $sql_poderes_salvos = "SELECT poder_id, tipo_poder FROM personagens_op_poderes WHERE personagem_id = ?";
+    $stmt_ps = $conn->prepare($sql_poderes_salvos);
+    $stmt_ps->bind_param("i", $id);
+    $stmt_ps->execute();
+    $res_ps = $stmt_ps->get_result();
+    while ($linha = $res_ps->fetch_assoc()) {
+        // Garante que a chave exista antes de adicionar
+        if (isset($poderes_salvos[$linha['tipo_poder']])) {
+            $poderes_salvos[$linha['tipo_poder']][] = intval($linha['poder_id']);
+        }
+    }
+}
 
 // Perícias agrupadas
 $pericias_agrupadas = [
@@ -155,13 +169,16 @@ if ($resultado_todos_itens) {
 // *** NOVO: Carregar o inventário do personagem ***
 $inventario_personagem = [];
 // Garante que só buscamos o inventário se o personagem já existir no banco
-if (!$is_new && $personagem_id) {
-    $sql_inventario = "SELECT i.id, i.nome, i.tipo_item_id, i.categoria, i.espacos, inv.quantidade 
+if (!$is_new) {
+    $sql_inventario = "SELECT i.id, i.nome, i.tipo_item_id, i.categoria, i.espacos, i.defesa_bonus, inv.quantidade 
                        FROM inventario_op inv
                        JOIN itens_op i ON inv.item_id = i.id
                        WHERE inv.personagem_id = ?";
     $stmt_inv = $conn->prepare($sql_inventario);
-    $stmt_inv->bind_param("i", $personagem_id);
+
+    // CORREÇÃO: Usando a variável $id, que contém o ID do personagem carregado.
+    $stmt_inv->bind_param("i", $id);
+
     $stmt_inv->execute();
     $resultado_inventario = $stmt_inv->get_result();
     if ($resultado_inventario) {
@@ -824,10 +841,10 @@ if (!$is_new && $personagem_id) {
                 if (temInventarioOtimizado) {
                     espacosTotal = (atributos.forca + atributos.intelecto) * 5;
                 } else {
-                    espacosTotal = (atributos.forca == 0) ? 2 : (5 + atributos.forca);
+                    espacosTotal = (atributos.forca == 0) ? 2 : (5 * atributos.forca);
                 }
                 if (temMochilaMilitar) {
-                    espacosTotal += 5; // Bônus da mochila
+                    espacosTotal += 2; // Bônus da mochila
                 }
 
                 document.getElementById('espacos-total-display').textContent = espacosTotal;

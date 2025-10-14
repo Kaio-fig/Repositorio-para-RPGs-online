@@ -173,8 +173,10 @@ h2 {
 
 .tab-content.active {
     display: block;
-    overflow: visible; /* IMPORTANTE: Garante que o conteúdo não seja cortado */
-    min-height: 300px; /* Garante uma altura mínima para a aba */
+    overflow: visible;
+    /* IMPORTANTE: Garante que o conteúdo não seja cortado */
+    min-height: 300px;
+    /* Garante uma altura mínima para a aba */
 }
 
 .atributos-grid {
@@ -245,7 +247,10 @@ h2 {
     border-radius: 5px;
     margin-bottom: 20px;
 }
-.patente-container label, .espacos-container span, .limites-categoria span {
+
+.patente-container label,
+.espacos-container span,
+.limites-categoria span {
     font-size: 0.8rem;
     font-weight: bold;
     color: #6c757d;
@@ -253,14 +258,17 @@ h2 {
     display: block;
     margin-bottom: 5px;
 }
+
 .espacos-container strong {
     font-size: 2rem;
     color: var(--primary-color);
 }
+
 .limites-grid {
     display: flex;
     gap: 10px;
 }
+
 .limite-box {
     flex: 1;
     background-color: #e9ecef;
@@ -269,6 +277,7 @@ h2 {
     text-align: center;
     font-weight: bold;
 }
+
 .limite-box strong {
     display: block;
     font-size: 1.5rem;
@@ -302,13 +311,36 @@ h2 {
 
 .item-row {
     display: grid;
-    grid-template-columns: 1fr 50px 50px;
-    /* Nome | Categoria | Espaços */
+    grid-template-columns: 1fr 50px 50px 50px;
+    /* Nome | Cat. | Esp. | Ações */
     gap: 15px;
     padding: 12px 15px;
     align-items: center;
     border-bottom: 1px solid var(--border-color);
 }
+
+.item-acoes {
+    text-align: center;
+}
+
+.btn-remover-item {
+    background-color: #e4e6eb;
+    color: #4b4f56;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-remover-item:hover {
+    background-color: #c0392b;
+    /* Vermelho ao passar o mouse */
+    color: white;
+}
+
 
 .item-row:last-child {
     border-bottom: none;
@@ -433,21 +465,114 @@ h2 {
 
 /* --- ESTILOS PARA O MODAL DE PODERES --- */
 .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7); z-index: 1000;
-    align-items: center; justify-content: center;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
 }
+
 .modal-content {
-    background: white; border-radius: 8px; padding: 30px;
-    width: 90%; max-width: 700px;
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    width: 90%;
+    max-width: 700px;
 }
+
+.modal-content.modal-itens {
+    max-width: 800px;
+    /* Um pouco maior para a lista de itens */
+}
+
+.modal-filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-filtros input[type="text"] {
+    font-size: 1.1rem;
+    padding: 12px;
+}
+
+.modal-botoes-filtro {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.filtro-tipo-item {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--light-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.filtro-tipo-item:hover {
+    background-color: #e0e0e0;
+}
+
+.filtro-tipo-item.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Lista de itens dentro do modal */
+.item-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.item-modal:last-child {
+    border-bottom: none;
+}
+
+.item-modal-info h4 {
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.item-modal-info p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.btn-adicionar {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-adicionar:hover {
+    background-color: var(--secondary-color);
+}
+
 .lista-modal {
     max-height: 400px;
     overflow-y: auto;
     padding-right: 15px;
     margin-top: 20px;
 }
+
 .poder-item-modal {
     padding: 15px;
     border-radius: 5px;
@@ -457,9 +582,21 @@ h2 {
     justify-content: space-between;
     align-items: center;
 }
-.poder-item-modal h4 { color: var(--primary-color); margin-bottom: 5px; }
-.poder-item-modal p { font-size: 0.9rem; color: #555; }
-.poder-item-modal button { padding: 8px 12px; cursor: pointer; }
+
+.poder-item-modal h4 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.poder-item-modal p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.poder-item-modal button {
+    padding: 8px 12px;
+    cursor: pointer;
+}
 
 /* Estilo especial para a opção Transcender */
 .poder-transcender-opcao {
@@ -467,7 +604,9 @@ h2 {
     border-color: var(--primary-color);
     box-shadow: 0 0 10px var(--primary-color);
 }
-.poder-transcender-opcao h4, .poder-transcender-opcao p {
+
+.poder-transcender-opcao h4,
+.poder-transcender-opcao p {
     color: #f0f0f0;
 }
 
@@ -476,10 +615,12 @@ h2 {
     background-color: #1a1a1a;
     border-color: #444;
 }
+
 .modal-transcender-content h2,
 .modal-transcender-content p {
     color: #f0f0f0;
 }
+
 .modal-transcender-content h2 {
     color: var(--primary-color);
     text-shadow: 0 0 5px var(--primary-color);
@@ -488,7 +629,8 @@ h2 {
 /* 2. Ajusta a grade dos poderes paranormais */
 #lista-poderes-transcender {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    grid-template-columns: 1fr 1fr;
+    /* Duas colunas */
     gap: 15px;
     max-height: 400px;
     overflow-y: auto;
@@ -501,7 +643,8 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    background-color: var(--cor-elemento); /* DIV com a cor do elemento */
+    background-color: var(--cor-elemento);
+    /* DIV com a cor do elemento */
     border: 1px solid var(--cor-elemento);
 }
 
@@ -509,14 +652,16 @@ h2 {
 .poder-paranormal-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    filter: brightness(1.1); /* Deixa a cor um pouco mais viva no hover */
+    filter: brightness(1.1);
+    /* Deixa a cor um pouco mais viva no hover */
 }
 
 /* 5. Deixa a fonte dos cards branca para contraste */
 .poder-paranormal-card h4,
 .poder-paranormal-card p {
     color: #ffffff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Sombra para legibilidade */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    /* Sombra para legibilidade */
 }
 
 .poder-paranormal-card h4 {
@@ -531,8 +676,28 @@ h2 {
 }
 
 /* 6. Define a variável de cor para cada elemento */
-.poder-paranormal-card.Conhecimento { --cor-elemento: #f39c12; } /* Laranja/Amarelo */
-.poder-paranormal-card.Sangue      { --cor-elemento: #c0392b; } /* Vermelho */
-.poder-paranormal-card.Energia     { --cor-elemento: var(--primary-color); } /* Roxo */
-.poder-paranormal-card.Morte       { --cor-elemento: #2c3e50; } /* Preto/Azul escuro */
-.poder-paranormal-card.Nenhum      { --cor-elemento: #7f8c8d; } /* Cinza */
+.poder-paranormal-card.Conhecimento {
+    --cor-elemento: #f39c12;
+}
+
+/* Laranja/Amarelo */
+.poder-paranormal-card.Sangue {
+    --cor-elemento: #c0392b;
+}
+
+/* Vermelho */
+.poder-paranormal-card.Energia {
+    --cor-elemento: var(--primary-color);
+}
+
+/* Roxo */
+.poder-paranormal-card.Morte {
+    --cor-elemento: #2c3e50;
+}
+
+/* Preto/Azul escuro */
+.poder-paranormal-card.Nenhum {
+    --cor-elemento: #7f8c8d;
+}
+
+/* Cinza */
