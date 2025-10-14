@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 07-Out-2025 às 14:41
+-- Data de Criação: 14-Out-2025 às 01:05
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -70,24 +70,122 @@ CREATE TABLE IF NOT EXISTS `historias` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `itens`
+-- Estrutura da tabela `inventario_op`
 --
 
-CREATE TABLE IF NOT EXISTS `itens` (
+CREATE TABLE IF NOT EXISTS `inventario_op` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `sistema` varchar(50) NOT NULL,
-  `nome` varchar(255) NOT NULL,
-  `tipo` varchar(100) DEFAULT 'Item Geral',
-  `descricao` text,
-  `imagem` varchar(255) DEFAULT 'default_item.jpg',
-  `categoria_op` int(11) DEFAULT NULL,
-  `espacos_op` int(11) DEFAULT NULL,
-  `preco_t20` varchar(50) DEFAULT NULL,
-  `peso_t20` int(11) DEFAULT NULL,
+  `personagem_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `quantidade` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
+  KEY `personagem_id` (`personagem_id`),
+  KEY `item_id` (`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `itens_op`
+--
+
+CREATE TABLE IF NOT EXISTS `itens_op` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) NOT NULL,
+  `tipo_item_id` int(11) NOT NULL COMMENT '1: Arma, 2: Proteção, 3: Geral, 4: Amaldiçoado',
+  `categoria` int(11) NOT NULL DEFAULT '0' COMMENT 'O número romano da categoria (I, II, III, IV)',
+  `espacos` int(11) NOT NULL DEFAULT '1',
+  `descricao` text,
+  `dano` varchar(20) DEFAULT NULL,
+  `critico` varchar(20) DEFAULT NULL,
+  `alcance` varchar(50) DEFAULT NULL,
+  `tipo_dano` varchar(20) DEFAULT NULL,
+  `defesa_bonus` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=78 ;
+
+--
+-- Extraindo dados da tabela `itens_op`
+--
+
+INSERT INTO `itens_op` (`id`, `nome`, `tipo_item_id`, `categoria`, `espacos`, `descricao`, `dano`, `critico`, `alcance`, `tipo_dano`, `defesa_bonus`) VALUES
+(1, 'Coronhada', 1, 0, 1, NULL, '1d4/1d6', 'x2', '-', 'I', NULL),
+(2, 'Faca', 1, 0, 1, NULL, '1d4', '19', 'Curto', 'C', NULL),
+(3, 'Martelo', 1, 0, 1, NULL, '1d6', 'x2', '-', 'I', NULL),
+(4, 'Punhal', 1, 0, 1, NULL, '1d4', 'x3', '-', 'P', NULL),
+(5, 'Bastão', 1, 0, 1, NULL, '1d6/1d8', 'x2', '-', 'I', NULL),
+(6, 'Machete', 1, 0, 1, NULL, '1d6', '19', '-', 'C', NULL),
+(7, 'Lança', 1, 0, 1, NULL, '1d6', 'x2', 'Curto', 'P', NULL),
+(8, 'Cajado', 1, 0, 2, NULL, '1d6/1d6', 'x2', '-', 'I', NULL),
+(9, 'Arco', 1, 0, 2, NULL, '1d6', 'x3', 'Médio', 'P', NULL),
+(10, 'Flechas', 1, 0, 1, NULL, '-', '-', '-', '-', NULL),
+(11, 'Besta', 1, 0, 2, NULL, '1d8', '19', 'Médio', 'P', NULL),
+(12, 'Pistola', 1, 1, 1, NULL, '1d12', '18', 'Curto', 'B', NULL),
+(13, 'Balas Curtas', 1, 0, 1, NULL, '-', '-', '-', '-', NULL),
+(14, 'Revólver', 1, 1, 1, NULL, '2d6', '19/x3', 'Curto', 'B', NULL),
+(15, 'Fuzil de Caça', 1, 1, 2, NULL, '2d8', '19/x3', 'Médio', 'B', NULL),
+(16, 'Balas Longas', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(17, 'Machadinha', 1, 0, 1, NULL, '1d6', 'x3', 'Curto', 'C', NULL),
+(18, 'Nunchaku', 1, 0, 1, NULL, '1d8', 'x2', '-', 'I', NULL),
+(19, 'Corrente', 1, 0, 1, NULL, '1d8', 'x2', '-', 'I', NULL),
+(20, 'Espada', 1, 1, 1, NULL, '1d8/1d10', '19', '-', 'C', NULL),
+(21, 'Florete', 1, 1, 1, NULL, '1d6', '18', '-', 'C', NULL),
+(22, 'Machado', 1, 1, 1, NULL, '1d8', 'x3', '-', 'C', NULL),
+(23, 'Maça', 1, 1, 1, NULL, '2d4', 'x2', '-', 'I', NULL),
+(24, 'Acha', 1, 1, 2, NULL, '1d12', 'x3', '-', 'C', NULL),
+(25, 'Gadanho', 1, 1, 2, NULL, '2d4', 'x4', '-', 'C', NULL),
+(26, 'Katana', 1, 1, 2, NULL, '1d10', '19', '-', 'C', NULL),
+(27, 'Marreta', 1, 1, 2, NULL, '3d4', 'x2', '-', 'I', NULL),
+(28, 'Montante', 1, 1, 2, NULL, '2d6', '19', '-', 'C', NULL),
+(29, 'Motosserra', 1, 1, 2, NULL, '3d6', 'x2', '-', 'C', NULL),
+(30, 'Arco Composto', 1, 1, 2, NULL, '1d10', 'x3', 'Médio', 'P', NULL),
+(31, 'Balestra', 1, 1, 2, NULL, '1d12', '19', 'Médio', 'P', NULL),
+(32, 'Submetralhadora', 1, 1, 1, NULL, '2d6', '19/x3', 'Curto', 'B', NULL),
+(33, 'Espingarda', 1, 1, 2, NULL, '4d6', 'x3', 'Curto', 'B', NULL),
+(34, 'Cartuchos', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(35, 'Fuzil de Assalto', 1, 2, 2, NULL, '2d10', '19/x3', 'Médio', 'B', NULL),
+(36, 'Fuzil de Precisão', 1, 3, 2, NULL, '2d10', '19/x3', 'Longo', 'B', NULL),
+(37, 'Bazuca', 1, 3, 2, NULL, '10d8', 'x2', 'Médio', 'I', NULL),
+(38, 'Foguete', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(39, 'Lança-Chamas', 1, 3, 2, NULL, '6d6', 'x2', 'Curto', 'Fogo', NULL),
+(40, 'Combustível', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(41, 'Metralhadora', 1, 2, 2, NULL, '2d12', 'x2', 'Médio', 'B', NULL),
+(42, 'Proteção Leve', 2, 1, 2, NULL, NULL, NULL, NULL, NULL, 5),
+(43, 'Proteção Pesada', 2, 2, 5, NULL, NULL, NULL, NULL, NULL, 10),
+(44, 'Escudo', 2, 1, 2, NULL, NULL, NULL, NULL, NULL, 2),
+(45, 'Kit de perícia', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(46, 'Utensílio', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(47, 'Vestimenta', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(48, 'Granada de atordoamento', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(49, 'Granada de fragmentação', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(50, 'Granada de fumaça', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(51, 'Granada incendiária', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(52, 'Mina antipessoal', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(53, 'Algemas', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(54, 'Arpéu', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(55, 'Bandoleira', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(56, 'Binóculos', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(57, 'Bloqueador de sinal', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(58, 'Cicatrizante', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(59, 'Corda', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(60, 'Equipamento de sobrevivência', 3, 0, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(61, 'Lanterna tática', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(62, 'Máscara de gás', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(63, 'Mochila militar', 3, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL),
+(64, 'Óculos de visão térmica', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(65, 'Pé de cabra', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(66, 'Pistola de dardos', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(67, 'Pistola sinalizadora', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(68, 'Soqueira', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(69, 'Spray de pimenta', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(70, 'Taser', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(71, 'Traje hazmat', 3, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(72, 'Amarras de (elemento)', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(73, 'Câmera de aura paranormal', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(74, 'Componentes ritualísticos de (elemento)', 4, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(75, 'Emissor de pulsos paranormais', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(76, 'Escuta de ruídos paranormais', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(77, 'Scanner de manifestação paranormal de (elemento)', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -106,114 +204,6 @@ CREATE TABLE IF NOT EXISTS `mundos` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `op_armas`
---
-
-CREATE TABLE IF NOT EXISTS `op_armas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) NOT NULL,
-  `dano` varchar(20) NOT NULL,
-  `crit` varchar(20) NOT NULL,
-  `alcance` varchar(20) DEFAULT NULL,
-  `tipo` varchar(20) DEFAULT NULL,
-  `categoria` int(11) NOT NULL DEFAULT '0',
-  `espaco` int(11) NOT NULL DEFAULT '1',
-  `descricao` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=36 ;
-
---
--- Extraindo dados da tabela `op_armas`
---
-
-INSERT INTO `op_armas` (`id`, `nome`, `dano`, `crit`, `alcance`, `tipo`, `categoria`, `espaco`, `descricao`) VALUES
-(1, 'Coronhada', '1d4/1d6', 'x2', '-', 'C', 0, 1, 'Corpo a Corpo - Leves'),
-(2, 'Faca', '1d4', '19', 'Curto', 'C', 0, 1, 'Corpo a Corpo - Leves'),
-(3, 'Martelo', '1d6', 'x2', '-', 'I', 0, 1, 'Corpo a Corpo - Leves'),
-(4, 'Punhal', '1d4', 'x2', '-', 'P', 0, 1, 'Corpo a Corpo - Leves'),
-(5, 'Bastão', '1d6/1d8', 'x2', '-', 'I', 0, 1, 'Corpo a Corpo - Uma Mão'),
-(6, 'Machete', '1d6', '19', '-', 'C', 0, 1, 'Corpo a Corpo - Uma Mão'),
-(7, 'Lança', '1d6', 'x2', 'Curto', 'P', 0, 1, 'Corpo a Corpo - Uma Mão'),
-(8, 'Cajado', '1d6/1d6', 'x2', '-', 'I', 0, 2, 'Corpo a Corpo - Duas Mãos'),
-(9, 'Arco', '1d6', 'x3', 'Médio', 'P', 0, 2, 'Armas de Disparo - Duas Mãos'),
-(10, 'Besta', '1d8', 'x3', 'Médio', 'P', 0, 2, 'Armas de Disparo - Duas Mãos'),
-(11, 'Pistola', '1d12', '18', 'Curto', 'B', 1, 1, 'Armas de Fogo - Leves'),
-(12, 'Revólver', '2d6', '19/x3', 'Curto', 'B', 1, 1, 'Armas de Fogo - Leves'),
-(13, 'Fuzil de caça', '2d8', '19/x3', 'Médio', 'B', 1, 2, 'Armas de Fogo - Duas Mãos'),
-(14, 'Machadinha', '1d6', 'x3', 'Curto', 'C', 0, 1, 'Armas Táticas - Corpo a Corpo - Leves'),
-(15, 'Nunchaku', '1d8', 'x2', '-', 'I', 0, 1, 'Armas Táticas - Corpo a Corpo - Leves'),
-(16, 'Corrente', '1d8', 'x2', '-', 'I', 0, 1, 'Armas Táticas - Corpo a Corpo - Uma Mão'),
-(17, 'Espada', '1d8/1d10', '19', '-', 'C', 1, 1, 'Armas Táticas - Corpo a Corpo - Uma Mão'),
-(18, 'Florete', '1d6', '18', '-', 'C', 1, 1, 'Armas Táticas - Corpo a Corpo - Uma Mão'),
-(19, 'Machado', '1d8', 'x3', '-', 'C', 1, 1, 'Armas Táticas - Corpo a Corpo - Uma Mão'),
-(20, 'Maça', '2d4', 'x2', '-', 'I', 1, 1, 'Armas Táticas - Corpo a Corpo - Uma Mão'),
-(21, 'Acha', '1d12', 'x2', '-', 'C', 1, 2, 'Armas Táticas - Corpo a Corpo - Duas Mãos'),
-(22, 'Gadanho', '2d4', 'x4', '-', 'C', 1, 2, 'Armas Táticas - Corpo a Corpo - Duas Mãos'),
-(23, 'Katana', '1d10', '19', '-', 'C', 1, 2, 'Armas Táticas - Corpo a Corpo - Duas Mãos'),
-(24, 'Marreta', '3d4', 'x2', '-', 'I', 1, 2, 'Armas Táticas - Corpo a Corpo - Duas Mãos'),
-(25, 'Montante', '2d6', '19', '-', 'C', 1, 2, 'Armas Táticas - Corpo a Corpo - Duas Mãos'),
-(26, 'Motosserra', '3d6', 'x2', '-', 'C', 1, 2, 'Armas Táticas - Corpo a Corpo - Duas Mãos'),
-(27, 'Arco composto', '1d10', 'x3', 'Médio', 'P', 1, 2, 'Armas Táticas - Armas de Disparo - Duas Mãos'),
-(28, 'Balestra', '1d12', '19', 'Médio', 'P', 1, 2, 'Armas Táticas - Armas de Disparo - Duas Mãos'),
-(29, 'Submetralhadora', '2d6', '19/x3', 'Curto', 'B', 1, 1, 'Armas Táticas - Armas de Fogo - Uma Mão'),
-(30, 'Espingarda', '4d6', 'x3', 'Curto', 'B', 1, 2, 'Armas Táticas - Armas de Fogo - Duas Mãos'),
-(31, 'Fuzil de assalto', '2d10', '19/x3', 'Médio', 'B', 2, 2, 'Armas Táticas - Armas de Fogo - Duas Mãos'),
-(32, 'Fuzil de precisão', '2d10', '19/x3', 'Longo', 'B', 3, 2, 'Armas Táticas - Armas de Fogo - Duas Mãos'),
-(33, 'Bazuca', '10d8', 'x2', 'Médio', 'I', 3, 2, 'Armas Pesadas - À Distância - Duas Mãos'),
-(34, 'Lança-chamas', '6d6', 'x2', 'Curto', 'Fogo', 3, 2, 'Armas Pesadas - À Distância - Duas Mãos'),
-(35, 'Metralhadora', '2d12', 'x2', 'Médio', 'B', 2, 2, 'Armas Pesadas - À Distância - Duas Mãos');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `op_gerais`
---
-
-CREATE TABLE IF NOT EXISTS `op_gerais` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) NOT NULL,
-  `categoria` int(11) NOT NULL,
-  `espaco` int(11) NOT NULL,
-  `descricao` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=28 ;
-
---
--- Extraindo dados da tabela `op_gerais`
---
-
-INSERT INTO `op_gerais` (`id`, `nome`, `categoria`, `espaco`, `descricao`) VALUES
-(1, 'Kit de Perícia', 0, 1, 'Um conjunto de ferramentas necessárias para algumas perícias.'),
-(2, 'Utensílio', 0, 1, 'Um item comum que tenha uma utilidade específica.'),
-(3, 'Vestimenta', 1, 1, 'Uma peça de vestuário que fornece +2 em uma perícia.'),
-(4, 'Granada de atordoamento', 0, 1, 'Explosivo para atordoar alvos.'),
-(5, 'Granada de fragmentação', 1, 1, 'Explosivo que causa dano em área.'),
-(6, 'Granada de fumaça', 0, 1, 'Cria uma nuvem de fumaça.'),
-(7, 'Granada incendiária', 1, 1, 'Explosivo que causa dano por fogo.'),
-(8, 'Mina antipessoal', 1, 1, 'Mina que explode ao ser ativada.'),
-(9, 'Algemas', 0, 1, 'Usadas para prender alvos.'),
-(10, 'Arpéu', 0, 1, 'Gancho para escalar ou se fixar.'),
-(11, 'Bandoleira', 0, 1, 'Cinto para carregar itens.'),
-(12, 'Binóculos', 0, 1, 'Fornece +5 em testes de Percepção.'),
-(13, 'Bloqueador de sinal', 1, 1, 'Emite ondas que bloqueiam sinais.'),
-(14, 'Cicatrizante', 1, 1, 'Recupera pontos de vida.'),
-(15, 'Corda', 0, 1, 'Corda resistente.'),
-(16, 'Equipamento de sobrevivência', 0, 2, 'Equipamento para sobreviver em ambientes selvagens.'),
-(17, 'Lanterna tática', 1, 1, 'Ilumina lugares escuros.'),
-(18, 'Máscara de gás', 0, 1, 'Proteção contra gases.'),
-(19, 'Mochila militar', 1, 2, 'Mochila que aumenta a capacidade de carga.'),
-(20, 'Óculos de visão térmica', 1, 1, 'Óculos que eliminam a penalidade em testes de camuflagem.'),
-(21, 'Pé de cabra', 0, 1, 'Usado para arrombar portas.'),
-(22, 'Pistola de dardos', 0, 1, 'Pistola que dispara dardos.'),
-(23, 'Pistola sinalizadora', 0, 1, 'Pistola que dispara sinalizadores.'),
-(24, 'Soqueira', 0, 1, 'Aumenta o dano de ataques desarmados.'),
-(25, 'Spray de pimenta', 0, 1, 'Causa dano e penalidades nos inimigos.'),
-(26, 'Taser', 1, 1, 'Dispositivo de choque.'),
-(27, 'Traje hazmat', 1, 2, 'Traje de proteção contra produtos químicos.');
 
 -- --------------------------------------------------------
 
@@ -295,35 +285,6 @@ INSERT INTO `op_modificacoes` (`id`, `nome`, `tipo_item`, `efeito`, `categoria_e
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `op_paranormal`
---
-
-CREATE TABLE IF NOT EXISTS `op_paranormal` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) NOT NULL,
-  `categoria` int(11) NOT NULL DEFAULT '0',
-  `espaco` int(11) NOT NULL DEFAULT '1',
-  `elemento` varchar(20) DEFAULT NULL,
-  `descricao` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
-
---
--- Extraindo dados da tabela `op_paranormal`
---
-
-INSERT INTO `op_paranormal` (`id`, `nome`, `categoria`, `espaco`, `elemento`, `descricao`) VALUES
-(1, 'Amarra de elementos', 2, 1, 'Varia', 'Imobiliza criaturas com base em elementos.'),
-(2, 'Câmera de aura paranormal', 2, 1, 'Energia', 'Detecta auras paranormais.'),
-(3, 'Componentes ritualísticos', 0, 1, 'Varia', 'Componentes necessários para conjurar rituais.'),
-(4, 'Emissor de pulsos paranormais', 2, 1, 'Varia', 'Cria uma pulsação que afasta criaturas do elemento oposto.'),
-(5, 'Escuta de ruídos paranormais', 2, 1, 'Conhecimento', 'Ajuda a ouvir e identificar ruídos paranormais.'),
-(6, 'Medidor de estabilidade da membrana', 2, 1, 'Conhecimento', 'Avalia a estabilidade de um local.'),
-(7, 'Scanner de manifestação paranormal', 2, 1, 'Varia', 'Detecta manifestações paranormais.');
-
--- --------------------------------------------------------
-
---
 -- Estrutura da tabela `op_personagem_itens`
 --
 
@@ -337,30 +298,6 @@ CREATE TABLE IF NOT EXISTS `op_personagem_itens` (
   PRIMARY KEY (`id`),
   KEY `personagem_id` (`personagem_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `op_protecoes`
---
-
-CREATE TABLE IF NOT EXISTS `op_protecoes` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) NOT NULL,
-  `defesa` int(11) NOT NULL,
-  `categoria` int(11) NOT NULL,
-  `espaco` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
-
---
--- Extraindo dados da tabela `op_protecoes`
---
-
-INSERT INTO `op_protecoes` (`id`, `nome`, `defesa`, `categoria`, `espaco`) VALUES
-(1, 'Leve', 5, 1, 2),
-(2, 'Pesada', 10, 2, 5),
-(3, 'Escudo', 2, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -459,7 +396,7 @@ CREATE TABLE IF NOT EXISTS `personagens_op` (
   KEY `user_id` (`user_id`),
   KEY `fk_origem` (`origem_id`),
   KEY `fk_classe` (`classe_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -725,10 +662,11 @@ ALTER TABLE `historias`
   ADD CONSTRAINT `historias_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
--- Limitadores para a tabela `itens`
+-- Limitadores para a tabela `inventario_op`
 --
-ALTER TABLE `itens`
-  ADD CONSTRAINT `itens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+ALTER TABLE `inventario_op`
+  ADD CONSTRAINT `fk_inventario_op_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_inventario_op_item` FOREIGN KEY (`item_id`) REFERENCES `itens_op` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `mundos`

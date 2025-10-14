@@ -142,6 +142,34 @@ $patentes = [
     'Oficial de Operações' => ['I' => 3, 'II' => 3, 'III' => 2, 'IV' => 1],
     'Agente de Elite' => ['I' => 3, 'II' => 3, 'III' => 3, 'IV' => 2]
 ];
+
+$todos_itens_op = [];
+$sql_todos_itens = "SELECT id, nome, tipo_item_id, categoria, espacos, descricao FROM itens_op ORDER BY nome ASC";
+$resultado_todos_itens = $conn->query($sql_todos_itens);
+if ($resultado_todos_itens) {
+    while ($linha = $resultado_todos_itens->fetch_assoc()) {
+        $todos_itens_op[] = $linha;
+    }
+}
+
+// *** NOVO: Carregar o inventário do personagem ***
+$inventario_personagem = [];
+// Garante que só buscamos o inventário se o personagem já existir no banco
+if (!$is_new && $personagem_id) {
+    $sql_inventario = "SELECT i.id, i.nome, i.tipo_item_id, i.categoria, i.espacos, inv.quantidade 
+                       FROM inventario_op inv
+                       JOIN itens_op i ON inv.item_id = i.id
+                       WHERE inv.personagem_id = ?";
+    $stmt_inv = $conn->prepare($sql_inventario);
+    $stmt_inv->bind_param("i", $personagem_id);
+    $stmt_inv->execute();
+    $resultado_inventario = $stmt_inv->get_result();
+    if ($resultado_inventario) {
+        while ($linha = $resultado_inventario->fetch_assoc()) {
+            $inventario_personagem[] = $linha;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -289,19 +317,21 @@ $patentes = [
                     </div>
 
                     <!-- ABA EQUIPAMENTO -->
+
                     <div id="tab-equipamento" class="tab-content">
                         <div class="info-equipamento">
                             <div class="patente-container">
                                 <label for="patente-select">Patente</label>
                                 <select id="patente-select" name="patente">
-                                    <?php foreach (array_keys($patentes) as $patente): ?>
+                                    <?php foreach (array_keys($patentes) as $patente) : ?>
                                         <option value="<?= $patente ?>"><?= $patente ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="espacos-container">
-                                <span>Espaços Totais</span>
-                                <strong id="espacos-total-display">--</strong>
+                                <!-- Mudamos para mostrar "usado / total" -->
+                                <span>Carga</span>
+                                <strong id="espacos-usados-display">0</strong> / <strong id="espacos-total-display">--</strong>
                             </div>
                             <div class="limites-categoria">
                                 <span>Limite de Itens por Categoria</span>
@@ -315,54 +345,29 @@ $patentes = [
                         </div>
 
                         <h2>Inventário</h2>
-                        <div class="lista-itens">
+                        <!-- A lista agora tem um ID e será preenchida pelo JS -->
+                        <div class="lista-itens" id="lista-itens-personagem">
                             <div class="item-row header">
                                 <div class="item-nome">Item</div>
                                 <div class="item-cat">Cat.</div>
                                 <div class="item-esp">Esp.</div>
+                                <div class="item-acoes">Ações</div>
                             </div>
-
-                            <div class="item-row">
-                                <div class="item-nome">Mochila Militar</div>
-                                <div class="item-cat">I</div>
-                                <div class="item-esp">+2</div>
-                            </div>
-                            <div class="item-row">
-                                <div class="item-nome">Pé de Cabra</div>
-                                <div class="item-cat">I</div>
-                                <div class="item-esp">1</div>
-                            </div>
-                            <div class="item-row">
-                                <div class="item-nome">Vestimenta (+2 Fortitude)</div>
-                                <div class="item-cat">I</div>
-                                <div class="item-esp">1</div>
-                            </div>
-                            <div class="item-row">
-                                <div class="item-nome">Pistola (Calibre Grosso)</div>
-                                <div class="item-cat">II</div>
-                                <div class="item-esp">1</div>
-                            </div>
-                            <div class="item-row">
-                                <div class="item-nome">Lanterna</div>
-                                <div class="item-cat">0</div>
-                                <div class="item-esp">1</div>
-                            </div>
-
+                            <!-- A lista de itens do personagem será inserida aqui dinamicamente -->
                         </div>
-                        <button type="button" class="btn-acao" id="btn-adicionar-item" style="margin-top: 20px;" disabled>Adicionar Item</button>
+                        <!-- O botão agora abre o novo modal -->
+                        <button type="button" class="btn-acao" id="btn-abrir-modal-item" style="margin-top: 20px;">Adicionar Item</button>
                     </div>
-                </div>
-            </div>
 
-            <!-- RODAPE -->
-            <div class="botoes-rodape">
-                <a href="meus_personagens.php" class="btn-acao btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Voltar para Meus Personagens
-                </a>
-                <button type="submit" class="btn-acao">
-                    <i class="fas fa-save"></i> Salvar Personagem
-                </button>
-            </div>
+                    <!-- RODAPE -->
+                    <div class="botoes-rodape">
+                        <a href="meus_personagens.php" class="btn-acao btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Voltar para Meus Personagens
+                        </a>
+                        <button type="submit" class="btn-acao">
+                            <i class="fas fa-save"></i> Salvar Personagem
+                        </button>
+                    </div>
         </form>
     </div>
 
@@ -387,6 +392,26 @@ $patentes = [
         </div>
     </div>
 
+    <div id="modal-adicionar-item" class="modal-overlay">
+        <div class="modal-content modal-itens">
+            <h2>Adicionar Item ao Inventário</h2>
+            <div class="modal-filtros">
+                <input type="text" id="filtro-item-nome" placeholder="Buscar por nome...">
+                <div class="modal-botoes-filtro">
+                    <button type="button" class="filtro-tipo-item active" data-tipo-id="0">Todos</button>
+                    <button type="button" class="filtro-tipo-item" data-tipo-id="1">Armas</button>
+                    <button type="button" class="filtro-tipo-item" data-tipo-id="2">Proteções</button>
+                    <button type="button" class="filtro-tipo-item" data-tipo-id="3">Geral</button>
+                    <button type="button" class="filtro-tipo-item" data-tipo-id="4">Paranormal</button>
+                </div>
+            </div>
+            <div id="lista-itens-modal" class="lista-modal">
+                <!-- A lista de todos os itens do jogo será inserida aqui pelo JavaScript -->
+            </div>
+            <button type="button" class="btn-acao" onclick="fecharModalAdicionarItem()" style="margin-top: 20px;">Fechar</button>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- DADOS DO PHP PARA O JS ---
@@ -398,6 +423,9 @@ $patentes = [
             const todosOsPoderesDeClasse = <?= json_encode(isset($poderes_de_classe) ? $poderes_de_classe : []) ?>;
             const todosOsPoderesParanormais = <?= json_encode(isset($poderes_paranormais) ? $poderes_paranormais : []) ?>;
             const patentesData = <?= json_encode(isset($patentes) ? $patentes : []) ?>;
+            const todosOsItensOP = <?= json_encode(isset($todos_itens_op) ? $todos_itens_op : []) ?>;
+            const inventarioInicialPersonagem = <?= json_encode(isset($inventario_personagem) ? $inventario_personagem : []) ?>;
+
 
             // --- ELEMENTOS GLOBAIS ---
             const form = document.getElementById('ficha-form');
@@ -405,9 +433,11 @@ $patentes = [
             const inputsParaMonitorar = form.querySelectorAll('input.atributo-input, select.atributo-input, #classe-select, #origem-select, #trilha-select, #patente-select');
             const modalPoderesClasse = document.getElementById('modal-poderes-classe');
             const modalTranscender = document.getElementById('modal-transcender');
+            const modalAdicionarItem = document.getElementById('modal-adicionar-item');
             let transcendCount = 0;
             var poderesParanormaisSelecionados = [];
             let classeIdAnterior = parseInt(document.getElementById('classe-select').value) || 0;
+            let inventarioAtual = [...inventarioInicialPersonagem];
 
             // --- LÓGICA DE UPLOAD E ABAS ---
             const btnImportar = document.getElementById('btn-importar-imagem');
@@ -633,6 +663,92 @@ $patentes = [
                 if (modalTranscender) modalTranscender.style.display = 'none';
             }
 
+            function atualizarDisplayInventario() {
+                const containerInventario = document.getElementById('lista-itens-personagem');
+                if (!containerInventario) return;
+
+                // Limpa o conteúdo atual, mantendo o cabeçalho
+                while (containerInventario.children.length > 1) {
+                    containerInventario.removeChild(containerInventario.lastChild);
+                }
+
+                let espacosUsados = 0;
+                inventarioAtual.forEach((item, index) => {
+                    const itemRow = document.createElement('div');
+                    itemRow.className = 'item-row';
+                    // Adiciona um botão de remover que chama a função com o índice do item
+                    itemRow.innerHTML = `
+            <div class="item-nome">${item.nome}</div>
+            <div class="item-cat">${item.categoria}</div>
+            <div class="item-esp">${item.espacos}</div>
+            <div class="item-acoes">
+                <button type="button" class="btn-remover-item" onclick="removerItemDoInventario(${index})">X</button>
+            </div>
+        `;
+                    containerInventario.appendChild(itemRow);
+                    espacosUsados += parseInt(item.espacos) || 0;
+                });
+
+                // Atualiza o display de espaços usados
+                document.getElementById('espacos-usados-display').textContent = espacosUsados;
+            }
+
+            window.adicionarItemAoInventario = (itemId) => {
+                const itemInfo = todosOsItensOP.find(i => i.id == itemId);
+                if (itemInfo) {
+                    inventarioAtual.push(itemInfo);
+                    atualizarDisplayInventario();
+                    calcularTudo(); // Recalcula tudo para atualizar carga e bônus
+                }
+            };
+
+            window.removerItemDoInventario = (index) => {
+                inventarioAtual.splice(index, 1); // Remove o item do array
+                atualizarDisplayInventario();
+                calcularTudo();
+            };
+
+            function popularModalItens() {
+                const containerModal = document.getElementById('lista-itens-modal');
+                if (!containerModal) return;
+
+                const termoBusca = document.getElementById('filtro-item-nome').value.toLowerCase();
+                const tipoIdFiltro = document.querySelector('.filtro-tipo-item.active').dataset.tipoId;
+
+                containerModal.innerHTML = ''; // Limpa a lista
+
+                const itensFiltrados = todosOsItensOP.filter(item => {
+                    const nomeMatch = item.nome.toLowerCase().includes(termoBusca);
+                    const tipoMatch = (tipoIdFiltro == "0" || item.tipo_item_id == tipoIdFiltro);
+                    return nomeMatch && tipoMatch;
+                });
+
+                itensFiltrados.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'item-modal';
+                    itemDiv.innerHTML = `
+            <div class="item-modal-info">
+                <h4>${item.nome} (Cat ${item.categoria}, ${item.espacos} esp)</h4>
+                ${item.descricao ? `<p>${item.descricao}</p>` : ''}
+            </div>
+            <button type="button" class="btn-adicionar" onclick="adicionarItemAoInventario(${item.id})">Adicionar</button>
+        `;
+                    containerModal.appendChild(itemDiv);
+                });
+            }
+
+            // Funções globais para abrir e fechar o modal de itens
+            window.abrirModalAdicionarItem = () => {
+                if (modalAdicionarItem) {
+                    popularModalItens();
+                    modalAdicionarItem.style.display = 'flex';
+                }
+            };
+
+            window.fecharModalAdicionarItem = () => {
+                if (modalAdicionarItem) modalAdicionarItem.style.display = 'none';
+            };
+
             // --- FUNÇÃO MASTER DE CÁLCULO ----
             function calcularTudo() {
 
@@ -691,42 +807,37 @@ $patentes = [
 
                 // CÁLCULO DE DEFESA
                 let defesaTotal = 10 + atributos.agilidade;
-                if (origemId == 16) { // Policial
-                    defesaTotal += 2;
-                }
+                if (origemId == 16) defesaTotal += 2; // Policial
+                // Soma a defesa de todas as proteções e escudos no inventário
+                inventarioAtual.forEach(item => {
+                    if (item.tipo_item_id == 2) { // ID 2 = Proteção
+                        defesaTotal += parseInt(item.defesa_bonus) || 0;
+                    }
+                });
 
                 // CÁLCULOS DE INVENTÁRIO
                 // Verifica se o personagem tem o poder de trilha "Inventário Otimizado" (ID 37)
-                const poderesGanhos = todosOsPoderesDeTrilha.filter(function(p) {
-                    return p.trilha_id == trilhaId && p.nex_requerido <= nex;
-                });
-                const temInventarioOtimizado = poderesGanhos.some(function(p) {
-                    return p.id == 37;
-                });
+                const temInventarioOtimizado = todosOsPoderesDeTrilha.some(p => p.trilha_id == trilhaId && p.nex_requerido <= nex && p.id == 37);
+                const temMochilaMilitar = inventarioAtual.some(item => item.nome === 'Mochila militar');
 
                 let espacosTotal;
                 if (temInventarioOtimizado) {
-                    // Se tiver o poder, a fórmula do Técnico é (Força + Intelecto) * 5
                     espacosTotal = (atributos.forca + atributos.intelecto) * 5;
                 } else {
-                    // Senão, usa a fórmula padrão com a sintaxe if/else compatível
-                    if (atributos.forca == 0) {
-                        espacosTotal = 2;
-                    } else {
-                        espacosTotal = 5 + atributos.forca;
-                    }
+                    espacosTotal = (atributos.forca == 0) ? 2 : (5 + atributos.forca);
                 }
-                document.getElementById('espacos-total-display').textContent = espacosTotal;
+                if (temMochilaMilitar) {
+                    espacosTotal += 5; // Bônus da mochila
+                }
 
-                // Atualiza os limites de categoria com base na patente selecionada
+                document.getElementById('espacos-total-display').textContent = espacosTotal;
                 const limites = patentesData[patenteSelecionada];
                 if (limites) {
-                    document.getElementById('limite-cat-i').textContent = limites['I'] !== 0 ? limites['I'] : '—';
-                    document.getElementById('limite-cat-ii').textContent = limites['II'] !== 0 ? limites['II'] : '—';
-                    document.getElementById('limite-cat-iii').textContent = limites['III'] !== 0 ? limites['III'] : '—';
-                    document.getElementById('limite-cat-iv').textContent = limites['IV'] !== 0 ? limites['IV'] : '—';
+                    document.getElementById('limite-cat-i').textContent = limites['I'] || '—';
+                    document.getElementById('limite-cat-ii').textContent = limites['II'] || '—';
+                    document.getElementById('limite-cat-iii').textContent = limites['III'] || '—';
+                    document.getElementById('limite-cat-iv').textContent = limites['IV'] || '—';
                 }
-
 
                 // Atualiza os displays na tela
                 document.getElementById('vida-display').textContent = vidaMax;
@@ -763,28 +874,29 @@ $patentes = [
 
             // --- EVENT LISTENERS E INICIALIZAÇÃO ---
 
-            if (inputsParaMonitorar) {
-                inputsParaMonitorar.forEach(input => {
-                    input.addEventListener('change', calcularTudo);
+            inputsParaMonitorar.forEach(input => input.addEventListener('change', calcularTudo));
+
+            document.getElementById('classe-select')?.addEventListener('change', () => {
+                limparPoderesDeClasseAdicionados();
+                calcularTudo();
+            });
+
+            document.getElementById('btn-adicionar-poder')?.addEventListener('click', abrirModalPoderesDeClasse);
+
+            // Novos Listeners para o Modal de Itens
+            document.getElementById('btn-abrir-modal-item')?.addEventListener('click', abrirModalAdicionarItem);
+            document.getElementById('filtro-item-nome')?.addEventListener('input', popularModalItens);
+            document.querySelectorAll('.filtro-tipo-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelector('.filtro-tipo-item.active').classList.remove('active');
+                    e.target.classList.add('active');
+                    popularModalItens();
                 });
+            });
 
-            }
-
-            const seletorDeClasse = document.getElementById('classe-select');
-            if (seletorDeClasse) {
-                seletorDeClasse.addEventListener('change', () => {
-                    // Quando a classe muda, PRIMEIRO limpa os poderes adicionados
-                    limparPoderesDeClasseAdicionados();
-                    // E DEPOIS recalcula tudo (o que vai adicionar os poderes iniciais da nova classe)
-                    calcularTudo();
-                });
-            }
-
-            const btnAdicionarPoder = document.getElementById('btn-adicionar-poder');
-            if (btnAdicionarPoder) {
-                btnAdicionarPoder.addEventListener('click', abrirModalPoderesDeClasse);
-            }
-            calcularTudo();
+            // Inicialização da Ficha
+            atualizarDisplayInventario(); // Popula o inventário inicial
+            calcularTudo(); // Calcula todos os status iniciais
         });
     </script>
 </body>
