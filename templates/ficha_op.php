@@ -158,7 +158,7 @@ $patentes = [
 ];
 
 $todos_itens_op = [];
-$sql_todos_itens = "SELECT id, nome, tipo_item_id, categoria, espacos, descricao FROM itens_op ORDER BY nome ASC";
+$sql_todos_itens = "SELECT id, nome, tipo_item_id, categoria, espacos, descricao, defesa_bonus FROM itens_op ORDER BY nome ASC";
 $resultado_todos_itens = $conn->query($sql_todos_itens);
 if ($resultado_todos_itens) {
     while ($linha = $resultado_todos_itens->fetch_assoc()) {
@@ -452,7 +452,8 @@ if (!$is_new) {
             const modalTranscender = document.getElementById('modal-transcender');
             const modalAdicionarItem = document.getElementById('modal-adicionar-item');
             let transcendCount = 0;
-            var poderesParanormaisSelecionados = [];
+            let poderesParanormaisSelecionados = [];
+            let poderesDeClasseSelecionados = (typeof poderesSalvos !== 'undefined' && poderesSalvos.classe) ? [...poderesSalvos.classe] : [];
             let classeIdAnterior = parseInt(document.getElementById('classe-select').value) || 0;
             let inventarioAtual = [...inventarioInicialPersonagem];
 
@@ -666,6 +667,11 @@ if (!$is_new) {
                 if (!poderInfo) return;
                 const listaPoderesFicha = document.querySelector('#tab-poderes .lista-poderes');
                 const poderDiv = document.createElement('div');
+                const poderIdNumerico = parseInt(poderId); // Converte o ID para número
+                if (!poderesDeClasseSelecionados.includes(poderIdNumerico)) {
+                    poderesDeClasseSelecionados.push(poderIdNumerico); // Adiciona o ID numérico à lista
+                    calcularTudo(); // Chama o cálculo para atualizar a defesa e outros status
+                }
                 poderDiv.className = 'poder-item poder-classe-adicionado'; // Classe para limpeza
                 poderDiv.innerHTML = `<h4>${poderInfo.nome} (Classe)</h4><p>${poderInfo.desc}</p>`;
                 listaPoderesFicha.appendChild(poderDiv);
@@ -711,11 +717,15 @@ if (!$is_new) {
             }
 
             window.adicionarItemAoInventario = (itemId) => {
-                const itemInfo = todosOsItensOP.find(i => i.id == itemId);
-                if (itemInfo) {
-                    inventarioAtual.push(itemInfo);
-                    atualizarDisplayInventario();
-                    calcularTudo(); // Recalcula tudo para atualizar carga e bônus
+                const itemInfoCompleto = todosOsItensOP.find(i => i.id == itemId);
+
+                if (itemInfoCompleto) {
+                    inventarioAtual.push(JSON.parse(JSON.stringify(itemInfoCompleto)));
+                    calcularTudo(); // Chama o cálculo principal que agora lerá o item adicionado
+                    atualizarDisplayInventario()
+                    fecharModalAdicionarItem();
+                } else {
+                    console.error("Item não encontrado:", itemId); // Ajuda a depurar se algo der errado
                 }
             };
 
@@ -768,6 +778,7 @@ if (!$is_new) {
 
             // --- FUNÇÃO MASTER DE CÁLCULO ----
             function calcularTudo() {
+                console.log("--- Iniciando calcularTudo ---");
 
                 const nex = parseInt(document.getElementById('nex').value) || 0;
                 const classeId = parseInt(document.getElementById('classe-select').value) || 0;
@@ -822,15 +833,27 @@ if (!$is_new) {
 
                 document.getElementById('sanidade-display').textContent = sanidadeMax;
 
-                // CÁLCULO DE DEFESA
+                //CÁLCULO DE DEFESA
                 let defesaTotal = 10 + atributos.agilidade;
-                if (origemId == 16) defesaTotal += 2; // Policial
-                // Soma a defesa de todas as proteções e escudos no inventário
-                inventarioAtual.forEach(item => {
-                    if (item.tipo_item_id == 2) { // ID 2 = Proteção
-                        defesaTotal += parseInt(item.defesa_bonus) || 0;
-                    }
-                });
+                if (origemId == 16) {
+                    defesaTotal += 2;
+                } // Policial
+                if (poderesDeClasseSelecionados.includes(13)) {
+                    defesaTotal += 2;
+                } // Reflexos Defensivos
+
+                // Loop para somar bônus de itens
+                if (typeof inventarioAtual !== 'undefined' && Array.isArray(inventarioAtual)) {
+                    inventarioAtual.forEach((item) => {
+                        // Verifica se é Proteção (ID 2) E se a propriedade existe E não é nula/vazia
+                        if (item && item.tipo_item_id == 2 && item.hasOwnProperty('defesa_bonus') && item.defesa_bonus !== null && item.defesa_bonus !== '') {
+                            const bonusDef = parseInt(item.defesa_bonus);
+                            if (!isNaN(bonusDef)) {
+                                defesaTotal += bonusDef;
+                            }
+                        }
+                    });
+                }
 
                 // CÁLCULOS DE INVENTÁRIO
                 // Verifica se o personagem tem o poder de trilha "Inventário Otimizado" (ID 37)
@@ -845,6 +868,7 @@ if (!$is_new) {
                 }
                 if (temMochilaMilitar) {
                     espacosTotal += 2; // Bônus da mochila
+                    console.log("Tem Mochila Militar:", temMochilaMilitar); // DEBUG MOCHILA RESULT
                 }
 
                 document.getElementById('espacos-total-display').textContent = espacosTotal;
@@ -857,6 +881,7 @@ if (!$is_new) {
                 }
 
                 // Atualiza os displays na tela
+                console.log("Atualizando displays...");
                 document.getElementById('vida-display').textContent = vidaMax;
                 document.getElementById('pe-display').textContent = peMax;
                 document.getElementById('sanidade-display').textContent = sanidadeMax;
@@ -887,6 +912,8 @@ if (!$is_new) {
                 atualizarTrilhasDisponiveis();
                 atualizarPoderesDaTrilha();
                 atualizarPoderesIniciaisDeClasse();
+
+                console.log("--- Finalizando calcularTudo ---");
             }
 
             // --- EVENT LISTENERS E INICIALIZAÇÃO ---
