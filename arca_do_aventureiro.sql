@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 14-Out-2025 às 13:25
+-- Data de Criação: 22-Out-2025 às 12:56
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -397,7 +397,7 @@ CREATE TABLE IF NOT EXISTS `personagens_op` (
   KEY `fk_origem` (`origem_id`),
   KEY `fk_classe` (`classe_id`),
   KEY `fk_trilha` (`trilha_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -412,6 +412,38 @@ CREATE TABLE IF NOT EXISTS `personagens_op_poderes` (
   `tipo_poder` enum('classe','paranormal') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `personagem_id` (`personagem_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `personagens_t20`
+--
+
+CREATE TABLE IF NOT EXISTS `personagens_t20` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `jogador` varchar(100) DEFAULT NULL,
+  `nivel` int(11) NOT NULL DEFAULT '1',
+  `raca_id` int(11) DEFAULT NULL,
+  `origem_id` int(11) DEFAULT NULL,
+  `classe_id` int(11) DEFAULT NULL,
+  `divindade_id` int(11) DEFAULT NULL,
+  `imagem` varchar(255) DEFAULT 'default_t20.jpg',
+  `pv_max` int(11) DEFAULT '0',
+  `pv_atual` int(11) DEFAULT '0',
+  `pm_max` int(11) DEFAULT '0',
+  `pm_atual` int(11) DEFAULT '0',
+  `forca` int(11) NOT NULL DEFAULT '10',
+  `destreza` int(11) NOT NULL DEFAULT '10',
+  `constituicao` int(11) NOT NULL DEFAULT '10',
+  `inteligencia` int(11) NOT NULL DEFAULT '10',
+  `sabedoria` int(11) NOT NULL DEFAULT '10',
+  `carisma` int(11) NOT NULL DEFAULT '10',
+  `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id_t20` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -612,6 +644,22 @@ INSERT INTO `poderes_trilha` (`id`, `trilha_id`, `nex_requerido`, `nome`, `descr
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `t20_classes`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_classes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `pv_inicial` int(11) NOT NULL,
+  `pv_por_nivel` int(11) NOT NULL,
+  `pm_por_nivel` int(11) NOT NULL,
+  `pericias_bonus` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `trilhas`
 --
 
@@ -706,9 +754,9 @@ ALTER TABLE `pericias`
 -- Limitadores para a tabela `personagens_op`
 --
 ALTER TABLE `personagens_op`
-  ADD CONSTRAINT `fk_trilha` FOREIGN KEY (`trilha_id`) REFERENCES `trilhas` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_classe` FOREIGN KEY (`classe_id`) REFERENCES `classes` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_origem` FOREIGN KEY (`origem_id`) REFERENCES `origens` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_trilha` FOREIGN KEY (`trilha_id`) REFERENCES `trilhas` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_user_op` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
@@ -716,6 +764,12 @@ ALTER TABLE `personagens_op`
 --
 ALTER TABLE `personagens_op_poderes`
   ADD CONSTRAINT `fk_poder_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `personagens_t20`
+--
+ALTER TABLE `personagens_t20`
+  ADD CONSTRAINT `fk_user_t20` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `poderes_classe`
