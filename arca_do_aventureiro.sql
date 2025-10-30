@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 29-Out-2025 às 13:42
+-- Data de Criação: 30-Out-2025 às 14:50
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -363,6 +363,21 @@ CREATE TABLE IF NOT EXISTS `pericias` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `personagem_t20_poderes`
+--
+
+CREATE TABLE IF NOT EXISTS `personagem_t20_poderes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `personagem_id` int(11) NOT NULL,
+  `poder_id` int(11) NOT NULL,
+  `tipo_poder` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_personagem_poder` (`personagem_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `personagens_op`
 --
 
@@ -672,6 +687,196 @@ INSERT INTO `t20_classes` (`id`, `nome`, `pv_inicial`, `pv_por_nivel`, `pm_por_n
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `t20_divindades`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_divindades` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `energia` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=21 ;
+
+--
+-- Extraindo dados da tabela `t20_divindades`
+--
+
+INSERT INTO `t20_divindades` (`id`, `nome`, `energia`) VALUES
+(1, 'Aharadak', 'Negativa'),
+(2, 'Allihanna', 'Positiva'),
+(3, 'Arsenal', 'Qualquer'),
+(4, 'Azgher', 'Positiva'),
+(5, 'Hyninn', 'Qualquer'),
+(6, 'Kallyadranoch', 'Negativa'),
+(7, 'Khalmyr', 'Positiva'),
+(8, 'Lena', 'Positiva'),
+(9, 'Lin-Wu', 'Qualquer'),
+(10, 'Marah', 'Positiva'),
+(11, 'Megalokk', 'Negativa'),
+(12, 'Nimb', 'Qualquer'),
+(13, 'Oceano', 'Qualquer'),
+(14, 'Sszzaas', 'Negativa'),
+(15, 'Tanna-Toh', 'Qualquer'),
+(16, 'Tenebra', 'Negativa'),
+(17, 'Thwor', 'Qualquer'),
+(18, 'Thyatis', 'Positiva'),
+(19, 'Valkaria', 'Positiva'),
+(20, 'Wynna', 'Qualquer');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `t20_divindade_poderes`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_divindade_poderes` (
+  `divindade_id` int(11) NOT NULL,
+  `poder_divino_id` int(11) NOT NULL,
+  PRIMARY KEY (`divindade_id`,`poder_divino_id`),
+  KEY `fk_poder_divino` (`poder_divino_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Extraindo dados da tabela `t20_divindade_poderes`
+--
+
+INSERT INTO `t20_divindade_poderes` (`divindade_id`, `poder_divino_id`) VALUES
+(1, 1),
+(17, 2),
+(19, 2),
+(13, 3),
+(5, 4),
+(19, 5),
+(13, 6),
+(14, 7),
+(8, 8),
+(18, 8),
+(6, 9),
+(10, 10),
+(8, 11),
+(20, 12),
+(16, 13),
+(20, 14),
+(2, 15),
+(15, 16),
+(3, 17),
+(3, 18),
+(7, 18),
+(9, 18),
+(19, 18),
+(8, 19),
+(8, 20),
+(2, 21),
+(2, 22),
+(10, 23),
+(18, 24),
+(18, 25),
+(18, 26),
+(7, 27),
+(6, 28),
+(20, 29),
+(7, 30),
+(4, 31),
+(1, 32),
+(12, 32),
+(14, 33),
+(5, 34),
+(3, 35),
+(5, 36),
+(4, 37),
+(17, 38),
+(5, 39),
+(4, 40),
+(4, 41),
+(9, 42),
+(19, 43),
+(16, 44),
+(15, 45),
+(9, 46),
+(13, 47),
+(11, 48),
+(17, 48),
+(10, 49),
+(1, 50),
+(15, 51),
+(12, 52),
+(6, 53),
+(11, 53),
+(14, 54),
+(1, 55),
+(7, 56),
+(3, 57),
+(14, 58),
+(6, 59),
+(13, 60),
+(12, 61),
+(10, 62),
+(20, 63),
+(9, 64),
+(12, 65),
+(17, 66),
+(11, 67),
+(16, 68),
+(15, 69),
+(2, 70),
+(11, 71),
+(16, 72);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `t20_habilidades_classe_auto`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_habilidades_classe_auto` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `classe_id` int(11) NOT NULL,
+  `nivel_obtido` int(11) NOT NULL,
+  `nome` varchar(191) NOT NULL,
+  `descricao` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_classe_nivel` (`classe_id`,`nivel_obtido`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=30 ;
+
+--
+-- Extraindo dados da tabela `t20_habilidades_classe_auto`
+--
+
+INSERT INTO `t20_habilidades_classe_auto` (`id`, `classe_id`, `nivel_obtido`, `nome`, `descricao`) VALUES
+(1, 1, 1, 'Marca da Presa', 'Você pode gastar uma ação de movimento e 1 PM para marcar uma criatura em alcance curto. Você recebe +1d4 em testes de ataque e rolagens de dano contra essa criatura. O bônus aumenta com o nível.'),
+(2, 1, 1, 'Rastreador', 'Você recebe +2 em Sobrevivência e pode usar esta perícia para rastrear mesmo em movimento normal (sem penalidade).'),
+(3, 1, 3, 'Explorador', 'Você aprende um tipo de terreno (como floresta, montanha, etc.). Você recebe +2 em Percepção, Sobrevivência e Furtividade nesse terreno. Você aprende um novo tipo de terreno nos níveis 7, 11, 15 e 19.'),
+(4, 1, 5, 'Caminho do Explorador', 'O bônus de Explorador (+2) aumenta para +4 nos terrenos escolhidos.'),
+(5, 1, 5, 'Marca da Presa (+1d8)', 'O bônus de sua Marca da Presa aumenta para +1d8.'),
+(6, 1, 9, 'Marca da Presa (+1d12)', 'O bônus de sua Marca da Presa aumenta para +1d12.'),
+(7, 1, 13, 'Marca da Presa (+2d8)', 'O bônus de sua Marca da Presa aumenta para +2d8.'),
+(8, 1, 17, 'Marca da Presa (+2d10)', 'O bônus de sua Marca da Presa aumenta para +2d10.'),
+(9, 1, 20, 'Mestre Caçador', 'Quando você marca uma criatura, pode gastar 2 PM para aplicar o efeito de Marca da Presa em todos os inimigos em alcance curto.'),
+(10, 2, 1, 'Ataque Especial (+4)', 'Você pode gastar uma ação padrão e 2 PM para fazer um ataque corpo a corpo ou à distância. Você soma +4 no teste de ataque ou na rolagem de dano. O bônus aumenta com o nível.'),
+(11, 2, 3, 'Durão', 'Quando sofre dano, você pode gastar 3 PM para reduzir esse dano à metade.'),
+(12, 2, 5, 'Ataque Especial (+8)', 'O bônus de seu Ataque Especial aumenta para +8.'),
+(13, 2, 6, 'Ataque Extra', 'Quando usa a ação agredir, você pode gastar 2 PM para realizar um ataque adicional (limitado a um ataque extra por rodada).'),
+(14, 2, 9, 'Ataque Especial (+12)', 'O bônus de seu Ataque Especial aumenta para +12.'),
+(15, 2, 13, 'Ataque Especial (+16)', 'O bônus de seu Ataque Especial aumenta para +16.'),
+(16, 2, 17, 'Ataque Especial (+20)', 'O bônus de seu Ataque Especial aumenta para +20.'),
+(17, 2, 20, 'Campeão', 'No 20º nível, você se torna um mestre do combate. Seu multiplicador de crítico com armas marciais aumenta em +1 (x2 torna-se x3, etc.).'),
+(18, 3, 1, 'Autoconfiança', 'Quando faz um teste de resistência, você pode gastar 2 PM para somar seu modificador de Carisma ao resultado do teste.'),
+(19, 3, 1, 'Espólio', 'Você recebe +2 PM para cada poder de Nobre que possui (além do poder inicial, Riqueza). Além disso, recebe +1 PM por nível par (2, 4, 6, etc.).'),
+(20, 3, 1, 'Orgulho', 'Você é imune a efeitos de medo (mágicos ou não) e recebe +5 em Vontade contra efeitos que afetem seu Carisma (como magias de Encantamento).'),
+(21, 3, 2, 'Palavras Afiadas (2d6)', 'Você pode gastar uma ação padrão e 2 PM para hostilizar uma criatura em alcance curto. Faça um teste de Diplomacia, Enganação ou Intimidação oposto ao de Vontade da criatura. Se vencer, ela sofre 2d6 pontos de dano mental.'),
+(22, 3, 3, 'Riqueza', 'Você recebe 10 T$ x seu nível de Nobre no início de cada aventura (acumulativo).'),
+(23, 3, 4, 'Gritar Ordens', 'Você pode gastar 1 PM e uma ação de movimento para fazer um teste de Diplomacia, Enganação ou Intimidação (CD 15). Se passar, seus aliados em alcance médio recebem +1 em testes de ataque por 1 rodada.'),
+(24, 3, 5, 'Presença Aristocrática', 'Quando usa a ação de movimento para comandar (habilidade Gritar Ordens), você pode gastar 1 PM adicional para aumentar o bônus em +1 (total +2).'),
+(25, 3, 6, 'Palavras Afiadas (4d6)', 'O dano de Palavras Afiadas aumenta para 4d6.'),
+(26, 3, 10, 'Palavras Afiadas (6d6)', 'O dano de Palavras Afiadas aumenta para 6d6.'),
+(27, 3, 14, 'Palavras Afiadas (8d6)', 'O dano de Palavras Afiadas aumenta para 8d6.'),
+(28, 3, 18, 'Palavras Afiadas (10d6)', 'O dano de Palavras Afiadas aumenta para 10d6.'),
+(29, 3, 20, 'Realeza', 'Sua Presença Aristocrática aumenta seu bônus de comando para +2 (total +3) e seu custo para 3 PM. Além disso, você pode gastar 5 PM para que todos os aliados afetados por seu comando recebam uma ação de movimento ou padrão adicional (à escolha deles).');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `t20_origens`
 --
 
@@ -729,6 +934,262 @@ INSERT INTO `t20_origens` (`id`, `nome`, `pericias_treinadas`, `poder_1_nome`, `
 (33, 'Soldado', 'Fortitude, Guerra, Luta, Pontaria', 'Influência Militar', 'Você recebe +2 em testes de Intimidação.', 'Poder de Combate (Escolha)', 'Você recebe um poder de combate a sua escolha.', NULL, NULL),
 (34, 'Taverneiro', 'Diplomacia, Jogatina, Ofício (cozinheiro)', 'Gororoba', 'Você pode preparar alimentos para um número de pessoas igual ao seu bônus de Carisma +1 por 1 Tibar por pessoa. Um personagem que coma uma refeição recupera 1 PV por nível.', 'Proficiência', 'Você recebe proficiência em uma arma exótica à sua escolha.', 'Vitalidade', 'Você recebe +2 pontos de vida para cada nível de personagem.'),
 (35, 'Trabalhador', 'Atletismo, Fortitude', 'Atlético', 'Você recebe +2 em testes de Atletismo.', 'Esforçado', 'Você recebe +1 PM para cada dois níveis de personagem.', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `t20_poderes_classe`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_poderes_classe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `classe_id` int(11) NOT NULL,
+  `nome` varchar(191) NOT NULL,
+  `descricao` text NOT NULL,
+  `pre_requisito` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome_classe_unique` (`classe_id`,`nome`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=54 ;
+
+--
+-- Extraindo dados da tabela `t20_poderes_classe`
+--
+
+INSERT INTO `t20_poderes_classe` (`id`, `classe_id`, `nome`, `descricao`, `pre_requisito`) VALUES
+(1, 1, 'Ambidestria', 'Se estiver empunhando duas armas (e pelo menos uma delas for leve) e fizer a ação agredir, você pode fazer dois ataques, um com cada arma. Se fizer isso, sofre –2 em todos os testes de ataque até o seu próximo turno.', 'Des 2'),
+(2, 1, 'Armadilha: Arataca', 'A vítima sofre 2d6 pontos de dano de perfuração e fica agarrada. Uma criatura agarrada pode escapar com uma ação padrão e um teste de Força ou Acrobacia (CD Sab).', NULL),
+(3, 1, 'Armadilha: Espinhos', 'A vítima sofre 6d6 pontos de dano de perfuração. Um teste de Reflexos (CD Sab) reduz o dano à metade.', NULL),
+(4, 1, 'Armadilha: Laço', 'A vítima deve fazer um teste de Reflexos (CD Sab). Se passar, fica caída. Se falhar, fica agarrada. Uma criatura agarrada pode se soltar com uma ação padrão e um teste de Força ou Acrobacia (CD Sab).', NULL),
+(5, 1, 'Armadilha: Rede', 'Todas as criaturas na área ficam enredadas e não podem sair da área. Uma vítima pode se libertar com uma ação padrão e um teste de Força ou Acrobacia (CD 25). Além disso, a área ocupada pela rede é considerada terreno difícil.', NULL),
+(6, 1, 'Armadilheiro', 'A CD para encontrar e resistir às suas armadilhas aumenta em +5 e você soma sua Sabedoria ao dano delas.', '5º nível de caçador'),
+(7, 1, 'Arqueiro', 'Se estiver usando uma arma de ataque à distância, você soma sua Sabedoria nas rolagens de dano (limitado pelo seu nível).', 'Sab 1'),
+(8, 1, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Você pode escolher este poder várias vezes, mas apenas uma vez por patamar para o mesmo atributo.', NULL),
+(9, 1, 'Bote', 'Se estiver empunhando duas armas e fizer uma investida, você pode pagar 1 PM para fazer um ataque adicional com sua arma secundária.', 'Ambidestria, 6º nível de caçador'),
+(10, 1, 'Camuflagem', 'Você pode gastar 2 PM para se esconder mesmo sem camuflagem ou cobertura disponível.', '6º nível de caçador'),
+(11, 1, 'Chuva de Lâminas', 'Uma vez por rodada, quando usa Ambidestria, você pode pagar 2 PM para fazer um ataque adicional com sua arma primária.', 'Des 4, Ambidestria, 12º nível de caçador'),
+(12, 1, 'Companheiro Animal', 'Você recebe um companheiro animal. Você veja o quadro na página 62.', 'Car 1, treinado em Adestramento'),
+(13, 1, 'Emboscar', 'Você pode gastar 2 PM para realizar uma ação padrão adicional em seu turno. Você só pode usar este poder na primeira rodada de um combate.', 'Treinado em Furtividade'),
+(14, 1, 'Empatia Selvagem', 'Você pode se comunicar com animais por meio de linguagem corporal e vocalizações. Você pode usar Adestramento para mudar atitude e persuasão com animais (veja Diplomacia).', NULL),
+(15, 1, 'Escaramuça', 'Quando se move 6m ou mais, você recebe +2 na Defesa e Reflexos e +1d8 nas rolagens de dano de ataques corpo a corpo e à distância até o início do seu próximo turno.', 'Des 2'),
+(16, 1, 'Escaramuça Superior', 'Quando usa Escaramuça, seus bônus aumentam para +5 na Defesa e Reflexos e +1d12 em rolagens de dano.', 'Escaramuça, 12º nível de caçador'),
+(17, 1, 'Espreitar', 'Quando usa a habilidade Marca da Presa, você recebe um bônus de +1 em testes de perícia contra a criatura marcada. Esse bônus aumenta em +1 para cada PM adicional gasto na habilidade e também dobra com a habilidade Inimigo.', NULL),
+(18, 1, 'Elo com a Natureza', 'Você recebe +2 em Adestramento, Cavalgar, Cura e Sobrevivência.', NULL),
+(19, 1, 'Ervas Curativas', 'Você pode gastar uma ação completa e uma quantidade de PM a sua escolha (limitado por sua Sabedoria) para aplicar ervas que curam ou desintoxicam em você ou num aliado adjacente. Para cada PM que gastar, cura 2d6 PV ou remove uma condição de veneno.', NULL),
+(20, 1, 'Despistar', 'Você pode gastar 1 PM para aumentar a dificuldade para rastreá-lo em +10 por uma rodada.', NULL),
+(21, 1, 'Inimigo (Criatura)', 'Escolha um tipo de criatura entre animal, construto, espírito, monstro ou morto-vivo, ou duas raças humanoides. Você recebe +2 em testes de Intimidação e Sobrevivência contra esse tipo/raças e +1d8 nas rolagens de dano. Você pode escolher este poder outras vezes para inimigos diferentes.', NULL),
+(22, 1, 'Olho de Falcão', 'Você pode usar a habilidade Marca da Presa em criaturas em alcance longo.', NULL),
+(23, 1, 'Ponto Fraco', 'Quando usa a habilidade Marca da Presa, seus ataques contra a criatura marcada recebem +2 na margem de ameaça. Esse bônus dobra com a habilidade Inimigo.', NULL),
+(24, 2, 'Ambidestria', 'Se estiver empunhando duas armas (e pelo menos uma delas for leve) e fizer a ação agredir, você pode fazer dois ataques, um com cada arma. Se fizer isso, sofre –2 em todos os testes de ataque até o seu próximo turno.', 'Des 2'),
+(25, 2, 'Arqueiro', 'Se estiver usando uma arma de ataque à distância, você soma sua Sabedoria em rolagens de dano (limitado pelo seu nível).', 'Sab 1'),
+(26, 2, 'Ataque Reflexo', 'Se um alvo em alcance de seus ataques corpo a corpo ficar desprevenido ou se mover voluntariamente para fora do seu alcance, você pode gastar 1 PM para fazer um ataque corpo a corpo contra esse alvo (apenas uma vez por alvo a cada rodada).', 'Des 1'),
+(27, 2, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Você pode escolher este poder várias vezes, mas apenas uma vez por patamar para o mesmo atributo.', NULL),
+(28, 2, 'Bater e Correr', 'Quando faz uma investida, você pode continuar se movendo após o ataque, até o limite de seu deslocamento. Se gastar 2 PM, pode fazer uma investida sobre terreno difícil e sem sofrer a penalidade de Defesa.', NULL),
+(29, 2, 'Destruidor', 'Quando causa dano com uma arma corpo a corpo de duas mãos, você pode rolar novamente qualquer resultado 1 ou 2 da rolagem de dano da arma.', 'For 1'),
+(30, 2, 'Esgrimista', 'Quando usa uma arma corpo a corpo leve ou ágil, você soma sua Inteligência em rolagens de dano (limitado pelo seu nível).', 'Int 1'),
+(31, 2, 'Especialização em Arma', 'Escolha uma arma. Você recebe +2 em rolagens de dano com essa arma. Você pode escolher este poder outras vezes para armas diferentes.', NULL),
+(32, 2, 'Especialização em Armadura', 'Você recebe redução de dano 5 se estiver usando uma armadura pesada.', '12º nível de guerreiro'),
+(33, 2, 'Golpe de Raspão', 'Uma vez por rodada, quando erra um ataque, você pode gastar 2 PM. Se fizer isso, causa metade do dano que causaria (ignorando efeitos que se aplicariam caso o ataque acertasse).', NULL),
+(34, 2, 'Golpe Demolidor', 'Quando usa a manobra quebrar ou ataca um objeto, você pode gastar 2 PM para ignorar a redução de dano dele.', NULL),
+(35, 2, 'Golpe Pessoal', 'Quando faz um ataque, você pode desferir seu Golpe Pessoal, uma técnica única, com efeitos determinados por você. (Veja a lista completa de efeitos no livro, ex: Amplo, Brutal, Conjurador, etc.)', '5º nível de guerreiro'),
+(36, 3, 'Armadura Brilhante', 'Você pode usar seu Carisma na Defesa quando usa armadura pesada. Se fizer isso, não pode somar sua Destreza, mesmo que outras habilidades ou efeitos permitam isso.', '8º nível de nobre'),
+(37, 3, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Você pode escolher este poder várias vezes, mas apenas uma vez por patamar para o mesmo atributo.', NULL),
+(38, 3, 'Autoridade Feudal', 'Você pode gastar uma hora e 2 PM para conclamar o povo a ajudá-lo. Isso conta como um parceiro iniciante de um tipo a sua escolha (aprovado pelo mestre) que lhe acompanha até o fim da aventura.', '6º nível de nobre'),
+(39, 3, 'Educação Privilegiada', 'Você se torna treinado em duas perícias de nobre a sua escolha.', NULL),
+(40, 3, 'Estrategista', 'Você pode direcionar aliados em alcance curto. Gaste uma ação padrão e 1 PM por aliado (limitado pelo seu Carisma). No próximo turno do aliado, ele ganha uma ação de movimento.', 'Int 1, treinado em Guerra, 6º nível de nobre'),
+(41, 3, 'Favor', 'Você pode usar sua influência para pedir favores a pessoas poderosas. Gaste 5 PM e uma hora de conversa. Role Diplomacia (CD 20). Se passar, consegue o favor. Se falhar, não pode pedir novamente por uma semana.', NULL),
+(42, 3, 'General', 'Quando você usa o poder Estrategista, aliados direcionados recebem 1d4 PM temporários. Esses PM duram até o fim do turno do aliado.', 'Estrategista, 12º nível de nobre'),
+(43, 3, 'Grito Típico', 'Você pode gastar um PM para usar Palavras Afiadas como uma ação completa, em vez de padrão. Se fizer isso, seus dados de dano aumentam para d8 e você atinge todos os inimigos em alcance curto.', '8º nível de nobre'),
+(44, 3, 'Inspirar Confiança', 'Sua presença faz as pessoas darem o melhor de si. Quando um aliado em alcance curto faz um teste, você pode gastar 2 PM para fazer com que ele possa rolar esse teste novamente.', NULL),
+(45, 3, 'Inspirar Glória', 'Quando você usa Inspirar Confiança, pode gastar +1 PM para fazer o aliado rolar novamente um teste de ataque ou resistência. Se o aliado passar no teste, você pode gastar 5 PM para que ele ganhe uma ação padrão adicional no próximo turno dele.', 'Inspirar Confiança, 8º nível de nobre'),
+(46, 3, 'Jogo da Corte', 'Você pode gastar 1 PM para rolar novamente um teste recém realizado de Diplomacia, Intuição ou Nobreza.', NULL),
+(47, 3, 'Liderar pelo Exemplo', 'Você pode gastar 2 PM para servir de inspiração. Até o início de seu próximo turno, sempre que você passar em um teste de perícia, aliados em alcance curto que fizerem um teste da mesma perícia podem usar o resultado do seu teste em vez de seu próprio.', '6º nível de nobre'),
+(48, 3, 'Língua de Ouro', 'Você pode gastar uma ação padrão e 4 PM para gerar o efeito da magia Enfeitiçar com os aprimoramentos de Sugestão e Afetar Criatura. A CD é baseada em Carisma.', 'Língua de Prata, 8º nível de nobre'),
+(49, 3, 'Língua de Prata', 'Quando faz um teste de perícia baseada em Carisma, você pode gastar 2 PM para receber um bônus no teste igual à metade do seu nível.', NULL),
+(50, 3, 'Língua Rápida', 'Quando faz um teste de Diplomacia para mudar atitude, pode gastar uma ação completa, em vez de uma minuto.', NULL),
+(51, 3, 'Presunção Aristocrática', 'Sua Presença Aristocrática passa a funcionar contra qualquer criatura com valor de Inteligência (incluindo criaturas sem mente), mas não funcionando contra criaturas Int -).', 'Presença Aristocrática, 16º nível de nobre'),
+(52, 3, 'Título', 'Você adquire um título de nobreza. Você recebe 20 T$ no início de cada aventura e um servo (parceiro iniciante).', NULL),
+(53, 3, 'Voz Poderosa', 'Você recebe +2 em Diplomacia e Intimidação. Suas habilidades de nobre com alcance curto passam para alcance médio.', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `t20_poderes_divinos`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_poderes_divinos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(191) NOT NULL,
+  `descricao` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome` (`nome`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=73 ;
+
+--
+-- Extraindo dados da tabela `t20_poderes_divinos`
+--
+
+INSERT INTO `t20_poderes_divinos` (`id`, `nome`, `descricao`) VALUES
+(1, 'Afinidade com a Tormenta', 'Você recebe +10 em testes de resistência contra efeitos da Tormenta, de suas criaturas e de devotos de Aharadak. Além disso, seu primeiro poder da Tormenta não conta para perda de Carisma.'),
+(2, 'Almejar o Impossível', 'Quando faz um teste de perícia, um resultado 19 ou mais no dado sempre é um sucesso, não importando o valor a ser alcançado.'),
+(3, 'Anfíbio', 'Você pode respirar embaixo d''água e adquire deslocamento de natação igual a seu deslocamento terrestre.'),
+(4, 'Apostar com o Trapaceiro', 'Quando faz um teste de perícia, você pode gastar 1 PM para apostar com Hyninn. Você e o mestre rolam 1d20; se o seu resultado for maior, você passa no teste (mesmo que o resultado rolado tenha sido uma falha). Se for menor, falha (mesmo que tenha sido um sucesso). Se empatar, o mestre escolhe se você passa ou falha. Você não pode usar esta habilidade em um teste que já tenha rolado novamente.'),
+(5, 'Armas da Ambição', 'Você recebe +1 em testes de ataque e na margem de ameaça com armas nas quais é proficiente.'),
+(6, 'Arsenal das Profundezas', 'Você recebe +2 nas rolagens de dano com azagaias, lanças e tridentes e seu multiplicador de crítico com essas armas aumenta em +1.'),
+(7, 'Astúcia da Serpente', 'Você recebe +2 em Enganação, Furtividade e Intuição.'),
+(8, 'Ataque Piedoso', 'Você pode usar armas corpo a corpo para causar dano não letal sem sofrer a penalidade de –5 no teste de ataque.'),
+(9, 'Aura de Medo', 'Você pode gastar 2 PM para gerar uma aura de medo de 9m de raio e duração até o fim da cena. Todos os inimigos que entrarem na aura devem fazer um teste de Vontade (CD Car) ou ficam abalados até o fim da cena. Uma criatura que passe no teste de Vontade fica imune a esta habilidade por um dia.'),
+(10, 'Aura de Paz', 'Você pode gastar 2 PM para gerar uma aura de paz com alcance curto e duração de uma cena. Qualquer inimigo dentro da aura que tente fazer uma ação hostil contra você deve fazer um teste de Vontade (CD Car). Se falhar, perderá sua ação. Se passar, fica imune a esta habilidade por um dia.'),
+(11, 'Aura Restauradora', 'Efeitos de cura usados por você e seus aliados em alcance curto recuperam +1 PV por dado.'),
+(12, 'Bênção do Mana', 'Você recebe +1 PM a cada nível ímpar.'),
+(13, 'Carícia Sombria', 'Você pode gastar 1 PM e uma ação padrão para cobrir sua arma com energia negativa e trocar seu dano para trevas (Fortitude CD Sab reduz à metade) e você recupera PV iguais à metade do dano causado. Você pode aprender Toque Vampírico como uma magia divina. Se fizer isso, seu custo diminui em –1 PM.'),
+(14, 'Centelha Mágica', 'Escolha uma magia arcana ou divina de 1º círculo. Você aprende e pode lançar essa magia.'),
+(15, 'Compreender os Ermos', 'Você recebe +2 em Sobrevivência e pode usar Sabedoria para Adestramento (em vez de Carisma).'),
+(16, 'Conhecimento Enciclopédico', 'Você se torna treinado em duas perícias baseadas em Inteligência a sua escolha.'),
+(17, 'Conjurar Arma', 'Você pode gastar 1 PM para invocar uma arma corpo a corpo ou de arremesso com a qual seja proficiente. A arma surge em sua mão, fornece +1 em testes de ataque e rolagens de dano, e é considerada mágica.'),
+(18, 'Coragem Total', 'Você é imune a efeitos de medo, mágicos ou não. Este poder não anula fobias raciais (como o medo de altura dos minotauros).'),
+(19, 'Cura Gentil', 'Você soma seu Carisma aos PV restaurados por seus efeitos mágicos de cura.'),
+(20, 'Curandeira Perfeita', 'Você sempre pode escolher 10 em testes de Cura. Além disso, não sofre penalidade por usar esta perícia sem um kit de medicamentos. Se possuir o item, recebe +2 no teste de Cura (ou +5, se ele for aprimorado).'),
+(21, 'Dedo Verde', 'Você aprende e pode lançar Controlar Plantas. Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(22, 'Descanso Natural', 'Para você, dormir ao relento conta como condição de descanso confortável.'),
+(23, 'Dom da Esperança', 'Você soma sua Sabedoria em seus PV em vez de Constituição, e se torna imune às condições alquebrado, esmorecido e frustrado.'),
+(24, 'Dom da Imortalidade', 'Você é imortal. Sempre que morre, não importando o motivo, volta à vida após 3d6 dias. Apenas paladinos podem escolher este poder. Um personagem pode ter Dom da Imortalidade ou Dom da Ressurreição, mas não ambos.'),
+(25, 'Dom da Profecia', 'Você pode lançar Augúrio. Caso aprenda novamente esta magia, seu custo diminui em –1 PM. Você também pode gastar 2 PM para receber +2 em um teste.'),
+(26, 'Dom da Ressurreição', 'Você pode gastar uma ação completa e todos os PM que possui (mínimo 1 PM) para tocar o corpo de uma criatura morta há menos de um ano e ressuscitá-la. A criatura volta à vida com 1 PV e 0 PM, e perde 1 ponto de Constituição permanentemente.'),
+(27, 'Dom da Verdade', 'Você pode pagar 2 PM para receber +5 em testes de Intuição, e em testes de Percepção contra Enganação e Furtividade, até o fim da cena.'),
+(28, 'Escamas Dracônicas', 'Você recebe +2 na Defesa e em Fortitude.'),
+(29, 'Escudo Mágico', 'Quando lança uma magia, você recebe um bônus na Defesa igual ao círculo da magia lançada até o início do seu próximo turno.'),
+(30, 'Espada Justiceira', 'Você pode gastar 1 PM para encantar sua espada (ou outra arma corpo a corpo de corte que esteja empunhando). Ela tem seu dano aumentado em um passo até o fim da cena.'),
+(31, 'Espada Solar', 'Você pode gastar 1 PM para fazer uma arma corpo a corpo de corte que esteja empunhando causar +1d6 de dano por fogo até o fim da cena.'),
+(32, 'Êxtase da Loucura', 'Toda vez que uma ou mais criaturas falham em um teste de Vontade contra uma de suas habilidades mágicas, você recebe 1 PM temporário cumulativo. Você pode ganhar um máximo de PM temporários por cena desta forma igual a sua Sabedoria.'),
+(33, 'Familiar Ofídico', 'Você recebe um familiar cobra (veja a página 38) que não conta em seu limite de parceiros.'),
+(34, 'Farsa do Fingidor', 'Você aprende e pode lançar Criar Ilusão. Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(35, 'Fé Guerreira', 'Você pode usar Sabedoria para Guerra (em vez de Inteligência). Além disso, em combate, pode gastar 2 PM para substituir um teste de perícia (exceto testes de ataque) por um teste de Guerra.'),
+(36, 'Forma de Macaco', 'Você pode gastar uma ação completa e 2 PM para transformar-se em um macaco. Você adquire tamanho Mínusculo (o que fornece +5 em Furtividade e –5 em testes de manobra) e recebe deslocamento de escalar 9m. Seus equipamentos desaparecem (você perde seus benefícios) e você volta ao normal se suas estatísticas não são alteradas. A transformação dura indefinidamente, mas termina caso você faça um ataque, lance uma magia ou sofra dano.'),
+(37, 'Fulgor Solar', 'Você recebe redução de frio e trevas 5. Além disso, quando é alvo de um ataque, pode gastar 1 PM para emitir um clarão solar que deixa o atacante ofuscado por uma rodada.'),
+(38, 'Fúria Divina', 'Você pode gastar 2 PM para invocar uma fúria selvagem, tornando-se temível em combate. Até o fim da cena, você recebe +2 em testes de ataque e rolagens de dano corpo a corpo, mas não pode executar nenhuma ação que exija paciência ou concentração (como usar a perícia Furtividade ou lançar magias).'),
+(39, 'Golpista Divino', 'Você recebe +2 em Enganação, Jogatina e Ladinagem.'),
+(40, 'Habitante do Deserto', 'Você recebe redução de fogo 10 e pode pagar 1 PM para criar água pura e potável suficiente para um odre (ou outro recipiente pequeno).'),
+(41, 'Inimigo de Tenebra', 'Seus ataques e habilidades causam +1d6 pontos de dano contra mortos-vivos. Quando você usa um efeito que gera luz, o alcance da iluminação dobra.'),
+(42, 'Kiai Divino', 'Uma vez por rodada, quando faz um ataque corpo a corpo, você pode pagar 3 PM. Se acertar o ataque, causa dano máximo, sem necessidade de rolar dados.'),
+(43, 'Liberdade Divina', 'Você pode gastar 2 PM para receber imunidade a efeitos de movimento por uma rodada.'),
+(44, 'Manto da Penumbra', 'Você aprende e pode lançar Escuridão. Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(45, 'Mente Analítica', 'Você recebe +2 em Intuição, Investigação e Vontade.'),
+(46, 'Mente Vazia', 'Você recebe +2 em Iniciativa, Percepção e Vontade.'),
+(47, 'Mestre dos Mares', 'Você pode falar com animais aquáticos (como o efeito da magia Voz Divina) e aprende e pode lançar Acalmar Animal, mas só contra criaturas aquáticas. Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(48, 'Olhar Amedrontador', 'Você aprende e pode lançar Amedrontar. Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(49, 'Palavras de Bondade', 'Você aprende e pode lançar Enfeitiçar. Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(50, 'Percepção Temporal', 'Você pode gastar 3 PM para somar sua Sabedoria (limitado por seu nível e não cumulativo com efeitos que somam este atributo) a seus ataques, Defesa e testes de Reflexos até o fim da cena.'),
+(51, 'Pesquisa Abençoada', 'Se passar uma hora pesquisando seus livros e anotações, você pode rolar novamente um teste de perícia baseada em Inteligência ou Sabedoria que tenha feito desde a última cena. Se tiver acesso a mais livros, você recebe um bônus no teste: +2 para uma coleção particular ou biblioteca pequena e +5 para a biblioteca de um templo ou universidade.'),
+(52, 'Poder Oculto', 'Você pode gastar uma ação de movimento e 2 PM para invocar a força do acaso, e rolar na tabela de Poder Oculto.'),
+(53, 'Presas Primordiais', 'Você pode gastar 1 PM para transformar seus dentes em presas afiadas até o fim da cena. Você recebe uma arma natural de mordida (dano 1d6, crítico x2, perfuração). Uma vez por rodada, quando usa a ação agredir, pode gastar 1 PM para fazer um ataque corpo a corpo extra com a mordida.'),
+(54, 'Presas Venenosas', 'Você pode gastar uma ação de movimento e 1 PM para envenenar uma arma corpo a corpo que esteja empunhando. Em caso de acerto, a arma causa perda de 1d12 pontos de vida. A arma permanece envenenada até atingir uma criatura ou até o fim da cena, o que acontecer primeiro.'),
+(55, 'Rejeição Divina', 'Você recebe resistência a magia divina +5.'),
+(56, 'Reparar Injustiça', 'Uma vez por rodada, quando um oponente em alcance curto acertar um ataque em você ou em um de seus aliados, você pode gastar 2 PM para fazer este oponente repetir o ataque, escolhendo o pior entre os dois resultados.'),
+(57, 'Sangue de Ferro', 'Você pode pagar 3 PM para receber +2 em rolagens de dano e redução de dano 5 até o fim da cena.'),
+(58, 'Sangue Ofídico', 'Você recebe resistência a veneno +5 e a CD para resistir aos seus venenos aumenta em +2.'),
+(59, 'Servos do Dragão', 'Você pode gastar uma ação completa e 2 PM para invocar 2d4+1 kobolds capangas em espaços desocupados em alcance curto.'),
+(60, 'Sopro do Mar', 'Você pode gastar uma ação padrão e 1 PM para soprar vento e chuva em um cone de 6m. Criaturas na área sofrem 2d6 pontos de dano de frio (Reflexos CD Sab reduz à metade). Você pode aprender Sopro das Uivantes como uma magia divina. Se fizer isso, o custo dela diminui em –1 PM.'),
+(61, 'Sorte dos Loucos', 'Você pode pagar 1 PM para rolar novamente um teste recém realizado. Se ainda assim falhar no teste, você perde 1d6 PM.'),
+(62, 'Talento Artístico', 'Você recebe +2 em Acrobacia, Atuação e Diplomacia.'),
+(63, 'Teurgista Místico', 'Até uma magia de cada círculo que você aprender poderá ser escolhida entre magias divinas (se você for um conjurador arcano) ou entre magias arcanas (se for um conjurador divino). Pré-requisito: habilidade de classe Magias.'),
+(64, 'Tradição de Lin-Wu', 'Você considera a katana uma arma simples e, se for proficiente em armas marciais, recebe +1 na margem de ameaça com ela.'),
+(65, 'Transmissão da Loucura', 'Você pode lançar Sussurros Insanos (CD Car). Caso aprenda novamente esta magia, seu custo diminui em –1 PM.'),
+(66, 'Tropas Duyshidakk', 'Você pode gastar uma ação completa e 2 PM para invocar 1d4+1 goblioides capangas em espaços desocupados em alcance curto.'),
+(67, 'Urro Divino', 'Quando faz um ataque ou lança uma magia, você pode pagar 1 PM para somar sua Constituição (mínimo +1) à rolagem de dano desse ataque ou magia.'),
+(68, 'Visão nas Trevas', 'Você enxerga perfeitamente no escuro, incluindo em magias de escuridão.'),
+(69, 'Voz da Civilização', 'Você está sempre sob efeito de Compreensão.'),
+(70, 'Voz da Natureza', 'Você pode falar com animais (como o efeito da magia Voz Divina) e aprende e pode lançar Acalmar Animal, mas só contra animais. Caso aprenda novamente esta magia, seu custo diminai em –1 PM.'),
+(71, 'Voz dos Monstros', 'Você conhece os idiomas de todos os monstros inteligentes e pode se comunicar livremente com monstros não inteligentes (Int –4 ou menor), como se estivesse sob efeito da magia Voz Divina.'),
+(72, 'Zumbificar', 'Você pode gastar uma ação completa e 3 PM para reanimar o cadáver de uma criatura Pequena ou Média adjacente por um dia. O cadáver funciona como um parceiro iniciante de um tipo a sua escolha entre combatente, fortão ou guardião.');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `t20_poderes_gerais`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_poderes_gerais` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(191) NOT NULL,
+  `descricao` text NOT NULL,
+  `categoria` varchar(50) NOT NULL,
+  `pre_requisito` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome_categoria_unique` (`nome`,`categoria`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=68 ;
+
+--
+-- Extraindo dados da tabela `t20_poderes_gerais`
+--
+
+INSERT INTO `t20_poderes_gerais` (`id`, `nome`, `descricao`, `categoria`, `pre_requisito`) VALUES
+(1, 'Acuidade com Arma', 'Quando usa uma arma corpo a corpo leve ou uma arma de arremesso, você pode usar sua Destreza em vez de Força nos testes de ataque e rolagens de dano.', 'Combate', 'Des 1'),
+(2, 'Arma Secundária Grande', 'Você pode empunhar uma arma corpo a corpo de uma mão com sua mão inábil (com o poder Estilo de Duas Armas).', 'Combate', 'Estilo de Duas Armas'),
+(3, 'Arremesso Potente', 'Quando usa uma arma de arremesso, você pode usar sua Força em vez de Destreza nos testes de ataque. Se você possuir o poder Ataque Poderoso, poderá usá-lo com armas de arremesso.', 'Combate', 'For 1, Estilo de Arremesso'),
+(4, 'Arremesso Múltiplo', 'Uma vez por rodada, quando faz um ataque com uma arma de arremesso, você pode gastar 1 PM para fazer um ataque adicional contra o mesmo alvo, arremessando outra arma de arremesso.', 'Combate', 'Des 1, Estilo de Arremesso'),
+(5, 'Ataque com Escudo', 'Uma vez por rodada, se estiver empunhando um escudo e fizer a ação agredir, você pode gastar 1 PM para fazer um ataque corpo a corpo extra com o escudo. Esse ataque não pode ser usado com o bônus do Bloqueio com Escudo na Defesa.', 'Combate', 'Estilo de Arma e Escudo'),
+(6, 'Ataque Pesado', 'Quando faz um ataque corpo a corpo com uma arma de duas mãos, você pode pagar 1 PM. Se fizer isso e acertar o ataque, além do dano você pode fazer uma manobra derrubar ou empurrar contra o alvo como uma ação livre (use o resultado do ataque como o teste de manobra).', 'Combate', 'Estilo de Duas Mãos'),
+(7, 'Ataque Preciso', 'Se estiver empunhando uma arma corpo a corpo em uma das mãos e nada na outra, você recebe +2 na margem de ameaça e +1 no multiplicador de crítico.', 'Combate', 'Estilo de Uma Arma'),
+(8, 'Bloqueio com Escudo', 'Quando sofre dano, você pode gastar 1 PM para receber redução de dano igual ao bônus na Defesa que seu escudo fornece contra este dano. Você só pode usar este poder se estiver usando um escudo.', 'Combate', 'Estilo de Arma e Escudo'),
+(9, 'Carga de Cavalaria', 'Quando faz uma investida montada, você causa +2d8 pontos de dano. Além disso, pode continuar se movendo depois do ataque, desde que se mova em linha reta e seu movimento máximo ainda seja o dobro do seu deslocamento.', 'Combate', 'Ginete'),
+(10, 'Combate Defensivo', 'Quando usa a ação agredir, você pode usar este poder. Se fizer isso, até seu próximo turno, sofre –2 em todos os testes de ataque, mas recebe +5 na Defesa.', 'Combate', 'Int 1'),
+(11, 'Derrubar Aprimorado', 'Você recebe +2 em testes de ataque para derrubar. Quando derruba uma criatura com esta manobra, pode gastar 1 PM para fazer um ataque extra contra ela.', 'Combate', NULL),
+(12, 'Desarmar Aprimorado', 'Você recebe +2 em testes de ataque para desarmar. Quando desarma uma criatura, pode gastar 1 PM para arremessar a arma dela para longe.', 'Combate', 'Combate Defensivo'),
+(13, 'Disparo Preciso', 'Você pode fazer ataques à distância contra oponentes envolvidos em combate corpo a corpo sem sofrer a penalidade de –5 no teste de ataque.', 'Combate', 'Estilo de Disparo ou Estilo de Arremesso'),
+(14, 'Disparo Rápido', 'Se estiver empunhando uma arma de disparo que possa recarregar como ação livre e gastar uma ação completa para agredir, pode fazer um ataque adicional com ela. Se fizer isso, sofre –2 em todos os testes de ataque até o seu próximo turno.', 'Combate', 'Estilo de Disparo'),
+(15, 'Empunhadura Poderosa', 'Ao usar uma arma feita para uma categoria de tamanho maior que a sua, a penalidade que você sofre nos testes de ataque diminui para –2 (normalmente, –5).', 'Combate', 'For 3'),
+(16, 'Encouraçado', 'Se estiver usando uma armadura pesada, você recebe +2 na Defesa. Este bônus aumenta em +2 para cada outro poder que você possua que tenha Encouraçado como pré-requisito.', 'Combate', 'Proficiência com armaduras pesadas'),
+(17, 'Esquiva', 'Você recebe +2 na Defesa e Reflexos.', 'Combate', 'Des 1'),
+(18, 'Estilo de Arma e Escudo', 'Se estiver usando um escudo, o bônus na Defesa que ele fornece aumenta em +2.', 'Combate', 'Treinado em Luta, proficiência com escudos'),
+(19, 'Estilo de Arma Longa', 'Você recebe +2 em testes de ataque com armas alongadas e pode atacar alvos adjacentes com essas armas.', 'Combate', 'For 1, treinado em Luta'),
+(20, 'Estilo de Arremesso', 'Você pode sacar armas de arremesso como uma ação livre e recebe +2 nas rolagens de dano com elas. Se também possuir o poder Saque Rápido, também recebe +2 nos testes de ataque com essas armas.', 'Combate', 'Treinado em Pontaria'),
+(21, 'Estilo de Disparo', 'Se estiver usando uma arma de disparo, você soma sua Destreza nas rolagens de dano.', 'Combate', 'Treinado em Pontaria'),
+(22, 'Estilo de Duas Armas', 'Se estiver empunhando duas armas (e pelo menos uma delas for leve) e fizer a ação agredir, você pode fazer dois ataques, um com cada arma. Se fizer isso, sofre –2 em todos os testes de ataque até o seu próximo turno. Se possuir Ambidestria, em vez disso não sofre penalidade para usá-lo.', 'Combate', 'Des 2, treinado em Luta'),
+(23, 'Estilo de Duas Mãos', 'Se estiver usando uma arma corpo a corpo com as duas mãos, você recebe +5 nas rolagens de dano. Este poder não pode ser usado com armas leves.', 'Combate', 'For 2, Treinado em Luta'),
+(24, 'Estilo de Uma Arma', 'Se estiver usando uma arma corpo a corpo em uma das mãos e nada na outra, você recebe +2 na Defesa e nos testes de ataque com essa arma (exceto ataques desarmados).', 'Combate', 'Treinado em Luta'),
+(25, 'Estilo Desarmado', 'Seus ataques desarmados causam 1d6 pontos de dano e podem causar dano letal ou não letal (sem penalidades).', 'Combate', 'Treinado em Luta'),
+(26, 'Fanático', 'Seu deslocamento não é reduzido por usar armaduras pesadas.', 'Combate', '12º nível de personagem, Encouraçado'),
+(27, 'Finta Aprimorada', 'Você recebe +2 em testes de Enganação para fintar e pode fintar como uma ação de movimento.', 'Combate', 'Treinado em Enganação'),
+(28, 'Foco em Arma', 'Escolha uma arma. Você recebe +2 em testes de ataque com essa arma. Você pode escolher este poder outras vezes para armas diferentes.', 'Combate', 'Proficiência com a arma'),
+(29, 'Ginete', 'Você passa automaticamente em testes de Cavalgar para não cair da montaria quando sofre dano. Além disso, não sofre penalidades para atacar à distância ou lançar magias quando montado.', 'Combate', 'Treinado em Cavalgar'),
+(30, 'Inexpugnável', 'Se estiver usando uma armadura pesada, você recebe +2 em todos os testes de resistência.', 'Combate', 'Encouraçado, 6º nível de personagem'),
+(31, 'Mira Apurada', 'Quando usa a ação mirar, você recebe +2 em testes de ataque e na margem de ameaça com ataques à distância até o fim do turno.', 'Combate', 'Sab 1, Disparo Preciso'),
+(32, 'Piqueiro', 'Uma vez por rodada, se estiver empunhando uma arma alongada e um inimigo entrar voluntariamente em seu alcance corpo a corpo, você pode gastar 1 PM para fazer um ataque corpo a corpo contra este oponente com esta arma. Se o oponente tiver se aproximado fazendo uma investida, seu ataque causa dois dados de dano extra do mesmo tipo.', 'Combate', 'Estilo de Arma Longa'),
+(33, 'Presença Aterradora', 'Você pode gastar uma ação padrão e 1 PM para assustar todas as criaturas a sua escolha em alcance curto. Veja a perícia Intimidação para as regras de assustar.', 'Combate', NULL),
+(34, 'Proficiência', 'Escolha uma proficiência: armas marciais, armas de fogo, armaduras pesadas ou escudos (se for proficiente em armas marciais, você também pode escolher armas exóticas). Você recebe essa proficiência.', 'Combate', NULL),
+(35, 'Quebrar Aprimorado', 'Você recebe +2 em testes de ataque para quebrar. Quando reduz os PV de uma arma para 0 ou menos, você pode gastar 1 PM para realizar um ataque extra contra o usuário dela. O ataque adicional usa os mesmos valores de ataque e dano, mas os dados devem ser rolados novamente.', 'Combate', 'Ataque Poderoso'),
+(36, 'Reflexos de Combate', 'Você ganha uma ação de movimento extra no seu primeiro turno de cada combate.', 'Combate', 'Des 1'),
+(37, 'Saque Rápido', 'Você recebe +2 em Iniciativa e pode sacar ou guardar itens como uma ação livre (em vez de ação de movimento). Além disso, a ação para recarregar armas de disparo diminui em uma categoria.', 'Combate', 'Treinado em Iniciativa'),
+(38, 'Trespassar', 'Quando você faz um ataque corpo a corpo e reduz os pontos de vida do alvo para 0 ou menos, pode gastar 1 PM para fazer um ataque adicional contra outra criatura dentro do seu alcance.', 'Combate', 'Ataque Poderoso'),
+(39, 'Vitalidade', 'Você recebe +1 PV por nível de personagem e +2 em Fortitude.', 'Combate', 'Con 1'),
+(40, 'Acrobático', 'Você pode usar sua Destreza em vez de Força em testes de Atletismo. Além disso, terreno difícil não reduz seu deslocamento nem o impede de realizar investidas.', 'Destino', 'Des 2'),
+(41, 'Ao Sabor do Destino', 'Confiando em suas próprias habilidades (ou em sua própria sorte), você abre mão de usar itens mágicos. Sua autoconfiança fornece diversos benefícios, de acordo com seu nível de personagem (6º: +2 perícia, 7º: +1 Defesa, 8º: +1 dano, 9º: +1 atributo, 11º: +2 perícia, 12º: +2 Defesa, 13º: +2 rolagens de dano, 14º: +1 atributo, 16º: +2 perícia, 17º: +2 Defesa, 18º: +3 rolagens de dano, 19º: +1 atributo). Você não pode usar itens mágicos (exceto poções), perde o benefício deste poder até o fim da aventura. Você ainda pode lançar magias, receber magias benéficas ou se beneficiar de itens usados por outros. Pré-requisito: Nível 6º.', 'Destino', 'Nível 6º'),
+(42, 'Aparência Inofensiva', 'A dificuldade para resistir aos seus testes de Enganação aumenta em +2.', 'Destino', 'Car 1'),
+(43, 'Atlético', 'Você recebe +2 em Atletismo e +3m em seu deslocamento.', 'Destino', 'For 2'),
+(44, 'Atraente', 'Você recebe +2 em testes de perícias baseadas em Carisma contra criaturas que possam se sentir fisicamente atraídas por você.', 'Destino', 'Car 1'),
+(45, 'Comandar', 'Você pode gastar uma ação de movimento e 1 PM para gritar ordens para seus aliados em alcance médio. Eles recebem +1 em testes de perícia até o fim da cena.', 'Destino', 'Car 1'),
+(46, 'Costas Largas', 'Seu limite de carga aumenta em 5 espaços e você pode se beneficiar de um item vestido adicional.', 'Destino', 'Con 1, For 1'),
+(47, 'Foco em Perícia', 'Escolha uma perícia. Quando faz um teste dessa perícia, você pode gastar 1 PM para rolar dois dados e usar o melhor resultado. Você pode escolher este poder outras vezes para perícias diferentes. Este poder não pode ser aplicado em Luta e Pontaria (mas veja Foco em Arma).', 'Destino', 'Treinado na perícia escolhida'),
+(48, 'Inventário Organizado', 'Você soma sua Inteligência no limite de espaços que pode carregar. Para você, itens muito leves ou pequenos como moedas/documentos ocupam meio espaço, em vez de 1/4.', 'Destino', 'Int 1'),
+(49, 'Investigador', 'Você recebe +2 em Investigação e soma sua Inteligência em Intuição.', 'Destino', 'Int 1'),
+(50, 'Lobo Solitário', 'Você recebe +1 em testes de perícia e Defesa se estiver sem nenhum aliado em alcance curto. Você não sofre penalidade por usar Cura em si mesmo.', 'Destino', NULL),
+(51, 'Medicina', 'Você pode gastar 1 PM para fazer um teste de Cura (CD 15) em uma criatura. Se você passar, ela recupera 1d6 PV, mais 1d6 para cada 5 pontos pelos quais o resultado do teste exceder a CD (2d6 com um resultado 20, 3d6 com um resultado 25 e assim por diante). Você só pode usar este poder uma vez por dia na mesma criatura.', 'Destino', 'Sab 1, treinado em Cura'),
+(52, 'Parceiro', 'Você possui um parceiro animal ou humanoide que o acompanha em aventuras. Escolha os detalhes dele, como nome, aparência e personalidade. Em termos de jogo, é um parceiro iniciante de um tipo a sua escolha (veja a página 260).', 'Destino', 'Treinado em Adestramento (parceiro animal) ou Diplomacia (parceiro humanoide), 5º nível de personagem'),
+(53, 'Sentidos Aguçados', 'Você recebe +2 em Percepção, não fica desprevenido contra inimigos que não possa ver e, sempre que erra um ataque devido a camuflagem, pode rolar mais uma vez o dado da chance de falha.', 'Destino', 'Sab 1, treinado em Percepção'),
+(54, 'Sortudo', 'Você pode gastar 3 PM para rolar novamente um teste recém realizado (apenas uma vez por teste).', 'Destino', NULL),
+(55, 'Surto Heroico', 'Uma vez por rodada, você pode gastar 5 PM para realizar uma ação padrão ou de movimento adicional.', 'Destino', NULL),
+(56, 'Torcida', 'Você recebe +2 em testes de perícia e Defesa quando tem a torcida a seu favor (entenda-se por “torcida” qualquer número de criaturas inteligentes em alcance médio que não esteja realizando nenhuma ação além de torcer por você).', 'Destino', 'Car 1'),
+(57, 'Treinamento em Perícia', 'Você se torna treinado em uma perícia a sua escolha. Você pode escolher este poder outras vezes para perícias diferentes.', 'Destino', NULL),
+(58, 'Venefício', 'Quando usa um veneno, você não corre risco de se envenenar acidentalmente. Além disso, a CD para resistir aos seus venenos aumenta em +2.', 'Destino', 'Treinado em Ofício (alquimista)'),
+(59, 'Vontade de Ferro', 'Você recebe +1 PM para cada dois níveis de personagem e +2 em Vontade.', 'Destino', 'Sab 1'),
+(60, 'Celebrar Ritual', 'Você pode lançar magias como rituais. Isso dobra seu limite de PM, mas muda a execução para 1 hora (ou o dobro, o que for maior) e exige um gasto de T$ 10 por PM gastos (em incensos, oferendas...).', 'Magia', 'Misticismo ou Religião, 8º nível de personagem'),
+(61, 'Escrever Pergaminho', 'Você pode usar a perícia Ofício (escriba) para fabricar pergaminhos com magias que conheça. Veja a página 121 para a regra de fabricar itens e as páginas 333 e 341 para as regras de pergaminhos.', 'Magia', 'Habilidade de classe Magias, treinado em Ofício (escriba)'),
+(62, 'Foco em Magia', 'Escolha uma magia que possa lançar. Seu custo diminui em –1 PM (cumulativo com outras reduções de custo). Você pode escolher este poder outras vezes para magias diferentes.', 'Magia', NULL),
+(63, 'Magia Acelerada', 'Muda a execução da magia para ação livre. Você só pode aplicar este aprimoramento em magias com execução de movimento, padrão ou completa e só pode lançar uma magia como ação livre por rodada.', 'Magia', 'Aprimoramento. Custo: +4 PM. Pré-requisito: lançar magias de 2º círculo.'),
+(64, 'Magia Ampliada', 'Aumenta o alcance da magia em um passo (de curto para médio, de médio para longo) ou dobra a área de efeito da magia.', 'Magia', 'Aprimoramento. Custo: +2 PM.'),
+(65, 'Magia Discreta', 'Você pode lançar a magia sem gesticular e falar, usando apenas concentração. Isso permite lançar magias com as mãos presas, amordaçado etc. Também permite lançar magias arcanas usando armadura sem teste de Misticismo. Outros personagens só percebem que você lançou uma magia se passarem num teste de Misticismo (CD 20).', 'Magia', 'Aprimoramento. Custo: +2 PM.'),
+(66, 'Magia Ilimitada', 'Você pode somar seu atributo-chave no limite de PM que pode gastar numa magia. Por exemplo, um arcanista de 5º nível com Int 4 e este poder pode gastar até 9 PM em cada magia.', 'Magia', NULL),
+(67, 'Preparar Poção', 'Você pode usar a perícia Ofício (alquimista) para fabricar poções com magias que conheça de 1º e 2º círculos. Veja a página 121 para a regra de fabricar itens e as páginas 333 e 341 para as regras de poções.', 'Magia', 'Habilidade de classe Magias, treinado em Ofício (alquimista)');
 
 -- --------------------------------------------------------
 
@@ -869,6 +1330,12 @@ ALTER TABLE `pericias`
   ADD CONSTRAINT `fk_pericia_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE;
 
 --
+-- Limitadores para a tabela `personagem_t20_poderes`
+--
+ALTER TABLE `personagem_t20_poderes`
+  ADD CONSTRAINT `fk_personagem_poder_t20` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_t20` (`id`) ON DELETE CASCADE;
+
+--
 -- Limitadores para a tabela `personagens_op`
 --
 ALTER TABLE `personagens_op`
@@ -900,6 +1367,25 @@ ALTER TABLE `poderes_classe`
 --
 ALTER TABLE `poderes_trilha`
   ADD CONSTRAINT `poderes_trilha_ibfk_1` FOREIGN KEY (`trilha_id`) REFERENCES `trilhas` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `t20_divindade_poderes`
+--
+ALTER TABLE `t20_divindade_poderes`
+  ADD CONSTRAINT `fk_divindade_link` FOREIGN KEY (`divindade_id`) REFERENCES `t20_divindades` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_poder_divino_link` FOREIGN KEY (`poder_divino_id`) REFERENCES `t20_poderes_divinos` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `t20_habilidades_classe_auto`
+--
+ALTER TABLE `t20_habilidades_classe_auto`
+  ADD CONSTRAINT `fk_habilidade_da_classe` FOREIGN KEY (`classe_id`) REFERENCES `t20_classes` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `t20_poderes_classe`
+--
+ALTER TABLE `t20_poderes_classe`
+  ADD CONSTRAINT `fk_poder_da_classe` FOREIGN KEY (`classe_id`) REFERENCES `t20_classes` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `trilhas`
