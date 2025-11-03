@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 03-Nov-2025 às 13:13
+-- Data de Criação: 03-Nov-2025 às 14:41
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `historias` (
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `inventario_op` (
 
 CREATE TABLE IF NOT EXISTS `itens_op` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `nome` varchar(255) NOT NULL,
   `tipo_item_id` int(11) NOT NULL COMMENT '1: Arma, 2: Proteção, 3: Geral, 4: Amaldiçoado',
   `categoria` int(11) NOT NULL DEFAULT '0' COMMENT 'O número romano da categoria (I, II, III, IV)',
@@ -101,91 +102,92 @@ CREATE TABLE IF NOT EXISTS `itens_op` (
   `alcance` varchar(50) DEFAULT NULL,
   `tipo_dano` varchar(20) DEFAULT NULL,
   `defesa_bonus` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=78 ;
+  PRIMARY KEY (`id`),
+  KEY `idx_user_item_op` (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=79 ;
 
 --
 -- Extraindo dados da tabela `itens_op`
 --
 
-INSERT INTO `itens_op` (`id`, `nome`, `tipo_item_id`, `categoria`, `espacos`, `descricao`, `dano`, `critico`, `alcance`, `tipo_dano`, `defesa_bonus`) VALUES
-(1, 'Coronhada', 1, 0, 1, NULL, '1d4/1d6', 'x2', '-', 'I', NULL),
-(2, 'Faca', 1, 0, 1, NULL, '1d4', '19', 'Curto', 'C', NULL),
-(3, 'Martelo', 1, 0, 1, NULL, '1d6', 'x2', '-', 'I', NULL),
-(4, 'Punhal', 1, 0, 1, NULL, '1d4', 'x3', '-', 'P', NULL),
-(5, 'Bastão', 1, 0, 1, NULL, '1d6/1d8', 'x2', '-', 'I', NULL),
-(6, 'Machete', 1, 0, 1, NULL, '1d6', '19', '-', 'C', NULL),
-(7, 'Lança', 1, 0, 1, NULL, '1d6', 'x2', 'Curto', 'P', NULL),
-(8, 'Cajado', 1, 0, 2, NULL, '1d6/1d6', 'x2', '-', 'I', NULL),
-(9, 'Arco', 1, 0, 2, NULL, '1d6', 'x3', 'Médio', 'P', NULL),
-(10, 'Flechas', 1, 0, 1, NULL, '-', '-', '-', '-', NULL),
-(11, 'Besta', 1, 0, 2, NULL, '1d8', '19', 'Médio', 'P', NULL),
-(12, 'Pistola', 1, 1, 1, NULL, '1d12', '18', 'Curto', 'B', NULL),
-(13, 'Balas Curtas', 1, 0, 1, NULL, '-', '-', '-', '-', NULL),
-(14, 'Revólver', 1, 1, 1, NULL, '2d6', '19/x3', 'Curto', 'B', NULL),
-(15, 'Fuzil de Caça', 1, 1, 2, NULL, '2d8', '19/x3', 'Médio', 'B', NULL),
-(16, 'Balas Longas', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
-(17, 'Machadinha', 1, 0, 1, NULL, '1d6', 'x3', 'Curto', 'C', NULL),
-(18, 'Nunchaku', 1, 0, 1, NULL, '1d8', 'x2', '-', 'I', NULL),
-(19, 'Corrente', 1, 0, 1, NULL, '1d8', 'x2', '-', 'I', NULL),
-(20, 'Espada', 1, 1, 1, NULL, '1d8/1d10', '19', '-', 'C', NULL),
-(21, 'Florete', 1, 1, 1, NULL, '1d6', '18', '-', 'C', NULL),
-(22, 'Machado', 1, 1, 1, NULL, '1d8', 'x3', '-', 'C', NULL),
-(23, 'Maça', 1, 1, 1, NULL, '2d4', 'x2', '-', 'I', NULL),
-(24, 'Acha', 1, 1, 2, NULL, '1d12', 'x3', '-', 'C', NULL),
-(25, 'Gadanho', 1, 1, 2, NULL, '2d4', 'x4', '-', 'C', NULL),
-(26, 'Katana', 1, 1, 2, NULL, '1d10', '19', '-', 'C', NULL),
-(27, 'Marreta', 1, 1, 2, NULL, '3d4', 'x2', '-', 'I', NULL),
-(28, 'Montante', 1, 1, 2, NULL, '2d6', '19', '-', 'C', NULL),
-(29, 'Motosserra', 1, 1, 2, NULL, '3d6', 'x2', '-', 'C', NULL),
-(30, 'Arco Composto', 1, 1, 2, NULL, '1d10', 'x3', 'Médio', 'P', NULL),
-(31, 'Balestra', 1, 1, 2, NULL, '1d12', '19', 'Médio', 'P', NULL),
-(32, 'Submetralhadora', 1, 1, 1, NULL, '2d6', '19/x3', 'Curto', 'B', NULL),
-(33, 'Espingarda', 1, 1, 2, NULL, '4d6', 'x3', 'Curto', 'B', NULL),
-(34, 'Cartuchos', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
-(35, 'Fuzil de Assalto', 1, 2, 2, NULL, '2d10', '19/x3', 'Médio', 'B', NULL),
-(36, 'Fuzil de Precisão', 1, 3, 2, NULL, '2d10', '19/x3', 'Longo', 'B', NULL),
-(37, 'Bazuca', 1, 3, 2, NULL, '10d8', 'x2', 'Médio', 'I', NULL),
-(38, 'Foguete', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
-(39, 'Lança-Chamas', 1, 3, 2, NULL, '6d6', 'x2', 'Curto', 'Fogo', NULL),
-(40, 'Combustível', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
-(41, 'Metralhadora', 1, 2, 2, NULL, '2d12', 'x2', 'Médio', 'B', NULL),
-(42, 'Proteção Leve', 2, 1, 2, NULL, NULL, NULL, NULL, NULL, 5),
-(43, 'Proteção Pesada', 2, 2, 5, NULL, NULL, NULL, NULL, NULL, 10),
-(44, 'Escudo', 2, 1, 2, NULL, NULL, NULL, NULL, NULL, 2),
-(45, 'Kit de perícia', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(46, 'Utensílio', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(47, 'Vestimenta', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(48, 'Granada de atordoamento', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(49, 'Granada de fragmentação', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(50, 'Granada de fumaça', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(51, 'Granada incendiária', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(52, 'Mina antipessoal', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(53, 'Algemas', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(54, 'Arpéu', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(55, 'Bandoleira', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(56, 'Binóculos', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(57, 'Bloqueador de sinal', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(58, 'Cicatrizante', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(59, 'Corda', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(60, 'Equipamento de sobrevivência', 3, 0, 2, NULL, NULL, NULL, NULL, NULL, NULL),
-(61, 'Lanterna tática', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(62, 'Máscara de gás', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(63, 'Mochila militar', 3, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL),
-(64, 'Óculos de visão térmica', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(65, 'Pé de cabra', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(66, 'Pistola de dardos', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(67, 'Pistola sinalizadora', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(68, 'Soqueira', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(69, 'Spray de pimenta', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(70, 'Taser', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(71, 'Traje hazmat', 3, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
-(72, 'Amarras de (elemento)', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(73, 'Câmera de aura paranormal', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(74, 'Componentes ritualísticos de (elemento)', 4, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(75, 'Emissor de pulsos paranormais', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(76, 'Escuta de ruídos paranormais', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
-(77, 'Scanner de manifestação paranormal de (elemento)', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `itens_op` (`id`, `user_id`, `nome`, `tipo_item_id`, `categoria`, `espacos`, `descricao`, `dano`, `critico`, `alcance`, `tipo_dano`, `defesa_bonus`) VALUES
+(1, NULL, 'Coronhada', 1, 0, 1, NULL, '1d4/1d6', 'x2', '-', 'I', NULL),
+(2, NULL, 'Faca', 1, 0, 1, NULL, '1d4', '19', 'Curto', 'C', NULL),
+(3, NULL, 'Martelo', 1, 0, 1, NULL, '1d6', 'x2', '-', 'I', NULL),
+(4, NULL, 'Punhal', 1, 0, 1, NULL, '1d4', 'x3', '-', 'P', NULL),
+(5, NULL, 'Bastão', 1, 0, 1, NULL, '1d6/1d8', 'x2', '-', 'I', NULL),
+(6, NULL, 'Machete', 1, 0, 1, NULL, '1d6', '19', '-', 'C', NULL),
+(7, NULL, 'Lança', 1, 0, 1, NULL, '1d6', 'x2', 'Curto', 'P', NULL),
+(8, NULL, 'Cajado', 1, 0, 2, NULL, '1d6/1d6', 'x2', '-', 'I', NULL),
+(9, NULL, 'Arco', 1, 0, 2, NULL, '1d6', 'x3', 'Médio', 'P', NULL),
+(10, NULL, 'Flechas', 1, 0, 1, NULL, '-', '-', '-', '-', NULL),
+(11, NULL, 'Besta', 1, 0, 2, NULL, '1d8', '19', 'Médio', 'P', NULL),
+(12, NULL, 'Pistola', 1, 1, 1, NULL, '1d12', '18', 'Curto', 'B', NULL),
+(13, NULL, 'Balas Curtas', 1, 0, 1, NULL, '-', '-', '-', '-', NULL),
+(14, NULL, 'Revólver', 1, 1, 1, NULL, '2d6', '19/x3', 'Curto', 'B', NULL),
+(15, NULL, 'Fuzil de Caça', 1, 1, 2, NULL, '2d8', '19/x3', 'Médio', 'B', NULL),
+(16, NULL, 'Balas Longas', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(17, NULL, 'Machadinha', 1, 0, 1, NULL, '1d6', 'x3', 'Curto', 'C', NULL),
+(18, NULL, 'Nunchaku', 1, 0, 1, NULL, '1d8', 'x2', '-', 'I', NULL),
+(19, NULL, 'Corrente', 1, 0, 1, NULL, '1d8', 'x2', '-', 'I', NULL),
+(20, NULL, 'Espada', 1, 1, 1, NULL, '1d8/1d10', '19', '-', 'C', NULL),
+(21, NULL, 'Florete', 1, 1, 1, NULL, '1d6', '18', '-', 'C', NULL),
+(22, NULL, 'Machado', 1, 1, 1, NULL, '1d8', 'x3', '-', 'C', NULL),
+(23, NULL, 'Maça', 1, 1, 1, NULL, '2d4', 'x2', '-', 'I', NULL),
+(24, NULL, 'Acha', 1, 1, 2, NULL, '1d12', 'x3', '-', 'C', NULL),
+(25, NULL, 'Gadanho', 1, 1, 2, NULL, '2d4', 'x4', '-', 'C', NULL),
+(26, NULL, 'Katana', 1, 1, 2, NULL, '1d10', '19', '-', 'C', NULL),
+(27, NULL, 'Marreta', 1, 1, 2, NULL, '3d4', 'x2', '-', 'I', NULL),
+(28, NULL, 'Montante', 1, 1, 2, NULL, '2d6', '19', '-', 'C', NULL),
+(29, NULL, 'Motosserra', 1, 1, 2, NULL, '3d6', 'x2', '-', 'C', NULL),
+(30, NULL, 'Arco Composto', 1, 1, 2, NULL, '1d10', 'x3', 'Médio', 'P', NULL),
+(31, NULL, 'Balestra', 1, 1, 2, NULL, '1d12', '19', 'Médio', 'P', NULL),
+(32, NULL, 'Submetralhadora', 1, 1, 1, NULL, '2d6', '19/x3', 'Curto', 'B', NULL),
+(33, NULL, 'Espingarda', 1, 1, 2, NULL, '4d6', 'x3', 'Curto', 'B', NULL),
+(34, NULL, 'Cartuchos', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(35, NULL, 'Fuzil de Assalto', 1, 2, 2, NULL, '2d10', '19/x3', 'Médio', 'B', NULL),
+(36, NULL, 'Fuzil de Precisão', 1, 3, 2, NULL, '2d10', '19/x3', 'Longo', 'B', NULL),
+(37, NULL, 'Bazuca', 1, 3, 2, NULL, '10d8', 'x2', 'Médio', 'I', NULL),
+(38, NULL, 'Foguete', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(39, NULL, 'Lança-Chamas', 1, 3, 2, NULL, '6d6', 'x2', 'Curto', 'Fogo', NULL),
+(40, NULL, 'Combustível', 1, 1, 1, NULL, '-', '-', '-', '-', NULL),
+(41, NULL, 'Metralhadora', 1, 2, 2, NULL, '2d12', 'x2', 'Médio', 'B', NULL),
+(42, NULL, 'Proteção Leve', 2, 1, 2, NULL, NULL, NULL, NULL, NULL, 5),
+(43, NULL, 'Proteção Pesada', 2, 2, 5, NULL, NULL, NULL, NULL, NULL, 10),
+(44, NULL, 'Escudo', 2, 1, 2, NULL, NULL, NULL, NULL, NULL, 2),
+(45, NULL, 'Kit de perícia', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(46, NULL, 'Utensílio', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(47, NULL, 'Vestimenta', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(48, NULL, 'Granada de atordoamento', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(49, NULL, 'Granada de fragmentação', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(50, NULL, 'Granada de fumaça', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(51, NULL, 'Granada incendiária', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(52, NULL, 'Mina antipessoal', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(53, NULL, 'Algemas', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(54, NULL, 'Arpéu', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(55, NULL, 'Bandoleira', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(56, NULL, 'Binóculos', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(57, NULL, 'Bloqueador de sinal', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(58, NULL, 'Cicatrizante', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(59, NULL, 'Corda', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(60, NULL, 'Equipamento de sobrevivência', 3, 0, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(61, NULL, 'Lanterna tática', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(62, NULL, 'Máscara de gás', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(63, NULL, 'Mochila militar', 3, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL),
+(64, NULL, 'Óculos de visão térmica', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(65, NULL, 'Pé de cabra', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(66, NULL, 'Pistola de dardos', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(67, NULL, 'Pistola sinalizadora', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(68, NULL, 'Soqueira', 3, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(69, NULL, 'Spray de pimenta', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(70, NULL, 'Taser', 3, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(71, NULL, 'Traje hazmat', 3, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL),
+(72, NULL, 'Amarras de (elemento)', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(73, NULL, 'Câmera de aura paranormal', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(74, NULL, 'Componentes ritualísticos de (elemento)', 4, 0, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(75, NULL, 'Emissor de pulsos paranormais', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(76, NULL, 'Escuta de ruídos paranormais', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(77, NULL, 'Scanner de manifestação paranormal de (elemento)', 4, 2, 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -959,6 +961,7 @@ INSERT INTO `t20_habilidades_classe_auto` (`id`, `classe_id`, `nivel_obtido`, `n
 
 CREATE TABLE IF NOT EXISTS `t20_itens` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `nome` varchar(191) NOT NULL,
   `tipo` varchar(50) NOT NULL,
   `preco` varchar(50) DEFAULT NULL,
@@ -972,29 +975,31 @@ CREATE TABLE IF NOT EXISTS `t20_itens` (
   `penalidade_armadura` int(11) DEFAULT NULL,
   `descricao` text,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `nome_item_unique` (`nome`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=16 ;
+  UNIQUE KEY `nome_item_unique` (`nome`),
+  KEY `idx_user_item_t20` (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=17 ;
 
 --
 -- Extraindo dados da tabela `t20_itens`
 --
 
-INSERT INTO `t20_itens` (`id`, `nome`, `tipo`, `preco`, `espacos`, `bonus_carga`, `dano`, `critico`, `alcance`, `tipo_dano`, `bonus_defesa`, `penalidade_armadura`, `descricao`) VALUES
-(1, 'Espada Curta', 'Arma', 'T$ 10', 1, 0, '1d6', '19', NULL, 'Perfuração/Corte', NULL, NULL, 'Uma arma leve e ágil.'),
-(2, 'Espada Longa', 'Arma', 'T$ 15', 2, 0, '1d8', '19', NULL, 'Corte', NULL, NULL, 'Uma arma marcial versátil.'),
-(3, 'Machado de Batalha', 'Arma', 'T$ 20', 2, 0, '1d10', 'x3', NULL, 'Corte', NULL, NULL, 'Uma arma marcial de duas mãos.'),
-(4, 'Arco Curto', 'Arma', 'T$ 25', 2, 0, '1d6', 'x3', 'Médio', 'Perfuração', NULL, NULL, 'Um arco simples para disparos rápidos.'),
-(5, 'Besta Leve', 'Arma', 'T$ 35', 2, 0, '1d8', '19', 'Médio', 'Perfuração', NULL, NULL, 'Uma arma de disparo que não exige Força.'),
-(6, 'Armadura de Couro', 'Armadura', 'T$ 20', 2, 0, NULL, NULL, NULL, NULL, 2, -1, 'Armadura leve feita de couro fervido.'),
-(7, 'Brunea', 'Armadura', 'T$ 50', 3, 0, NULL, NULL, NULL, NULL, 3, -2, 'Armadura leve de couro com anéis de metal.'),
-(8, 'Cota de Malha', 'Armadura', 'T$ 150', 4, 0, NULL, NULL, NULL, NULL, 5, -3, 'Armadura pesada feita de anéis de metal entrelaçados.'),
-(9, 'Escudo Leve', 'Escudo', 'T$ 5', 1, 0, '1d4', 'x2', NULL, 'Impacto', 1, -1, 'Um escudo leve de madeira.'),
-(10, 'Escudo Pesado', 'Escudo', 'T$ 15', 2, 0, '1d6', 'x2', NULL, 'Impacto', 2, -2, 'Um escudo pesado de madeira e metal.'),
-(11, 'Mochila', 'Item Geral', 'T$ 2', 0, 5, NULL, NULL, NULL, NULL, NULL, NULL, 'Aumenta seu limite de carga (espaços) em +5. (Bônus não cumulativo)'),
-(12, 'Corda', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, '15m de corda de cânhamo.'),
-(13, 'Poção de Vida', 'Item Geral', 'T$ 50', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Beber esta poção cura 2d4+2 PV.'),
-(14, 'Kit de Ladrão', 'Item Geral', 'T$ 50', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Concede +2 em testes de Ladinagem.'),
-(15, 'Saco de Dormir', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Permite dormir confortavelmente.');
+INSERT INTO `t20_itens` (`id`, `user_id`, `nome`, `tipo`, `preco`, `espacos`, `bonus_carga`, `dano`, `critico`, `alcance`, `tipo_dano`, `bonus_defesa`, `penalidade_armadura`, `descricao`) VALUES
+(1, NULL, 'Espada Curta', 'Arma', 'T$ 10', 1, 0, '1d6', '19', NULL, 'Perfuração/Corte', NULL, NULL, 'Uma arma leve e ágil.'),
+(2, NULL, 'Espada Longa', 'Arma', 'T$ 15', 2, 0, '1d8', '19', NULL, 'Corte', NULL, NULL, 'Uma arma marcial versátil.'),
+(3, NULL, 'Machado de Batalha', 'Arma', 'T$ 20', 2, 0, '1d10', 'x3', NULL, 'Corte', NULL, NULL, 'Uma arma marcial de duas mãos.'),
+(4, NULL, 'Arco Curto', 'Arma', 'T$ 25', 2, 0, '1d6', 'x3', 'Médio', 'Perfuração', NULL, NULL, 'Um arco simples para disparos rápidos.'),
+(5, NULL, 'Besta Leve', 'Arma', 'T$ 35', 2, 0, '1d8', '19', 'Médio', 'Perfuração', NULL, NULL, 'Uma arma de disparo que não exige Força.'),
+(6, NULL, 'Armadura de Couro', 'Armadura', 'T$ 20', 2, 0, NULL, NULL, NULL, NULL, 2, -1, 'Armadura leve feita de couro fervido.'),
+(7, NULL, 'Brunea', 'Armadura', 'T$ 50', 3, 0, NULL, NULL, NULL, NULL, 3, -2, 'Armadura leve de couro com anéis de metal.'),
+(8, NULL, 'Cota de Malha', 'Armadura', 'T$ 150', 4, 0, NULL, NULL, NULL, NULL, 5, -3, 'Armadura pesada feita de anéis de metal entrelaçados.'),
+(9, NULL, 'Escudo Leve', 'Escudo', 'T$ 5', 1, 0, '1d4', 'x2', NULL, 'Impacto', 1, -1, 'Um escudo leve de madeira.'),
+(10, NULL, 'Escudo Pesado', 'Escudo', 'T$ 15', 2, 0, '1d6', 'x2', NULL, 'Impacto', 2, -2, 'Um escudo pesado de madeira e metal.'),
+(11, NULL, 'Mochila', 'Item Geral', 'T$ 2', 0, 5, NULL, NULL, NULL, NULL, NULL, NULL, 'Aumenta seu limite de carga (espaços) em +5. (Bônus não cumulativo)'),
+(12, NULL, 'Corda', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, '15m de corda de cânhamo.'),
+(13, NULL, 'Poção de Vida', 'Item Geral', 'T$ 50', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Beber esta poção cura 2d4+2 PV.'),
+(14, NULL, 'Kit de Ladrão', 'Item Geral', 'T$ 50', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Concede +2 em testes de Ladinagem.'),
+(15, NULL, 'Saco de Dormir', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Permite dormir confortavelmente.'),
+(16, 1, 'xesquebresque', 'Item Geral', 'T$ 10', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'skasng');
 
 -- --------------------------------------------------------
 

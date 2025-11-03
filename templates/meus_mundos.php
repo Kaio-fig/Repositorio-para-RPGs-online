@@ -15,16 +15,25 @@ if (isset($_GET['excluir'])) {
     $mundo_id = intval($_GET['excluir']);
     $user_id = $_SESSION['user_id'];
 
-    // Verifica se o mundo pertence ao usuário antes de deletar
-    $stmt_check = $conn->prepare("SELECT id FROM mundos WHERE id = ? AND user_id = ?");
+    // Verifica se o mundo pertence ao usuário antes de deletar E pega o nome da imagem
+    $stmt_check = $conn->prepare("SELECT id, imagem_mundo FROM mundos WHERE id = ? AND user_id = ?");
     $stmt_check->bind_param("ii", $mundo_id, $user_id);
     $stmt_check->execute();
     $result_check = $stmt_check->get_result();
 
     if ($result_check->num_rows > 0) {
+        $mundo = $result_check->fetch_assoc();
+        
+        // Deleta o registro do banco
         $stmt_delete = $conn->prepare("DELETE FROM mundos WHERE id = ?");
         $stmt_delete->bind_param("i", $mundo_id);
         $stmt_delete->execute();
+        
+        // Deleta a imagem associada (se não for a padrão)
+        if ($mundo['imagem_mundo'] != 'default_mundo.jpg' && file_exists("../uploads/" . $mundo['imagem_mundo'])) {
+            unlink("../uploads/" . $mundo['imagem_mundo']);
+        }
+        
         header('Location: meus_mundos.php?excluido=1');
         exit;
     }
@@ -98,6 +107,7 @@ $mundos = $result->fetch_all(MYSQLI_ASSOC);
             font-size: 4rem;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
+            overflow: hidden; /* Adicionado */
         }
         .mundo-imagem img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -112,7 +122,17 @@ $mundos = $result->fetch_all(MYSQLI_ASSOC);
             color: #6c757d;
             margin-bottom: 15px;
         }
-        .mundo-info .descricao { font-size: 1rem; color: #333; line-height: 1.6; }
+        .mundo-info .descricao { 
+            font-size: 1rem; 
+            color: #333; 
+            line-height: 1.6;
+            /* Limita a sinopse para não quebrar o card */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4; /* Mostra no máximo 4 linhas */
+            -webkit-box-orient: vertical;
+        }
 
         .mundo-footer {
             padding: 15px 20px;
@@ -133,12 +153,19 @@ $mundos = $result->fetch_all(MYSQLI_ASSOC);
             <p>Gerencie seus universos e cenários de campanha</p>
         </header>
 
-        <?php if (isset($_GET['excluido'])): ?>
-            <div class="alert alert-success">Mundo excluído com sucesso!</div>
+        <?php if (isset($_GET['excluido']) || isset($_GET['salvo'])): ?>
+            <div class="alert alert-success">
+                <?php 
+                    if (isset($_GET['excluido'])) echo "Mundo excluído com sucesso!";
+                    if (isset($_GET['salvo'])) echo "Mundo salvo com sucesso!";
+                ?>
+            </div>
         <?php endif; ?>
 
         <div style="text-align: center; margin-bottom: 30px;">
-            <a href="novo_mundo.php" class="btn btn-primary"><i class="fas fa-plus"></i> Criar Novo Mundo</a>
+            <!-- *** CORREÇÃO AQUI *** -->
+            <!-- Link corrigido de 'novo_mundo.php' para 'ficha_mundo.php?id=0' -->
+            <a href="novo_mundo.php?id=0" class="btn btn-primary"><i class="fas fa-plus"></i> Criar Novo Mundo</a>
             <a href="dashboard.php" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
         </div>
 
@@ -147,20 +174,43 @@ $mundos = $result->fetch_all(MYSQLI_ASSOC);
                 <?php foreach ($mundos as $mundo): ?>
                     <div class="mundo-card">
                         <div class="mundo-imagem">
-                            <?php if ($mundo['imagem_mundo'] && $mundo['imagem_mundo'] != 'default_mundo.jpg'): ?>
-                                <img src="../uploads/<?= htmlspecialchars($mundo['imagem_mundo']) ?>" alt="Imagem do Mundo">
+                            <?php if ($mundo['imagem_mundo'] && $mundo['imagem_mundo'] != 'default_mundo.jpg' && file_exists("../uploads/" . $mundo['imagem_mundo'])): ?>
+                                <img src="../uploads/<?php echo htmlspecialchars($mundo['imagem_mundo']); ?>" alt="Imagem do Mundo">
                             <?php else: ?>
-                                <i class="fas fa-map-marked-alt"></i>
+                                <i class="fas fa-globe-americas"></i> <!-- Ícone atualizado -->
                             <?php endif; ?>
                         </div>
                         <div class="mundo-info">
-                            <h3><?= htmlspecialchars($mundo['nome']) ?></h3>
-                            <p class="sistema"><?= htmlspecialchars($mundo['sistema_jogo']) ?></p>
-                            <p class="descricao"><?= htmlspecialchars($mundo['descricao']) ?></p>
+                            <h3><?php echo htmlspecialchars($mundo['nome']); ?></h3>
+                            <p class="sistema"><?php echo htmlspecialchars($mundo['sistema_jogo']); ?></p>
+                            
+                            <!-- *** CORREÇÃO AQUI *** -->
+                            <!-- Decodifica o JSON da 'descricao' para exibir um resumo -->
+                            <div class="descricao">
+                                <?php
+                                    $descricao_texto = "Este mundo ainda não tem seções.";
+                                    if (!empty($mundo['descricao'])) {
+                                        $blocos = json_decode($mundo['descricao'], true);
+                                        if (is_array($blocos) && count($blocos) > 0) {
+                                            $descricao_texto = "<strong>Contém " . count($blocos) . " seções.</strong><br>";
+                                            if (!empty($blocos[0]['texto'])) {
+                                                $descricao_texto .= htmlspecialchars(strip_tags($blocos[0]['texto']));
+                                            } else {
+                                                $descricao_texto .= "<i>(Primeira seção sem texto)</i>";
+                                            }
+                                        } else if ($mundo['descricao'][0] != '[') {
+                                            // Fallback para texto antigo que não é JSON
+                                            $descricao_texto = htmlspecialchars($mundo['descricao']);
+                                        }
+                                    }
+                                    echo $descricao_texto;
+                                ?>
+                            </div>
+
                         </div>
                         <div class="mundo-footer">
-                            <a href="ficha_mundo.php?id=<?= $mundo['id'] ?>" class="btn btn-secondary" style="color: #2c2c2c;">Editar</a>
-                            <a href="meus_mundos.php?excluir=<?= $mundo['id'] ?>" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este mundo?')">Excluir</a>
+                            <a href="novo_mundo.php?id=<?php echo $mundo['id']; ?>" class="btn btn-secondary" style="color: #2c2c2c;">Editar</a>
+                            <a href="meus_mundos.php?excluir=<?php echo $mundo['id']; ?>" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este mundo?')">Excluir</a>
                         </div>
                     </div>
                 <?php endforeach; ?>

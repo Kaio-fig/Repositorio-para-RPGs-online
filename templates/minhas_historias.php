@@ -15,16 +15,22 @@ if (isset($_GET['excluir'])) {
     $historia_id = intval($_GET['excluir']);
     $user_id = $_SESSION['user_id'];
 
-    // Verifica se a história pertence ao usuário antes de deletar
-    $stmt_check = $conn->prepare("SELECT id FROM historias WHERE id = ? AND user_id = ?");
+    $stmt_check = $conn->prepare("SELECT id, imagem_historia FROM historias WHERE id = ? AND user_id = ?");
     $stmt_check->bind_param("ii", $historia_id, $user_id);
     $stmt_check->execute();
     $result_check = $stmt_check->get_result();
 
     if ($result_check->num_rows > 0) {
+        $historia = $result_check->fetch_assoc();
+        
         $stmt_delete = $conn->prepare("DELETE FROM historias WHERE id = ?");
         $stmt_delete->bind_param("i", $historia_id);
         $stmt_delete->execute();
+        
+        if ($historia['imagem_historia'] != 'default_historia.jpg' && file_exists("../uploads/" . $historia['imagem_historia'])) {
+            unlink("../uploads/" . $historia['imagem_historia']);
+        }
+        
         header('Location: minhas_historias.php?excluido=1');
         exit;
     }
@@ -47,7 +53,7 @@ $historias = $result->fetch_all(MYSQLI_ASSOC);
     <title>Minhas Histórias - Arca do Aventureiro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilo consistente com as outras páginas "Meus..." */
+        /* CSS (O mesmo de antes, sem alterações) */
         :root {
             --primary-color: #6a1b9a;
             --secondary-color: #9c27b0;
@@ -98,8 +104,13 @@ $historias = $result->fetch_all(MYSQLI_ASSOC);
             font-size: 4rem;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
+            overflow: hidden; 
         }
-        .historia-imagem img { width: 100%; height: 100%; object-fit: cover; }
+        .historia-imagem img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
 
         .historia-info {
             padding: 20px;
@@ -112,7 +123,16 @@ $historias = $result->fetch_all(MYSQLI_ASSOC);
             color: #6c757d;
             margin-bottom: 15px;
         }
-        .historia-info .sinopse { font-size: 1rem; color: #333; line-height: 1.6; }
+        .historia-info .sinopse { 
+            font-size: 1rem; 
+            color: #333; 
+            line-height: 1.6;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4; 
+            -webkit-box-orient: vertical;
+        }
 
         .historia-footer {
             padding: 15px 20px;
@@ -133,12 +153,17 @@ $historias = $result->fetch_all(MYSQLI_ASSOC);
             <p>Gerencie suas crônicas e campanhas</p>
         </header>
 
-        <?php if (isset($_GET['excluido'])): ?>
-            <div class="alert alert-success">História excluída com sucesso!</div>
+        <?php if (isset($_GET['excluido']) || isset($_GET['salvo'])): ?>
+            <div class="alert alert-success">
+                <?php 
+                    if (isset($_GET['excluido'])) echo "História excluída com sucesso!";
+                    if (isset($_GET['salvo'])) echo "História salva com sucesso!";
+                ?>
+            </div>
         <?php endif; ?>
 
         <div style="text-align: center; margin-bottom: 30px;">
-            <a href="historia.php" class="btn btn-primary"><i class="fas fa-plus"></i> Criar Nova História</a>
+            <a href="historia.php?id=0" class="btn btn-primary"><i class="fas fa-plus"></i> Criar Nova História</a>
             <a href="dashboard.php" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
         </div>
 
@@ -147,20 +172,41 @@ $historias = $result->fetch_all(MYSQLI_ASSOC);
                 <?php foreach ($historias as $historia): ?>
                     <div class="historia-card">
                         <div class="historia-imagem">
-                            <?php if ($historia['imagem_historia'] && $historia['imagem_historia'] != 'default_historia.jpg'): ?>
-                                <img src="../uploads/<?= htmlspecialchars($historia['imagem_historia']) ?>" alt="Imagem da História">
+                            <?php if ($historia['imagem_historia'] && $historia['imagem_historia'] != 'default_historia.jpg' && file_exists("../uploads/" . $historia['imagem_historia'])): ?>
+                                <img src="../uploads/<?php echo htmlspecialchars($historia['imagem_historia']); ?>" alt="Imagem da História">
                             <?php else: ?>
                                 <i class="fas fa-feather-alt"></i>
                             <?php endif; ?>
                         </div>
                         <div class="historia-info">
-                            <h3><?= htmlspecialchars($historia['titulo']) ?></h3>
-                            <p class="sistema"><?= htmlspecialchars($historia['sistema_jogo']) ?></p>
-                            <p class="sinopse"><?= htmlspecialchars($historia['sinopse']) ?></p>
+                            <h3><?php echo htmlspecialchars($historia['titulo']); ?></h3>
+                            <p class="sistema"><?php echo htmlspecialchars($historia['sistema_jogo']); ?></p>
+                            
+                            <!-- *** CORREÇÃO AQUI *** -->
+                            <!-- Decodifica o JSON para exibir um resumo -->
+                            <div class="sinopse">
+                                <?php
+                                    $sinopse_texto = "Esta história ainda não tem seções.";
+                                    if (!empty($historia['sinopse'])) {
+                                        $blocos = json_decode($historia['sinopse'], true);
+                                        if (is_array($blocos) && count($blocos) > 0) {
+                                            $sinopse_texto = "<strong>Contém " . count($blocos) . " seções.</strong><br>";
+                                            // Pega o texto do primeiro bloco como preview
+                                            if (!empty($blocos[0]['texto'])) {
+                                                $sinopse_texto .= htmlspecialchars(strip_tags($blocos[0]['texto']));
+                                            } else {
+                                                $sinopse_texto .= "<i>(Primeira seção sem texto)</i>";
+                                            }
+                                        }
+                                    }
+                                    echo $sinopse_texto;
+                                ?>
+                            </div>
+                            
                         </div>
                         <div class="historia-footer">
-                            <a href="ficha_historia.php?id=<?= $historia['id'] ?>" class="btn btn-secondary" style="color: #2c2c2c;">Editar</a>
-                            <a href="minhas_historias.php?excluir=<?= $historia['id'] ?>" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta história?')">Excluir</a>
+                            <a href="historia.php?id=<?php echo $historia['id']; ?>" class="btn btn-secondary" style="color: #2c2c2c;">Editar</a>
+                            <a href="minhas_historias.php?excluir=<?php echo $historia['id']; ?>" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta história?')">Excluir</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -174,3 +220,4 @@ $historias = $result->fetch_all(MYSQLI_ASSOC);
     </div>
 </body>
 </html>
+
