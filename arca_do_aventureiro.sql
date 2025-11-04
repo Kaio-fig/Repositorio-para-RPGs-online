@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Máquina: localhost
--- Data de Criação: 03-Nov-2025 às 14:41
+-- Data de Criação: 04-Nov-2025 às 15:14
 -- Versão do servidor: 5.6.13
 -- versão do PHP: 5.4.17
 
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `historias` (
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `inventario_op` (
   PRIMARY KEY (`id`),
   KEY `personagem_id` (`personagem_id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `itens_op` (
   `defesa_bonus` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_user_item_op` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=79 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=78 ;
 
 --
 -- Extraindo dados da tabela `itens_op`
@@ -377,7 +377,23 @@ CREATE TABLE IF NOT EXISTS `personagem_t20_inventario` (
   PRIMARY KEY (`id`),
   KEY `idx_personagem_inventario` (`personagem_id`),
   KEY `fk_item_inventario_t20` (`item_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `personagem_t20_magias`
+--
+
+CREATE TABLE IF NOT EXISTS `personagem_t20_magias` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `personagem_id` int(11) NOT NULL,
+  `magia_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personagem_magia_unique` (`personagem_id`,`magia_id`),
+  KEY `fk_magia_personagem` (`personagem_id`),
+  KEY `fk_magia_id` (`magia_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -392,7 +408,7 @@ CREATE TABLE IF NOT EXISTS `personagem_t20_poderes` (
   `tipo_poder` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_personagem_poder` (`personagem_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -431,7 +447,7 @@ CREATE TABLE IF NOT EXISTS `personagens_op` (
   KEY `fk_origem` (`origem_id`),
   KEY `fk_classe` (`classe_id`),
   KEY `fk_trilha` (`trilha_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -446,6 +462,22 @@ CREATE TABLE IF NOT EXISTS `personagens_op_poderes` (
   `tipo_poder` enum('classe','paranormal') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `personagem_id` (`personagem_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=10 ;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `personagens_op_rituais`
+--
+
+CREATE TABLE IF NOT EXISTS `personagens_op_rituais` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `personagem_id` int(11) NOT NULL,
+  `ritual_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `personagem_ritual_unique` (`personagem_id`,`ritual_id`),
+  KEY `fk_ritual_personagem` (`personagem_id`),
+  KEY `fk_ritual_id` (`ritual_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -538,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `personagens_t20` (
   `outros_vontade` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id_t20` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -738,6 +770,113 @@ INSERT INTO `poderes_trilha` (`id`, `trilha_id`, `nex_requerido`, `nome`, `descr
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `rituais_op`
+--
+
+CREATE TABLE IF NOT EXISTS `rituais_op` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `elemento` varchar(20) NOT NULL,
+  `circulo` int(11) NOT NULL,
+  `execucao` varchar(50) NOT NULL,
+  `alcance` varchar(50) NOT NULL,
+  `alvo` varchar(100) DEFAULT NULL,
+  `duracao` varchar(50) DEFAULT NULL,
+  `resistencia` varchar(100) DEFAULT NULL,
+  `descricao` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_circulo_elemento` (`circulo`,`elemento`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=81 ;
+
+--
+-- Extraindo dados da tabela `rituais_op`
+--
+
+INSERT INTO `rituais_op` (`id`, `nome`, `elemento`, `circulo`, `execucao`, `alcance`, `alvo`, `duracao`, `resistencia`, `descricao`) VALUES
+(1, 'Amaldiçoar Arma', 'Sangue', 1, 'Padrão', 'Toque', '1 arma corpo a corpo ou 10 munições', 'Cena', 'Nenhuma', 'A arma ou munições se tornam amaldiçoadas. Elas recebem +1d6 de dano de Sangue. Em NEX 35%, o bônus aumenta para +2d6.'),
+(2, 'Armadura de Sangue', 'Sangue', 1, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você cria uma armadura de sangue sobre sua pele, recebendo +5 na Defesa. Em NEX 35%, você também recebe Resistência a dano 2.'),
+(3, 'Cicatrização', 'Sangue', 1, 'Padrão', 'Toque', '1 ser', 'Instantânea', 'Nenhuma', 'O alvo recupera 2d8+2 pontos de vida. Em NEX 35%, a cura aumenta para 4d8+4 PV.'),
+(4, 'Consumir Manancial', 'Sangue', 1, 'Reação', 'Pessoal', 'Você', 'Instantânea', 'Nenhuma', 'Quando um ser em alcance curto morre, você pode usar este ritual para recuperar 1d6 pontos de esforço.'),
+(5, 'Descarnar', 'Sangue', 1, 'Padrão', 'Curto', '1 ser', 'Instantânea', 'Fortitude parcial', 'Você causa 3d6 pontos de dano de Sangue. Se a vítima for reduzida a 0 PV, seu corpo é destruído. Se passar na resistência, sofre metade do dano.'),
+(6, 'Ferver Sangue', 'Sangue', 1, 'Padrão', 'Curto', '1 ser', 'Sustentada', 'Fortitude parcial', 'O alvo sofre 2d6 pontos de dano de Sangue e fica fatigado. Se passar na resistência, sofre metade do dano e não fica fatigado.'),
+(7, 'Forma Monstruosa', 'Sangue', 1, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você assume uma aparência horrenda, recebendo +2 em Luta e +5 em Intimidação, mas sofre -5 em Diplomacia e Enganação.'),
+(8, 'Ouvir os Sinos', 'Sangue', 1, 'Padrão', 'Curto', '1 ser', 'Cena', 'Vontade anula', 'O alvo ouve o badalar de sinos de uma igreja que não existe. Ele fica surdo e perturbado (-1d20 em testes de perícia).'),
+(9, 'Sensação de Morte', 'Sangue', 1, 'Padrão', 'Toque', '1 ser', '1 dia', 'Vontade anula', 'O alvo sente um calafrio e tem a sensação de que irá morrer. Ele sofre -5 em testes de resistência de Vontade.'),
+(10, 'Embaralhar', 'Energia', 1, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você distorce sua imagem, recebendo 20% de camuflagem (ataques têm 20% de chance de errar).'),
+(11, 'Enfeitiçar', 'Energia', 1, 'Padrão', 'Curto', '1 criatura', 'Cena', 'Vontade anula', 'A criatura se torna prestativa a você. Ela não arriscará a vida, mas ajudará com ações simples.'),
+(12, 'Localização', 'Energia', 1, 'Padrão', 'Longo', '1 objeto', 'Cena', 'Nenhuma', 'Você detecta a direção e distância aproximada de um objeto familiar em alcance longo.'),
+(13, 'Polarização Caótica', 'Energia', 1, 'Padrão', 'Curto', '1 objeto', 'Cena', 'Nenhuma', 'Você afeta um objeto eletrônico ou mecânico. Ele para de funcionar (se for mundano) ou tem seu efeito reduzido (se for paranormal).'),
+(14, 'Relâmpago', 'Energia', 1, 'Padrão', 'Curto', '1 ser', 'Instantânea', 'Reflexos parcial', 'Um raio acerta o alvo, causando 3d8 pontos de dano de Energia. Se passar na resistência, sofre metade do dano.'),
+(15, 'Tela de Ruído', 'Energia', 1, 'Padrão', 'Pessoal', 'Área (esfera de 6m de raio)', 'Cena', 'Nenhuma', 'Uma esfera de estática e distorção surge centrada em você. Câmeras e microfones não funcionam na área.'),
+(16, 'Travar Alvo', 'Energia', 1, 'Padrão', 'Curto', '1 ser', 'Cena', 'Nenhuma', 'Seus ataques contra o alvo recebem +2 na margem de ameaça e ignoram camuflagem leve.'),
+(17, 'Visão Mística', 'Energia', 1, 'Movimento', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você pode enxergar o fluxo de Energia. Você vê no escuro e pode ver criaturas invisíveis.'),
+(18, 'Aprimorar Mente', 'Conhecimento', 1, 'Padrão', 'Toque', '1 ser', 'Cena', 'Nenhuma', 'O alvo recebe +2 em Intelecto. Em NEX 35%, o bônus aumenta para +5.'),
+(19, 'Aprimorar Físico', 'Conhecimento', 1, 'Padrão', 'Toque', '1 ser', 'Cena', 'Nenhuma', 'O alvo recebe +2 em um atributo físico (Força, Agilidade ou Vigor). Em NEX 35%, o bônus aumenta para +5.'),
+(20, 'Cicatrizar', 'Conhecimento', 1, 'Padrão', 'Toque', '1 ser', 'Cena', 'Nenhuma', 'O alvo recebe Resistência a dano 2. Em NEX 35%, a resistência aumenta para 5.'),
+(21, 'Coincidência Forçada', 'Conhecimento', 1, 'Livre', 'Pessoal', 'Você', 'Instantânea', 'Nenhuma', 'Você pode usar este ritual após rolar um teste de perícia para rolar novamente o dado. Você deve usar o segundo resultado.'),
+(22, 'Detectar Ameaça', 'Conhecimento', 1, 'Padrão', 'Pessoal', 'Área (esfera de 6m de raio)', 'Cena', 'Nenhuma', 'Você detecta a presença de perigos paranormais na área. Você sabe a localização de armadilhas, criaturas ou itens paranormais.'),
+(23, 'Distorcer Aparência', 'Conhecimento', 1, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você muda sua aparência (cor de cabelo, pele, roupas). Não muda sua forma ou silhueta.'),
+(24, 'Enfeitiçar', 'Conhecimento', 1, 'Padrão', 'Curto', '1 criatura', 'Cena', 'Vontade anula', 'A criatura se torna prestativa a você. Ela não arriscará a vida, mas ajudará com ações simples.'),
+(25, 'Localizar Objeto', 'Conhecimento', 1, 'Padrão', 'Longo', '1 objeto', 'Cena', 'Nenhuma', 'Você detecta a direção e distância aproximada de um objeto familiar em alcance longo.'),
+(26, 'Poeira da Podridão', 'Morte', 1, 'Padrão', 'Curto', '1 ser', 'Instantânea', 'Fortitude parcial', 'O alvo sofre 2d8 pontos de dano de Morte e fica fraco. Se passar na resistência, sofre metade do dano e não fica fraco.'),
+(27, 'Arma Atroz', 'Morte', 1, 'Padrão', 'Toque', '1 arma corpo a corpo', 'Cena', 'Nenhuma', 'A arma se torna enegrecida. Ela causa +1d8 de dano de Morte e o alvo atingido não pode ser curado até o início do seu próximo turno.'),
+(28, 'Desfigurar', 'Morte', 1, 'Padrão', 'Curto', '1 ser', 'Cena', 'Fortitude anula', 'O alvo tem seu corpo coberto por feridas. Ele sofre -1d6 em testes de Agilidade e Vigor.'),
+(29, 'Espirais da Perdição', 'Morte', 1, 'Padrão', 'Curto', '1 ser', 'Instantânea', 'Vontade parcial', 'O alvo sofre 2d6 pontos de dano mental e fica abalado. Se passar na resistência, sofre metade do dano e não fica abalado.'),
+(30, 'Miasma Entrópico', 'Morte', 1, 'Padrão', 'Pessoal', 'Área (esfera de 6m de raio)', 'Sustentada', 'Nenhuma', 'Uma névoa escura surge. A área é considerada escuridão e qualquer ser (exceto você) que entrar ou começar o turno na área fica fatigado.'),
+(31, 'Soprar Cinzas', 'Morte', 1, 'Padrão', 'Curto', '1 ser', 'Cena', 'Fortitude anula', 'O alvo respira cinzas e poeira, ficando cego e surdo.'),
+(32, 'Arma de Sangue', 'Sangue', 2, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você cria uma arma corpo a corpo de Sangue (como machado, martelo, espada). Ela causa 2d8 de dano de Sangue (dano adicional).'),
+(33, 'Controle de Multidão', 'Sangue', 2, 'Padrão', 'Curto', 'Até 3 seres', 'Cena', 'Vontade anula', 'Você instila fúria ou medo nos alvos. Você pode fazê-los ficarem amedrontados ou agressivos (atacando o ser mais próximo).'),
+(34, 'Paralisia', 'Sangue', 2, 'Padrão', 'Curto', '1 ser', 'Sustentada', 'Vontade anula', 'O alvo fica paralisado (incapaz de agir).'),
+(35, 'Possessão', 'Sangue', 2, 'Padrão', 'Curto', '1 ser', 'Cena', 'Vontade anula', 'Você controla as ações do alvo. Ele age no seu turno e você pode usar uma ação padrão para fazê-lo realizar uma ação padrão.'),
+(36, 'Hemofagia', 'Sangue', 2, 'Padrão', 'Toque', '1 ser', 'Instantânea', 'Fortitude parcial', 'Você causa 6d6 de dano de Sangue no alvo e recupera metade desse valor em PV. Se passar, o alvo sofre metade do dano e você não cura.'),
+(37, 'Acelerar Entropia', 'Energia', 2, 'Padrão', 'Curto', '1 ser ou objeto', 'Instantânea', 'Fortitude parcial', 'Você acelera o tempo para o alvo. Se for um objeto, ele se desgasta até virar pó. Se for uma criatura, sofre 6d10 de dano de Energia. Resistência reduz o dano à metade.'),
+(38, 'Alterar Destino', 'Energia', 2, 'Livre', 'Pessoal', 'Você', 'Instantânea', 'Nenhuma', 'Você pode usar este ritual após rolar um d20. Você pode rolar novamente o dado e deve usar o segundo resultado.'),
+(39, 'Campo de Força', 'Energia', 2, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você cria um escudo de energia que fornece 15 PV temporários. Você pode gastar uma reação para receber +10 na Defesa contra um ataque.'),
+(40, 'Invisibilidade', 'Energia', 2, 'Padrão', 'Toque', '1 ser ou objeto', 'Cena', 'Nenhuma', 'O alvo fica invisível. O ritual termina se o alvo fizer uma ação hostil.'),
+(41, 'Relâmpago em Cadeia', 'Energia', 2, 'Padrão', 'Curto', 'Até 3 seres', 'Instantânea', 'Reflexos parcial', 'Raios saltam entre os alvos, causando 4d8 de dano de Energia em cada. Resistência reduz o dano à metade.'),
+(42, 'Velocidade Mortal', 'Energia', 2, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você se move mais rápido que o normal. Você recebe +2 em Agilidade, +5 na Defesa, +10 em Reflexos e uma ação de movimento adicional por turno.'),
+(43, 'Cinerária', 'Morte', 2, 'Padrão', 'Pessoal', 'Área (cone de 9m)', 'Instantânea', 'Fortitude parcial', 'Uma nuvem de cinzas e fuligem causa 5d8 de dano de Morte e deixa os alvos cegos por 1 rodada. Resistência reduz o dano à metade e anula a cegueira.'),
+(44, 'Contaminar', 'Morte', 2, 'Padrão', 'Toque', '1 ser', 'Cena', 'Fortitude anula', 'O alvo fica vulnerável e fatigado.'),
+(45, 'Definhar', 'Morte', 2, 'Padrão', 'Curto', '1 ser', 'Instantânea', 'Fortitude parcial', 'O alvo sofre 4d10 pontos de dano de Morte e 2d4 de dano de Vigor. Resistência reduz o dano à metade e anula o dano de Vigor.'),
+(46, 'Desprezo do Ceifador', 'Morte', 2, 'Reação', 'Pessoal', 'Você', 'Instantânea', 'Nenhuma', 'Quando você sofreria dano de Morte, você pode usar este ritual para anular esse dano.'),
+(47, 'Ecoar da Morte', 'Morte', 2, 'Padrão', 'Curto', '1 ser', 'Sustentada', 'Vontade anula', 'O alvo fica apavorado.'),
+(48, 'Selo Paranormal', 'Morte', 2, 'Padrão', 'Curto', '1 ser', 'Cena', 'Vontade anula', 'O alvo fica mudo (incapaz de falar ou usar componentes verbais de rituais).'),
+(49, 'Chamar o Outro Lado', 'Conhecimento', 2, 'Padrão', 'Curto', 'Nenhum', 'Até 1d4 criaturas', 'Nenhuma', 'Você invoca 1d4 criaturas de Conhecimento (VD 20) que o obedecem. Elas duram até o fim da cena.'),
+(50, 'Dissipar Ritual', 'Conhecimento', 2, 'Padrão', 'Curto', '1 ritual', 'Instantânea', 'Nenhuma', 'Você anula um ritual de 1º ou 2º círculo ativo na área.'),
+(51, 'Invadir Mente', 'Conhecimento', 2, 'Padrão', 'Toque', '1 ser', 'Sustentada', 'Vontade anula', 'Você pode ler os pensamentos superficiais do alvo. Você pode gastar uma ação padrão para se aprofundar e descobrir uma informação específica.'),
+(52, 'Proteção contra Rituais', 'Conhecimento', 2, 'Padrão', 'Toque', '1 ser', 'Cena', 'Nenhuma', 'O alvo recebe +5 em testes de resistência contra rituais.'),
+(53, 'Tela de Proteção', 'Conhecimento', 2, 'Padrão', 'Pessoal', 'Área (esfera de 3m de raio)', 'Sustentada', 'Nenhuma', 'Uma cúpula de energia protege a área. Rituais não podem ser conjurados de dentro para fora ou de fora para dentro da área.'),
+(54, 'Terror', 'Conhecimento', 2, 'Padrão', 'Curto', '1 ser', 'Sustentada', 'Vontade anula', 'O alvo vê seus piores medos. Ele fica apavorado e sofre 1d6 de dano mental por rodada.'),
+(55, 'Transmissão de Pensamento', 'Conhecimento', 2, 'Padrão', 'Longo', 'Até 5 seres', 'Cena', 'Nenhuma', 'Você cria um elo telepático com os alvos. Todos podem se comunicar mentalmente.'),
+(56, 'Âncora Dimensional', 'Energia', 3, 'Padrão', 'Curto', '1 ser', 'Cena', 'Vontade anula', 'O alvo é preso no espaço-tempo. Ele não pode se teleportar, atravessar dimensões ou sair da realidade.'),
+(57, 'Chamar o Outro Lado (Energia)', 'Energia', 3, 'Padrão', 'Curto', 'Nenhum', 'Até 1d4 criaturas', 'Nenhuma', 'Você invoca 1d4 criaturas de Energia (VD 40) que o obedecem. Elas duram até o fim da cena.'),
+(58, 'Distorcer Tempo', 'Energia', 3, 'Padrão', 'Curto', 'Até 5 seres', 'Cena', 'Vontade anula', 'Os alvos ficam lentos (apenas uma ação padrão ou de movimento por turno).'),
+(59, 'Teletransporte', 'Energia', 3, 'Padrão', 'Qualquer', 'Você e 1 ser por NEX', 'Instantânea', 'Nenhuma', 'Você e os alvos tocados são transportados instantaneamente para qualquer lugar que você conheça.'),
+(60, 'Sopro do Caos', 'Energia', 3, 'Padrão', 'Pessoal', 'Área (cone de 9m)', 'Instantânea', 'Reflexos parcial', 'Uma rajada de energia caótica causa 10d6 de dano de Energia. Resistência reduz o dano à metade.'),
+(61, 'Chamar o Outro Lado (Sangue)', 'Sangue', 3, 'Padrão', 'Curto', 'Nenhum', 'Até 1d4 criaturas', 'Nenhuma', 'Você invoca 1d4 criaturas de Sangue (VD 40) que o obedecem. Elas duram até o fim da cena.'),
+(62, 'Controle Mental', 'Sangue', 3, 'Padrão', 'Curto', '1 ser', 'Sustentada', 'Vontade anula', 'Você assume controle total sobre o alvo. Ele recebe suas ordens telepaticamente.'),
+(63, 'Muralha de Sangue', 'Sangue', 3, 'Padrão', 'Médio', 'Muralha (até 15m de comp, 3m de alt)', 'Cena', 'Nenhuma', 'Uma muralha de sangue surge. Ela bloqueia visão e movimento. A muralha tem 100 PV e RD 10.'),
+(64, 'Reviver', 'Sangue', 3, 'Livre', 'Longo', '1 ser', 'Instantânea', 'Nenhuma', 'O alvo que tenha morrido na última rodada volta à vida com 1 PV.'),
+(65, 'Tentáculos de Lodo', 'Sangue', 3, 'Padrão', 'Médio', 'Área (cilindro de 6m de raio)', 'Sustentada', 'Reflexos anula', 'Tentáculos de sangue surgem do chão. Seres na área ficam agarrados e sofrem 3d6 de dano de Sangue por rodada. Reflexos evita ser agarrado.'),
+(66, 'Chamar o Outro Lado (Conhecimento)', 'Conhecimento', 3, 'Padrão', 'Curto', 'Nenhum', 'Até 1d4 criaturas', 'Nenhuma', 'Você invoca 1d4 criaturas de Conhecimento (VD 40) que o obedecem. Elas duram até o fim da cena.'),
+(67, 'Despertar Consciência', 'Conhecimento', 3, 'Padrão', 'Toque', '1 ser', 'Instantânea', 'Nenhuma', 'Você toca um ser. Se for uma criatura, ela se torna prestativa. Se for um personagem, ele recupera toda a Sanidade.'),
+(68, 'Forma Etérea', 'Conhecimento', 3, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você se torna etéreo (incorpóreo). Você pode atravessar objetos e sofre apenas metade do dano de fontes mundanas.'),
+(69, 'Interrogar', 'Conhecimento', 3, 'Padrão', 'Toque', '1 ser', 'Sustentada', 'Vontade anula', 'Você força o alvo a responder suas perguntas. Ele não pode mentir.'),
+(70, 'Olhar do Desespero', 'Conhecimento', 3, 'Padrão', 'Curto', '1 ser', 'Sustentada', 'Vontade anula', 'O alvo fica pasmo (não pode agir). A cada rodada, ele pode tentar um novo teste de Vontade para se libertar.'),
+(71, 'Chamar o Outro Lado (Morte)', 'Morte', 3, 'Padrão', 'Curto', 'Nenhum', 'Até 1d4 criaturas', 'Nenhuma', 'Você invoca 1d4 criaturas de Morte (VD 40) que o obedecem. Elas duram até o fim da cena.'),
+(72, 'Explosão de Cinzas', 'Morte', 3, 'Padrão', 'Pessoal', 'Área (esfera de 6m de raio)', 'Instantânea', 'Fortitude parcial', 'Uma explosão de energia entrópica causa 8d8 de dano de Morte e deixa os alvos exaustos. Resistência reduz o dano à metade e anula a exaustão.'),
+(73, 'Nuvem de Cinzas', 'Morte', 3, 'Padrão', 'Longo', 'Área (esfera de 12m de raio)', 'Cena', 'Nenhuma', 'Uma nuvem de fumaça e cinzas bloqueia visão (camuflagem total) e causa 2d8 de dano de Morte por rodada a quem estiver dentro.'),
+(74, 'Possessão Entrópica', 'Morte', 3, 'Padrão', 'Toque', '1 cadáver', 'Sustentada', 'Nenhuma', 'Você transfere sua consciência para um cadáver recente. Você o controla e usa seus atributos físicos, mas mantém seus mentais.'),
+(75, 'Zerar Entropia', 'Morte', 3, 'Padrão', 'Curto', '1 ser', 'Instantânea', 'Fortitude anula', 'O alvo é reduzido a 0 PV. Se for bem-sucedido na resistência, sofre 8d10 de dano de Morte.'),
+(76, 'Canalizar o Medo', 'Medo', 4, 'Padrão', 'Curto', '1 ser', 'Cena', 'Vontade parcial', 'O alvo sofre 15d6 de dano mental e fica apavorado. Se passar, sofre metade do dano e fica abalado.'),
+(77, 'Conhecendo o Medo', 'Medo', 4, 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você compreende a verdade do Medo. Você recebe +5 em Ocultismo e em testes de resistência contra efeitos mentais.'),
+(78, 'Lâmina do Medo', 'Medo', 4, 'Padrão', 'Toque', '1 arma', 'Cena', 'Nenhuma', 'A arma se torna um pesadelo tangível. Ela causa +5d8 de dano de Medo e qualquer ser atingido fica abalado por 1 rodada.'),
+(79, 'Medo Tangível', 'Medo', 4, 'Padrão', 'Curto', 'Área (esfera de 6m de raio)', 'Sustentada', 'Vontade anula', 'A área é preenchida por uma manifestação de Medo. Seres na área ficam apavorados e sofrem 4d8 de dano mental por rodada.'),
+(80, 'Presença do Medo', 'Medo', 4, 'Padrão', 'Pessoal', 'Área (esfera de 12m de raio)', 'Cena', 'Vontade anula', 'Seres na área devem passar no teste de Vontade ou ficam apavorados. Mesmo que passem, ficam abalados enquanto na área.');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `t20_classes`
 --
 
@@ -752,7 +891,7 @@ CREATE TABLE IF NOT EXISTS `t20_classes` (
   `pericias_escolha_qtd` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `nome` (`nome`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=15 ;
 
 --
 -- Extraindo dados da tabela `t20_classes`
@@ -761,7 +900,14 @@ CREATE TABLE IF NOT EXISTS `t20_classes` (
 INSERT INTO `t20_classes` (`id`, `nome`, `pv_inicial`, `pv_por_nivel`, `pm_por_nivel`, `pericias_treinadas_fixas`, `pericias_escolha_lista`, `pericias_escolha_qtd`) VALUES
 (1, 'Caçador', 16, 4, 4, 'Luta ou Pontaria, Sobrevivência', 'Adestramento, Atletismo, Cavalgar, Cura, Fortitude, Furtividade, Iniciativa, Investigação, Luta, Ofício, Percepção, Pontaria, Reflexos', 6),
 (2, 'Guerreiro', 20, 5, 3, 'Luta ou Pontaria, Fortitude', 'Adestramento, Atletismo, Cavalgar, Guerra, Iniciativa, Intimidação, Luta, Ofício, Percepção, Pontaria, Reflexos', 2),
-(3, 'Nobre', 16, 4, 4, 'Diplomacia ou Intimidação, Vontade', 'Adestramento, Atuação, Cavalgar, Conhecimento, Diplomacia, Enganação, Fortitude, Guerra, Iniciativa, Intimidação, Intuição, Investigação, Jogatina, Luta, Nobreza, Ofício, Percepção, Pontaria', 4);
+(3, 'Nobre', 16, 4, 4, 'Diplomacia ou Intimidação, Vontade', 'Adestramento, Atuação, Cavalgar, Conhecimento, Diplomacia, Enganação, Fortitude, Guerra, Iniciativa, Intimidação, Intuição, Investigação, Jogatina, Luta, Nobreza, Ofício, Percepção, Pontaria', 4),
+(4, 'Arcanista', 12, 3, 6, 'Misticismo, Vontade', 'Conhecimento, Diplomacia, Enganação, Guerra, Iniciativa, Intuição, Investigação, Nobreza, Ofício, Percepção', 2),
+(6, 'Bárbaro', 24, 6, 3, 'Fortitude, Luta', 'Adestramento, Atletismo, Cavalgar, Guerra, Iniciativa, Intimidação, Luta, Ofício, Percepção, Pontaria, Reflexos, Sobrevivência, Vontade', 4),
+(10, 'Druida', 16, 4, 4, 'Sobrevivência, Vontade', 'Adestramento, Atletismo, Cavalgar, Conhecimento, Cura, Fortitude, Iniciativa, Intuição, Luta, Misticismo, Ofício, Percepção, Religião, Sobrevivência', 4),
+(11, 'Inventor', 12, 3, 4, 'Ofício, Vontade', 'Conhecimento, Cura, Diplomacia, Enganação, Fortitude, Iniciativa, Intuição, Investigação, Luta, Misticismo, Ofício, Pilotagem, Pontaria', 4),
+(12, 'Ladino', 12, 3, 4, 'Ladinagem, Reflexos', 'Acrobacia, Atletismo, Atuação, Cavalgar, Conhecimento, Diplomacia, Enganação, Furtividade, Iniciativa, Intimidação, Intuição, Investigação, Jogatina, Luta, Misticismo, Ofício, Percepção, Pilotagem, Pontaria', 8),
+(13, 'Lutador', 20, 5, 3, 'Fortitude, Luta', 'Acrobacia, Atletismo, Enganação, Furtividade, Iniciativa, Intimidação, Luta, Ofício, Percepção, Pontaria, Reflexos', 4),
+(14, 'Paladino', 20, 5, 3, 'Fortitude, Vontade', 'Adestramento, Atletismo, Cavalgar, Cura, Diplomacia, Fortitude, Guerra, Iniciativa, Intimidação, Luta, Nobreza, Percepção, Religião, Vontade', 2);
 
 -- --------------------------------------------------------
 
@@ -916,7 +1062,7 @@ CREATE TABLE IF NOT EXISTS `t20_habilidades_classe_auto` (
   `descricao` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_classe_nivel` (`classe_id`,`nivel_obtido`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=30 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=96 ;
 
 --
 -- Extraindo dados da tabela `t20_habilidades_classe_auto`
@@ -951,7 +1097,57 @@ INSERT INTO `t20_habilidades_classe_auto` (`id`, `classe_id`, `nivel_obtido`, `n
 (26, 3, 10, 'Palavras Afiadas (6d6)', 'O dano de Palavras Afiadas aumenta para 6d6.'),
 (27, 3, 14, 'Palavras Afiadas (8d6)', 'O dano de Palavras Afiadas aumenta para 8d6.'),
 (28, 3, 18, 'Palavras Afiadas (10d6)', 'O dano de Palavras Afiadas aumenta para 10d6.'),
-(29, 3, 20, 'Realeza', 'Sua Presença Aristocrática aumenta seu bônus de comando para +2 (total +3) e seu custo para 3 PM. Além disso, você pode gastar 5 PM para que todos os aliados afetados por seu comando recebam uma ação de movimento ou padrão adicional (à escolha deles).');
+(29, 3, 20, 'Realeza', 'Sua Presença Aristocrática aumenta seu bônus de comando para +2 (total +3) e seu custo para 3 PM. Além disso, você pode gastar 5 PM para que todos os aliados afetados por seu comando recebam uma ação de movimento ou padrão adicional (à escolha deles).'),
+(30, 4, 1, 'Magias (Arcanista)', 'Você pode lançar magias arcanas de 1º círculo. A cada nível ímpar (3, 5, etc.), você aprende magias de um círculo maior (2º, 3º, 4º, 5º).'),
+(31, 4, 1, 'Caminho do Arcanista', 'Escolha entre Mago (foco em Inteligência), Bruxo (foco em Carisma) ou Feiticeiro (foco em Carisma, magias inatas).'),
+(32, 4, 2, 'Poder de Arcanista', 'Você aprende um novo poder de arcanista.'),
+(33, 4, 3, 'Poder de Arcanista', 'Você aprende um novo poder de arcanista.'),
+(34, 4, 4, 'Poder de Arcanista', 'Você aprende um novo poder de arcanista.'),
+(35, 4, 5, 'Magias (2º Círculo)', 'Você aprende a lançar magias arcanas de 2º círculo.'),
+(36, 4, 5, 'Poder de Arcanista', 'Você aprende um novo poder de arcanista.'),
+(37, 4, 20, 'Alta Arcana', 'No 20º nível, o custo em PM de suas magias arcanas é reduzido à metade (após aplicar aprimoramentos e quaisquer outros efeitos que reduzam o custo).'),
+(38, 6, 1, 'Fúria', 'Você pode gastar 2 PM para invocar uma fúria selvagem. Você recebe +2 em testes de ataque e rolagens de dano corpo a corpo, mas não pode fazer nenhuma ação que exija calma (como usar a perícia Furtividade ou lançar magias). A cada 5 níveis, +1 PM para aumentar o bônus em +1.'),
+(39, 6, 2, 'Poder de Bárbaro', 'Você aprende um novo poder de bárbaro.'),
+(40, 6, 3, 'Instinto Selvagem', 'Você recebe +1 poder de bárbaro. Além disso, no início do combate, pode gastar 2 PM para receber +1d8 em testes de ataque e rolagens de dano (limitado pela sua Sabedoria).'),
+(41, 6, 4, 'Poder de Bárbaro', 'Você aprende um novo poder de bárbaro.'),
+(42, 6, 5, 'Poder de Bárbaro', 'Você aprende um novo poder de bárbaro.'),
+(43, 6, 5, 'Redução de Dano 2', 'Você recebe Redução de Dano 2 (todo dano que sofre é reduzido em 2).'),
+(44, 6, 20, 'Fúria Titânica', 'No 20º nível, quando em fúria, você recebe +2 em testes de ataque e rolagens de dano (além dos bônus normais) e seus bônus de Fúria são dobrados. Custo +10 PM.'),
+(61, 10, 1, 'Devoto Fiel', 'Você se torna devoto de Allihanna, Megalokk ou Oceano. Você recebe dois poderes concedidos por ser devoto, em vez de apenas um.'),
+(62, 10, 1, 'Empatia Selvagem', 'Você pode se comunicar com animais. Você pode usar Adestramento para mudar atitude e persuasão com animais.'),
+(63, 10, 1, 'Magias (Druida)', 'Você pode lançar magias divinas de 1º círculo (atributo-chave Sabedoria) das escolas de Abjuração, Adivinhação e Transmutação. A cada nível ímpar (3, 5, etc.), aprende magias de um círculo maior.'),
+(64, 10, 3, 'Caminho dos Ermos', 'No 3º nível, você pode atravessar terrenos difíceis (floresta, etc.) sem sofrer redução no deslocamento.'),
+(65, 10, 5, 'Magias (2º Círculo)', 'Você aprende a lançar magias divinas de 2º círculo.'),
+(66, 10, 20, 'Força da Natureza', 'No 20º nível, você se torna uma força da natureza. Você recebe +2 em Sabedoria e pode gastar 1 PM para lançar magias como ação livre (uma vez por rodada).'),
+(67, 11, 1, 'Engenhosidade', 'Você pode gastar 2 PM para somar sua Inteligência (em vez do atributo normal) em um teste de perícia. Você não pode usar esta habilidade em testes de ataque.'),
+(68, 11, 1, 'Protótipo', 'Você começa com um item superior (preço de até T$ 500) ou com 10 itens alquímicos (preço de até T$ 50 cada).'),
+(69, 11, 3, 'Comerciante', 'No 3º nível, você pode vender itens 10% mais caro.'),
+(70, 11, 7, 'Encontrar Fraqueza', 'A partir do 7º nível, você pode gastar 2 PM para analisar um oponente. Você ignora a RD dele e ele sofre -2 em testes de resistência contra seus itens.'),
+(71, 11, 10, 'Olho do Dragão', 'No 10º nível, você pode gastar uma ação completa para analisar um item. Você automaticamente descobre se ele é mágico e suas propriedades.'),
+(72, 11, 20, 'Obra-Prima', 'No 20º nível, você fabrica sua obra-prima, um item com quatro melhorias e dois aprimoramentos (ou um item mágico menor).'),
+(73, 12, 1, 'Ataque Furtivo +1d6', 'Você sabe atingir os pontos vitais de inimigos distraídos. Uma vez por rodada, quando atinge um alvo desprevenido ou flanqueado, seu ataque causa +1d6 de dano. A cada dois níveis, esse dano extra aumenta em +1d6.'),
+(74, 12, 1, 'Especialista', 'Escolha um número de perícias (mínimo 1) igual à sua Inteligência. Você pode gastar 1 PM para receber +1d6 em um teste de uma dessas perícias.'),
+(75, 12, 2, 'Evasão', 'A partir do 2º nível, se sofrer um efeito que permite um teste de Reflexos para reduzir o dano à metade, você não sofre dano algum se passar no teste.'),
+(76, 12, 4, 'Esquiva Sobrenatural', 'No 4º nível, seus instintos reagem ao perigo. Você nunca fica surpreendido.'),
+(77, 12, 8, 'Olhos nas Costas', 'No 8º nível, você não pode ser flanqueado.'),
+(78, 12, 10, 'Evasão Aprimorada', 'No 10º nível, quando você falha no teste de Reflexos para reduzir o dano à metade, você ainda sofre apenas metade do dano.'),
+(79, 12, 20, 'A Pessoa Certa', 'No 20º nível, você se torna um mestre da lábia. Uma vez por dia, pode usar a perícia Diplomacia (com um bônus de +10) para pedir um favor a alguém, como se usasse a magia Desejo.'),
+(80, 13, 1, 'Briga (1d6)', 'Seus ataques desarmados causam 1d6 de dano (letais ou não letais). A cada quatro níveis, o dano aumenta (1d8, 1d10, 1d12, 2d8, 2d10).'),
+(81, 13, 1, 'Golpe Relâmpago', 'Quando usa a ação agredir, pode gastar 1 PM para realizar um ataque desarmado adicional.'),
+(82, 13, 5, 'Briga (1d8)', 'O dano de seus ataques desarmados aumenta para 1d8.'),
+(83, 13, 6, 'Casca Grossa (+1)', 'Você soma sua Constituição na Defesa (limitado pelo seu nível), mas não pode usar armadura nem escudo. O bônus aumenta com o nível.'),
+(84, 13, 9, 'Briga (1d10)', 'O dano de seus ataques desarmados aumenta para 1d10.'),
+(85, 13, 13, 'Briga (1d12)', 'O dano de seus ataques desarmados aumenta para 1d12.'),
+(86, 13, 17, 'Briga (2d8)', 'O dano de seus ataques desarmados aumenta para 2d8.'),
+(87, 13, 20, 'Dono da Rua (2d10)', 'O dano de seus ataques desarmados aumenta para 2d10 e você pode usar a ação agredir para fazer três ataques desarmados (em vez de dois).'),
+(88, 14, 1, 'Abençoado', 'Você soma seu Carisma nos testes de resistência (além do bônus normal).'),
+(89, 14, 1, 'Código do Herói', 'Você deve seguir um código de honra. Se violar o código, você perde todos os seus PM e só os recupera no próximo dia.'),
+(90, 14, 1, 'Devoto', 'Você se torna devoto de uma divindade (Khalmyr, Thyatis, etc.) e deve seguir suas Obrigações & Restrições. Você ganha Poderes Concedidos por ela.'),
+(91, 14, 2, 'Cura pelas Mãos (1d8+1 PV)', 'Você pode gastar uma ação de movimento e 2 PM para curar 1d8+1 PV em um alvo (incluindo você). A cada quatro níveis, a cura aumenta em +1d8+1 PV.'),
+(92, 14, 3, 'Aura Sagrada', 'No 3º nível, você pode gastar 1 PM para gerar uma aura de 9m. Você e seus aliados na aura somam seu Carisma nos testes de resistência.'),
+(93, 14, 5, 'Bênção da Justiça', 'No 5º nível, sua Cura pelas Mãos pode curar 2d8+2 PV.'),
+(94, 14, 5, 'Golpe Divino (+1d8)', 'Quando faz um ataque corpo a corpo, pode gastar 2 PM para causar +1d8 de dano de luz e +1d8 na rolagem de dano. O dano de luz aumenta em +1d8 a cada quatro níveis.'),
+(95, 14, 20, 'Vingador Sagrado', 'No 20º nível, você pode gastar 10 PM para se cobrir de energia divina. Você recebe +18m de deslocamento de voo e RD 20. Além disso, seu Golpe Divino tem o custo reduzido à metade e causa mais dois dados de dano.');
 
 -- --------------------------------------------------------
 
@@ -977,7 +1173,7 @@ CREATE TABLE IF NOT EXISTS `t20_itens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `nome_item_unique` (`nome`),
   KEY `idx_user_item_t20` (`user_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=16 ;
 
 --
 -- Extraindo dados da tabela `t20_itens`
@@ -998,8 +1194,51 @@ INSERT INTO `t20_itens` (`id`, `user_id`, `nome`, `tipo`, `preco`, `espacos`, `b
 (12, NULL, 'Corda', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, '15m de corda de cânhamo.'),
 (13, NULL, 'Poção de Vida', 'Item Geral', 'T$ 50', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Beber esta poção cura 2d4+2 PV.'),
 (14, NULL, 'Kit de Ladrão', 'Item Geral', 'T$ 50', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Concede +2 em testes de Ladinagem.'),
-(15, NULL, 'Saco de Dormir', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Permite dormir confortavelmente.'),
-(16, 1, 'xesquebresque', 'Item Geral', 'T$ 10', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'skasng');
+(15, NULL, 'Saco de Dormir', 'Item Geral', 'T$ 1', 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, 'Permite dormir confortavelmente.');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `t20_magias`
+--
+
+CREATE TABLE IF NOT EXISTS `t20_magias` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `tipo` enum('Arcana','Divina') NOT NULL,
+  `circulo` int(11) NOT NULL,
+  `escola` varchar(50) NOT NULL,
+  `execucao` varchar(50) DEFAULT NULL,
+  `alcance` varchar(50) DEFAULT NULL,
+  `alvo_area` varchar(100) DEFAULT NULL,
+  `duracao` varchar(50) DEFAULT NULL,
+  `resistencia` varchar(100) DEFAULT NULL,
+  `descricao` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome_magia_unica` (`nome`),
+  KEY `idx_tipo_circulo_escola` (`tipo`,`circulo`,`escola`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=16 ;
+
+--
+-- Extraindo dados da tabela `t20_magias`
+--
+
+INSERT INTO `t20_magias` (`id`, `nome`, `tipo`, `circulo`, `escola`, `execucao`, `alcance`, `alvo_area`, `duracao`, `resistencia`, `descricao`) VALUES
+(1, 'Abençoar', 'Divina', 1, 'Encantamento', 'Padrão', 'Curto', '1 aliado', 'Cena', 'Nenhuma', 'O alvo recebe +1 em testes de ataque e rolagens de dano.'),
+(2, 'Amarrar Animal', 'Divina', 1, 'Encantamento', 'Padrão', 'Curto', '1 animal', 'Cena', 'Vontade anula', 'O animal fica prestativo em relação a você. Ele não sabe falar, mas obedece comandos simples. Ele não colocará sua vida em risco.'),
+(3, 'Aviso', 'Divina', 1, 'Adivinhação', 'Movimento', 'Longo', '1 criatura', '1 dia', 'Nenhuma', 'Você avisa o alvo de um perigo telepaticamente, desde que ele não esteja em combate. O alvo recebe +1 na Defesa e em Reflexos na próxima cena.'),
+(4, 'Bênção', 'Divina', 1, 'Encantamento', 'Padrão', 'Curto', 'Aliados escolhidos', 'Cena', 'Nenhuma', 'Alvos escolhidos recebem +1 em testes de ataque e rolagens de dano. Aprimoramento: +1 PM: muda o bônus para +2.'),
+(5, 'Curar Ferimentos', 'Divina', 1, 'Evocação', 'Padrão', 'Toque', '1 criatura', 'Instantânea', 'Nenhuma', 'O alvo recupera 1d8+1 pontos de vida. Aprimoramento: +1 PM: aumenta os PV curados em +1d8+1.'),
+(6, 'Adaga Mental', 'Arcana', 1, 'Encantamento', 'Padrão', 'Curto', '1 criatura', 'Instantânea', 'Vontade parcial', 'Você manifesta uma adaga de energia mental e a dispara. Causa 2d6 de dano psíquico. Se a vítima passar na resistência, sofre metade do dano.'),
+(7, 'Alarme', 'Arcana', 1, 'Abjuração', 'Padrão', 'Curto', 'Área de 6m de raio', 'Cena', 'Nenhuma', 'Cria uma barreira protetora invisível. Se uma criatura entrar na área, você é alertado mentalmente.'),
+(8, 'Área Escorregadia', 'Arcana', 1, 'Convocação', 'Padrão', 'Curto', 'Quadrado de 3m de lado', 'Cena', 'Reflexos (veja texto)', 'O chão fica escorregadio. Criaturas na área devem passar em Reflexos (CD Int) ou ficam caídas. Mover-se na área exige Acrobacia (CD 15).'),
+(9, 'Amedrontar', 'Arcana', 1, 'Necromancia', 'Padrão', 'Curto', '1 criatura', 'Cena', 'Vontade parcial', 'O alvo é envolvido por sombras e fica abalado. Se falhar na resistência por 5 ou mais, fica apavorado por 1 rodada e abalado pelo resto da cena.'),
+(10, 'Seta Infalível', 'Arcana', 1, 'Evocação', 'Padrão', 'Curto', '1 criatura', 'Instantânea', 'Nenhuma', 'Você cria um dardo de energia que atinge o alvo, causando 1d4+1 pontos de dano de força. Aprimoramento: +1 PM: +1 dardo (máx 5 dardos).'),
+(11, 'Arma Espiritual', 'Divina', 2, 'Evocação', 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Uma arma feita de energia flutua ao seu lado. Uma vez por rodada, você pode gastar uma ação livre para atacar com ela (teste de Luta ou Pontaria + Sab). Causa 1d8+Sab de dano de força.'),
+(12, 'Resistência a Energia', 'Divina', 2, 'Abjuração', 'Padrão', 'Toque', '1 criatura', 'Cena', 'Nenhuma', 'O alvo recebe resistência 10 contra um tipo de dano (ácido, eletricidade, fogo, frio ou sônico).'),
+(13, 'Aparência Perfeita', 'Arcana', 2, 'Ilusão', 'Padrão', 'Pessoal', 'Você', 'Cena', 'Nenhuma', 'Você oculta imperfeições e parece mais belo e confiante. Você recebe +5 em testes de Carisma (exceto Intimidação).'),
+(14, 'Alterar Tamanho', 'Arcana', 2, 'Transmutação', 'Padrão', 'Curto', '1 criatura', 'Cena', 'Fortitude anula', 'Você altera o tamanho da criatura. Aumentar: +2 For, -1 Des, +1d6 dano. Diminuir: -2 For, +1 Des, -1d6 dano.'),
+(15, 'Bola de Fogo', 'Arcana', 3, 'Evocação', 'Padrão', 'Médio', 'Esfera com 6m de raio', 'Instantânea', 'Reflexos parcial', 'Uma explosão causa 6d6 de dano de fogo. Vítimas na área sofrem o dano total (metade se passarem na resistência).');
 
 -- --------------------------------------------------------
 
@@ -1076,7 +1315,7 @@ CREATE TABLE IF NOT EXISTS `t20_poderes_classe` (
   `pre_requisito` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `nome_classe_unique` (`classe_id`,`nome`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=54 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=229 ;
 
 --
 -- Extraindo dados da tabela `t20_poderes_classe`
@@ -1135,7 +1374,131 @@ INSERT INTO `t20_poderes_classe` (`id`, `classe_id`, `nome`, `descricao`, `pre_r
 (50, 3, 'Língua Rápida', 'Quando faz um teste de Diplomacia para mudar atitude, pode gastar uma ação completa, em vez de uma minuto.', NULL),
 (51, 3, 'Presunção Aristocrática', 'Sua Presença Aristocrática passa a funcionar contra qualquer criatura com valor de Inteligência (incluindo criaturas sem mente), mas não funcionando contra criaturas Int -).', 'Presença Aristocrática, 16º nível de nobre'),
 (52, 3, 'Título', 'Você adquire um título de nobreza. Você recebe 20 T$ no início de cada aventura e um servo (parceiro iniciante).', NULL),
-(53, 3, 'Voz Poderosa', 'Você recebe +2 em Diplomacia e Intimidação. Suas habilidades de nobre com alcance curto passam para alcance médio.', NULL);
+(53, 3, 'Voz Poderosa', 'Você recebe +2 em Diplomacia e Intimidação. Suas habilidades de nobre com alcance curto passam para alcance médio.', NULL),
+(54, 4, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Pode ser escolhido várias vezes.', NULL),
+(55, 4, 'Arcano de Batalha', 'Quando lança uma magia, você soma seu atributo-chave na rolagem de dano.', NULL),
+(56, 4, 'Caldeirão do Bruxo', 'Você pode criar poções de até 5º círculo com magias que conhece.', 'Bruxo, treinado em Ofício (alquimista)'),
+(57, 4, 'Conhecimento Mágico', 'Você aprende duas magias de qualquer círculo que possa lançar.', NULL),
+(58, 4, 'Contramágica Aprimorada', 'Uma vez por rodada, pode fazer uma contramágica como uma reação (Requer 3º círculo).', 'Pré-requisito: Disputar Magia, 6º nível de arcanista'),
+(59, 4, 'Escriba Arcano', 'Você pode aprender magias copiando de pergaminhos. Custo: T$ 250 em matéria-prima por PM (1º círculo).', 'Mago, treinado em Ofício (escriba)'),
+(60, 4, 'Especialista em Escola', 'Escolha uma escola de magia. A CD para resistir a ela aumenta em +2. Pré-requisito: Bruxo ou Mago.', NULL),
+(61, 4, 'Familiar', 'Você possui um animal de estimação mágico (Borboleta, Cobra, Coruja, Gato, etc.).', NULL),
+(62, 4, 'Fluxo de Magia', 'Pode manter dois efeitos sustentados ativos simultaneamente com uma ação livre.', '10º nível de arcanista'),
+(63, 4, 'Foco Vital', 'Se estiver segurando seu foco e sofrer dano que o levaria a 0 PV ou menos, você fica com 1 PV. Pré-requisito: Bruxo.', NULL),
+(64, 4, 'Fortalecimento Arcano', 'A CD para resistir a suas magias aumenta em +1. Você pode lançar magias de 5º círculo, em vez disso, ela aumenta em +2.', '5º nível de arcanista'),
+(65, 4, 'Herança Aprimorada', 'Você recebe a herança aprimorada de sua linhagem sobrenatural.', 'Feiticeiro, 6º nível de arcanista'),
+(66, 4, 'Herança Superior', 'Você recebe a herança superior de sua linhagem sobrenatural.', 'Herança Aprimorada, 11º nível de arcanista'),
+(67, 4, 'Magia Pungente', 'Quando lança uma magia, pode pagar 1 PM para aumentar em +2 a CD para resistir a ela.', NULL),
+(68, 4, 'Mestre em Escola', 'O custo para lançar magias dessa escola diminui em –1 PM.', 'Especialista em Escola, 8º nível de arcanista'),
+(69, 4, 'Poder Mágico', 'Você recebe +1 ponto de mana por nível de arcanista.', NULL),
+(70, 4, 'Raio Arcano', 'Você pode gastar uma ação padrão para causar 1d8 de dano de essência (aumenta com PM).', 'Bruxo'),
+(71, 4, 'Linhagem Sobrenatural (Básica)', 'Escolha uma linhagem (Dracônica, Feérica, Rubra). Você recebe a herança básica dela.', 'Feiticeiro'),
+(72, 6, 'Alma de Bronze', 'Quando entra em fúria, você recebe PV temporários igual ao seu nível + Força.', NULL),
+(73, 6, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Pode ser escolhido várias vezes.', NULL),
+(74, 6, 'Brado Assustador', 'Você pode gastar uma ação de movimento e 1 PM para gritar. Inimigos em alcance curto ficam vulneráveis até o fim da cena.', 'Treinado em Intimidação'),
+(75, 6, 'Crítico Brutal', 'Seu multiplicador de crítico com armas corpo a corpo e de arremesso aumenta em +1.', '6º nível de bárbaro'),
+(76, 6, 'Destruidor', 'Quando causa dano com uma arma corpo a corpo de duas mãos, pode rolar novamente qualquer resultado 1 ou 2 das rolagens de dano.', 'For 1'),
+(77, 6, 'Espírito Inquebrável', 'Enquanto está em fúria, você não fica inconsciente por estar com 0 PV ou menos.', NULL),
+(78, 6, 'Animais Totêmicos', 'Escolha um animal (Coruja, Falcão, Grifo, Lobo, Urso, etc.) e recebe seu bônus.', NULL),
+(79, 6, 'Esquiva Sobrenatural', 'Seus instintos o protegem. Você nunca fica surpreendido.', NULL),
+(80, 6, 'Força Indomável', 'Pode gastar 1 PM para somar seu nível em um teste de Força ou Atletismo.', NULL),
+(81, 6, 'Fúria Raivosa', 'Sua fúria se torna mais mortal. Se terminar seu turno sem ter atacado, pode gastar 1 PM para manter a fúria.', NULL),
+(82, 6, 'Fúria da Savana', 'Seu deslocamento aumenta em +3m. Quando usa fúria, aplica o bônus em Atletismo e Fortitude.', NULL),
+(83, 6, 'Golpe Poderoso', 'Ao acertar um ataque corpo a corpo, pode causar dano extra (+1d12 para duas mãos, +1d6 para uma mão) pelo custo de +1d6 de dano de impacto em você mesmo.', NULL),
+(84, 6, 'Investida Imprudente', 'Ao fazer uma investida, você pode aumentar sua penalidade na Defesa pela investida para -5 para receber um bônus de +1d12 na rolagem de dano.', NULL),
+(85, 6, 'Pele de Aço', 'O bônus de Pele de Ferro aumenta para +4.', 'Pele de Ferro, 8º nível de bárbaro'),
+(86, 6, 'Pele de Ferro', 'Você recebe +4 na Defesa, mas apenas se não estiver usando armadura pesada.', NULL),
+(87, 6, 'Sangrar dos Inimigos', 'Enquanto em fúria, quando faz um acerto crítico, o inimigo sangra (1d6 dano por rodada).', NULL),
+(88, 6, 'Superstição', 'Você odeia magia e recebe +5 em testes de resistência contra elas.', NULL),
+(89, 6, 'Totem Espiritual', 'Você soma sua Sabedoria no seu total de pontos de mana.', 'Sab 1, 4º nível de bárbaro'),
+(90, 6, 'Vigor Primal', 'Você pode gastar uma ação de movimento e 1 PM para recuperar 1d12 pontos de vida.', NULL),
+(142, 10, 'Aspecto da Invernia', 'Você aprende magias de Convocação, Evocação, Arcana ou Divina, de qualquer círculo que possa lançar. Custo +1 PM, RD 5 Frio e +1 dano de gelo.', NULL),
+(143, 10, 'Aspecto do Outono', 'Você aprende magias de Necromancia, Arcana ou Divina, de qualquer círculo que possa lançar. Custo +1 PM, -2 em testes de resistência de inimigos.', NULL),
+(144, 10, 'Aspecto da Primavera', 'Você aprende magias de Encantamento ou Ilusão, Arcana ou Divina, de qualquer círculo que possa lançar. Custo +1 PM, +2 Carisma.', NULL),
+(145, 10, 'Aspecto do Verão', 'Você aprende magias de Transmutação, Arcana ou Divina, de qualquer círculo que possa lançar. Custo +1 PM, +1d6 dano de fogo.', NULL),
+(146, 10, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Pode ser escolhido várias vezes.', NULL),
+(147, 10, 'Companheiro Animal', 'Você recebe um companheiro animal (parceiro).', 'Car 1, treinado em Adestramento'),
+(148, 10, 'Companheiro Animal Aprimorado', 'Seu companheiro animal se torna veterano (+3 Defesa, +1d12 rolagens de dano).', 'Companheiro Animal, 6º nível de druida'),
+(149, 10, 'Forma Selvagem', 'Você pode gastar uma ação completa e 3 PM para se transformar em um animal. Você recebe +1d6 em ataques desarmados, +1 na Defesa e +10 em testes de Furtividade.', '6º nível de druida'),
+(150, 10, 'Magia Natural', 'Em forma selvagem, você pode lançar magias e empunhar catalisadores.', 'Forma Selvagem'),
+(151, 10, 'Presas Afiadas', 'A margem de ameaça de suas armas naturais aumenta em +2.', NULL),
+(152, 10, 'Segredos da Natureza', 'Você aprende duas magias de qualquer círculo que possa lançar (devem pertencer às escolas do druida).', NULL),
+(153, 10, 'Tranquilidade dos Lagos', 'Você recebe +2 em Vontade. Pode gastar 1 PM para refazer um teste de resistência.', NULL),
+(154, 11, 'Agite Antes de Usar', 'Você pode gastar 1 PM para arremessar um item alquímico como ação padrão, causando +1d6 de dano do mesmo tipo.', 'treinado em Ofício (alquimista)'),
+(155, 11, 'Ajuste de Mira', 'Você pode gastar uma ação padrão e PM (limitado pela Int) para aprimorar uma arma. Para cada PM, +1 em ataques e rolagens de dano.', 'Balística'),
+(156, 11, 'Alquimista de Batalha', 'Você pode preparar uma poção ou veneno com uma ação padrão (pagando o custo).', 'Alquimista Iniciado'),
+(157, 11, 'Alquimista Iniciado', 'Você recebe um livro de fórmulas e aprende 3 fórmulas de 1º círculo. A cada nível ímpar, aprende uma fórmula de círculo maior.', 'Int 1, Sab 1, treinado em Ofício (alquimista)'),
+(158, 11, 'Ativação Rápida', 'Ativar uma engenhoca exige uma ação padrão, mas você pode pagar 2 PM para ativá-la como ação de movimento.', 'Engenhoqueiro, 7º nível de inventor'),
+(159, 11, 'Autômato', 'Você fabrica um autômato (parceiro) que o auxilia.', 'Engenhoqueiro'),
+(160, 11, 'Balística', 'Você recebe proficiência com armas marciais de ataque à distância e de fogo. Pode usar Inteligência em vez de Destreza nos testes de ataque.', 'treinado em Pontaria e Ofício (armeiro)'),
+(161, 11, 'Blindagem', 'Você pode usar sua Inteligência na Defesa quando usa armadura pesada.', 'Couraceiro, 8º nível de inventor'),
+(162, 11, 'Conhecimento de Fórmulas', 'Você aprende três fórmulas de quaisquer círculos que possa aprender.', 'Alquimista Iniciado'),
+(163, 11, 'Couraceiro', 'Você recebe proficiência com armaduras pesadas e escudos. Pode usar Inteligência em vez de Destreza na Defesa (mas continua não podendo somar Int na Defesa).', 'treinado em Ofício (armeiro)'),
+(164, 11, 'Engenhoqueiro', 'Você pode fabricar engenhocas (itens mágicos).', 'Int 3, treinado em Ofício (engenhoqueiro)'),
+(165, 11, 'Farmacêutico', 'Quando usa um item alquímico que cura PV, ele cura +1d6 PV para cada PM gasto.', 'Sab 1, treinado em Ofício (alquimista)'),
+(166, 12, 'Acrobata Arcano', 'Quando usa Acrobacia para evitar um ataque, você pode gastar 1 PM para receber +5 no teste.', 'Truque Mágico, 7º nível de ladino'),
+(167, 12, 'Assassinar', 'Você pode gastar 3 PM para analisar uma criatura. No próximo turno, seu primeiro Ataque Furtivo contra ela tem os dados de dano dobrados.', '5º nível de ladino'),
+(168, 12, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Pode ser escolhido várias vezes.', NULL),
+(169, 12, 'Contatos no Submundo', 'Você pode gastar 2 PM para encontrar um contato no submundo, recebendo +5 em Investigação e descontos em itens.', NULL),
+(170, 12, 'Emboscar', 'Na primeira rodada de um combate, pode gastar 2 PM para executar uma ação padrão adicional.', 'treinado em Furtividade'),
+(171, 12, 'Escapista', 'Você recebe +5 em testes de Acrobacia para escapar de agarrão e efeitos de movimento.', NULL),
+(172, 12, 'Fuga Formidável', 'Você pode gastar uma ação completa e 1 PM para analisar um local. Até o fim da cena, recebe +3m em deslocamento e +5 em Acrobacia e Atletismo.', NULL),
+(173, 12, 'Gatuno', 'Você recebe +2 em Atletismo. Quando escala, não fica desprevenido e seu deslocamento é reduzido apenas pela metade.', NULL),
+(174, 12, 'Ladrão Arcano', 'Quando causa dano com Ataque Furtivo, pode gastar 1 PM para "roubar" uma magia do alvo (deve passar em teste de Vontade).', 'Roubo de Magia, 13º nível de ladino'),
+(175, 12, 'Mão na Boca', 'Quando acerta um ataque furtivo contra uma criatura desprevenida, pode tentar agarrá-la como ação livre.', 'treinado em Luta'),
+(176, 12, 'Mãos Rápidas', 'Uma vez por rodada, pode gastar 1 PM para fazer um teste de Ladinagem como ação livre.', 'Des 2, treinado em Ladinagem'),
+(177, 12, 'Mente Criminosa', 'Você soma sua Inteligência em Ladinagem e Furtividade.', 'Int 1'),
+(178, 12, 'Oportunismo', 'Uma vez por rodada, quando um inimigo adjacente sofre dano de um de seus aliados, pode gastar 2 PM para fazer um ataque corpo a corpo contra ele.', '6º nível de ladino'),
+(179, 12, 'Rolamento Defensivo', 'Quando sofre dano, pode gastar 2 PM para reduzir esse dano à metade. Se passar em um teste de Reflexos (CD 15), fica caído.', 'treinado em Reflexos'),
+(180, 12, 'Roubo de Magia', 'Quando causa dano com Ataque Furtivo, pode gastar 1 PM para roubar 1 PM temporário do alvo.', NULL),
+(181, 12, 'Saqueador de Tumbas', 'Você recebe +5 em testes de Investigação para encontrar armadilhas e em testes de resistência contra elas.', 'Sab 2, treinado em Investigação'),
+(182, 12, 'Sombra', 'Você recebe +2 em Furtividade, e não sofre penalidade em testes de Furtividade por se mover no mesmo turno.', 'treinado em Furtividade'),
+(183, 12, 'Truque Mágico', 'Você aprende e pode lançar uma magia arcana de 1º círculo (atributo-chave Int).', 'Int 1'),
+(184, 12, 'Velocidade Ladina', 'Uma vez por rodada, pode gastar 2 PM para realizar uma ação de movimento adicional.', 'Des 2, treinado em Iniciativa'),
+(185, 12, 'Veneno Persistente', 'A CD para resistir aos seus venenos aumenta em +2.', 'Veneno Potente, 8º nível de ladino'),
+(186, 12, 'Veneno Potente', 'A CD para resistir aos seus venenos aumenta em +2.', 'treinado em Ofício (alquimista)'),
+(187, 13, 'Arma Improvisada', 'Você pode gastar uma ação de movimento para procurar uma arma improvisada. Se passar no teste de Percepção (CD 20), encontra uma arma que causa +1d6 de dano.', NULL),
+(188, 13, 'Até Acertar', 'Se você errar um ataque desarmado, recebe +2 cumulativo em testes de ataque e rolagens de dano contra esse oponente (até acertar).', NULL),
+(189, 13, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Pode ser escolhido várias vezes.', NULL),
+(190, 13, 'Braços Calejados', 'Se não estiver usando armadura, soma sua Força na Defesa (limitado pelo seu nível).', NULL),
+(191, 13, 'Cabeçada', 'Quando faz um ataque desarmado, pode gastar 2 PM. Se fizer isso, o oponente não pode fazer ataques de oportunidade contra você até seu próximo turno.', NULL),
+(192, 13, 'Chave', 'Se estiver agarrando uma criatura, pode gastar 2 PM e uma ação padrão para fazer um teste de manobra (Luta). Se vencer, a criatura fica imobilizada.', 'Int 1, Lutador 4º'),
+(193, 13, 'Confiança dos Ringues', 'Quando um inimigo erra um ataque corpo a corpo em você, você recebe 2 PM temporários (cumulativos).', '6º nível de lutador'),
+(194, 13, 'Convencido', 'Você recebe +5 em resistência a medo e intimidação.', NULL),
+(195, 13, 'Golpe Baixo', 'Quando faz um ataque desarmado, pode gastar 2 PM. O oponente deve fazer um teste de Fortitude (CD For); se falhar, fica atordoado por uma rodada.', NULL),
+(196, 13, 'Golpe Imprudente', 'Quando usa o Golpe Relâmpago, pode atacar de forma impulsiva. Seus ataques desarmados recebem +1d6 de dano, mas você sofre -5 na Defesa até o início do seu próximo turno.', NULL),
+(197, 13, 'Imobilização', 'Se estiver agarrando uma criatura, pode gastar uma ação completa e 2 PM para imobilizá-la.', 'Chave, 8º nível de lutador'),
+(198, 13, 'Língua dos Becos', 'Você pode usar Carisma para testes de Intimidação (em vez de Força).', 'Treinado em Intimidação'),
+(199, 13, 'Listado de Chão', 'Você recebe +2 em testes de ataque para agarrar e derrubar. Quando agarrar, pode gastar 1 PM para fazer uma manobra derrubar como ação livre.', NULL),
+(200, 13, 'Punho de Adamante', 'Seus ataques desarmados ignoram 10 pontos de RD do alvo.', '8º nível de lutador'),
+(201, 13, 'Rasteira', 'Quando faz um ataque desarmado contra uma criatura maior que você, pode gastar 2 PM. Se acertar, a criatura fica caída.', NULL),
+(202, 13, 'Sarado', 'Você soma sua Força no seu total de pontos de vida e em Fortitude.', 'For 1'),
+(203, 13, 'Sequência Destruidora', 'No início do seu turno, pode gastar 2 PM para dizer um número (no mínimo 2). Seus ataques desarmados recebem +1 bônus cumulativo no dano (ex: +1, +2, +3...).', NULL),
+(204, 13, 'Trocação', 'Quando você começa a bater, não para mais. Ao acertar um ataque desarmado, pode gastar PM (até o limite do bônus de Briga) para fazer ataques extras, mas sofre penalidade cumulativa de -5.', '6º nível de lutador'),
+(205, 13, 'Trocação Tumultuosa', 'Quando usa a ação agredir para fazer um ataque desarmado, pode gastar 2 PM para atingir todas as criaturas adjacentes (incluindo aliados).', 'Trocação, 8º nível de lutador'),
+(206, 13, 'Valentão', 'Você recebe +2 em testes de ataque e rolagens de dano contra oponentes caídos, desprevenidos, flanqueados ou indefesos.', NULL),
+(207, 13, 'Voadora', 'Quando faz uma investida desarmada, pode gastar 2 PM. Se fizer isso, causa +1d6 de dano para cada 3m que se deslocar (máx. +5d6).', NULL),
+(208, 14, 'Arma Sagrada', 'Quando usa Golpe Divino, o dano de luz aumenta em um passo (d8 vira d10, etc).', 'Devoto de Azgher, Khalmyr, Lena ou Thyatis'),
+(209, 14, 'Aumento de Atributo', 'Você recebe +1 em um atributo. Pode ser escolhido várias vezes.', NULL),
+(210, 14, 'Aura Ardente', 'Enquanto sua aura estiver ativa, no início de seus turnos, oponentes em alcance curto sofrem dano de luz igual ao seu Carisma.', '10º nível de paladino'),
+(211, 14, 'Aura de Cura', 'Enquanto sua aura estiver ativa, no início de seus turnos, você e seus aliados em alcance curto curam PV igual ao seu Carisma.', '6º nível de paladino'),
+(212, 14, 'Aura de Invencibilidade', 'Enquanto sua aura estiver ativa, você ignora o primeiro dano que sofrer na cena.', '18º nível de paladino'),
+(213, 14, 'Aura Poderosa', 'O raio da sua aura aumenta para 9m.', '6º nível de paladino'),
+(214, 14, 'Julgamento Divino: Autoridade', 'Você pode gastar 1 PM para comandar uma criatura (Vontade anula).', NULL),
+(215, 14, 'Julgamento Divino: Coragem', 'Você pode gastar 2 PM para inspirar coragem. Você e aliados em alcance curto ficam imunes a medo.', NULL),
+(216, 14, 'Julgamento Divino: Iluminação', 'Você pode gastar 2 PM para marcar um inimigo. Quando o acerta, ele recebe 2 PM temporários (uma vez por cena).', NULL),
+(217, 14, 'Julgamento Divino: Justiça', 'Você pode gastar 2 PM para marcar um inimigo. A próxima vez que ele causar dano em você ou um aliado, deve fazer um teste de Vontade (CD Car) ou sofre dano de luz igual à metade do dano que causou.', NULL),
+(218, 14, 'Julgamento Divino: Libertação', 'Você pode gastar 5 PM para cancelar uma condição negativa (como abalado, paralisado, etc.) que esteja afetando uma criatura em alcance curto.', NULL),
+(219, 14, 'Julgamento Divino: Salvação', 'Você pode gastar 2 PM para marcar um inimigo. Você e seus aliados recuperam 5 PV quando o acertam.', NULL),
+(220, 14, 'Julgamento Divino: Vindicação', 'Você pode gastar 2 PM para marcar um inimigo. Você e aliados recebem +1d8 em testes de ataque e dano contra ele.', NULL),
+(221, 14, 'Julgamento Divino: Zelo', 'Você pode gastar 1 PM para marcar um alvo em alcance longo. Você se move em direção a ele no início de cada turno.', NULL),
+(222, 14, 'Orar', 'Você pode aprender magias divinas de 1º círculo (atributo-chave Sabedoria).', 'Sab 1'),
+(223, 14, 'Virtude Paladinesca: Caridade', 'O custo de suas habilidades de paladino (como Golpe Divino) que tenham um aliado como alvo é reduzido em -1 PM.', NULL),
+(224, 14, 'Virtude Paladinesca: Compaixão', 'Você pode usar Cura pelas Mãos como ação padrão e, para cada PM gasto, curar 2d6+1 PV.', NULL),
+(225, 14, 'Virtude Paladinesca: Humildade', 'Na primeira rodada de um combate, pode gastar uma ação completa para rezar e pedir orientação. Você recebe PM temporários igual ao seu Carisma.', NULL),
+(226, 14, 'Bênção da Justiça', 'No 5º nível, você pode escolher entre Égide Sagrada ou Montaria Sagrada.', '5º nível de paladino'),
+(227, 14, 'Égide Sagrada', 'Você pode gastar 2 PM para receber o bônus de seu escudo na Defesa e Reflexos de aliados adjacentes.', 'Bênção da Justiça'),
+(228, 14, 'Montaria Sagrada', 'Você pode gastar 2 PM para invocar uma montaria sagrada (parceiro).', 'Bênção da Justiça');
 
 -- --------------------------------------------------------
 
@@ -1464,6 +1827,13 @@ ALTER TABLE `personagem_t20_inventario`
   ADD CONSTRAINT `fk_personagem_inventario_t20` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_t20` (`id`) ON DELETE CASCADE;
 
 --
+-- Limitadores para a tabela `personagem_t20_magias`
+--
+ALTER TABLE `personagem_t20_magias`
+  ADD CONSTRAINT `fk_magia_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_t20` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_magia_id` FOREIGN KEY (`magia_id`) REFERENCES `t20_magias` (`id`) ON DELETE CASCADE;
+
+--
 -- Limitadores para a tabela `personagem_t20_poderes`
 --
 ALTER TABLE `personagem_t20_poderes`
@@ -1483,6 +1853,13 @@ ALTER TABLE `personagens_op`
 --
 ALTER TABLE `personagens_op_poderes`
   ADD CONSTRAINT `fk_poder_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `personagens_op_rituais`
+--
+ALTER TABLE `personagens_op_rituais`
+  ADD CONSTRAINT `fk_ritual_personagem` FOREIGN KEY (`personagem_id`) REFERENCES `personagens_op` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ritual_id` FOREIGN KEY (`ritual_id`) REFERENCES `rituais_op` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `personagens_t20`

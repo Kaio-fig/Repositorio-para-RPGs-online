@@ -1,40 +1,69 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
+// ficha_t20.php
 session_start();
-// Autenticação (manter comentado por enquanto para testes)
-// if (!isset($_SESSION['user_id'])) { header("Location: ../login.php"); exit(); }
-require_once '../conection/db_connect.php';
 
-// --- LÓGICA PARA CARREGAR OU CRIAR UM PERSONAGEM T20 ---
-$personagem_t20 = null;
-$is_new_t20 = true;
-$id_t20 = isset($_GET['personagem_id']) ? intval($_GET['personagem_id']) : null;
-
-if ($id_t20) {
-    $user_id_placeholder = 1; // Substituir por $_SESSION['user_id'] em produção
-
-    // Busca na tabela personagens_t20
-    $stmt = $conn->prepare("SELECT * FROM personagens_t20 WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $id_t20, $user_id_placeholder);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $personagem_t20 = $result->fetch_assoc();
-        $is_new_t20 = false;
-    }
-    $stmt->close();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: ../login/login.php"); // Ajuste o caminho se necessário
+    exit();
 }
 
-// Se não encontrou personagem ou não passou ID, cria um novo com valores padrão T20
-if ($is_new_t20) {
-    $personagem_t20 = [
-        'id' => null,
+require_once '../conection/db_connect.php'; // Ajuste o caminho se necessário
+$user_id = $_SESSION['user_id'];
+
+// Pega o ID da URL. Se for 0, é um personagem novo.
+$personagem_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+$personagem_t20 = null;
+$poderes_personagem_t20 = array();
+$inventario_personagem_t20 = array();
+
+if ($personagem_id > 0) {
+    // --- MODO DE EDIÇÃO (CARREGAR DADOS) ---
+
+    // 1. Carregar dados principais
+    $stmt = $conn->prepare("SELECT * FROM personagens_t20 WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $personagem_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $personagem_t20 = $result->fetch_assoc();
+    } else {
+        // Não achou ou não pertence ao usuário
+        echo "Personagem não encontrado ou não autorizado.";
+        exit();
+    }
+    $stmt->close();
+
+    // 2. Carregar poderes escolhidos
+    $stmt_poderes = $conn->prepare("SELECT poder_id, tipo_poder FROM personagem_t20_poderes WHERE personagem_id = ?");
+    $stmt_poderes->bind_param("i", $personagem_id);
+    $stmt_poderes->execute();
+    $result_poderes = $stmt_poderes->get_result();
+    $poderes_personagem_t20 = $result_poderes->fetch_all(MYSQLI_ASSOC);
+    $stmt_poderes->close();
+
+    // 3. Carregar inventário (precisa do JOIN para ter os dados do item)
+    $stmt_inv = $conn->prepare(
+        "SELECT inv.item_id as id, inv.quantidade, inv.equipado, item.nome, item.espacos, item.bonus_carga, item.tipo, item.bonus_defesa, item.penalidade_armadura 
+         FROM personagem_t20_inventario AS inv 
+         JOIN t20_itens AS item ON inv.item_id = item.id 
+         WHERE inv.personagem_id = ?"
+    );
+    $stmt_inv->bind_param("i", $personagem_id);
+    $stmt_inv->execute();
+    $result_inv = $stmt_inv->get_result();
+    $inventario_personagem_t20 = $result_inv->fetch_all(MYSQLI_ASSOC);
+    $stmt_inv->close();
+} else {
+    // --- MODO DE CRIAÇÃO (DADOS EM BRANCO) ---
+    // (Este é o array que corrige o erro de 'tibares' e outros)
+    $personagem_t20 = array(
+        'id' => 0, // Importante para o save_character
+        'user_id' => $user_id,
         'nome' => 'Novo Personagem T20',
-        'jogador' => '', // Pode buscar do $_SESSION['nome_usuario']
         'nivel' => 1,
-        'raca_id' => null, // Começa sem raça selecionada
+        'raca_id' => null,
         'origem_id' => null,
         'classe_id' => null,
         'divindade_id' => null,
@@ -43,151 +72,134 @@ if ($is_new_t20) {
         'pv_atual' => 0,
         'pm_max' => 0,
         'pm_atual' => 0,
+        'tibares' => 0,
+        'carga_maxima' => 0,
         'forca' => 0,
         'destreza' => 0,
         'constituicao' => 0,
         'inteligencia' => 0,
         'sabedoria' => 0,
-        'carisma' => 0
-    ];
+        'carisma' => 0,
+        // Adiciona valores padrão para todas as perícias (para evitar erros de 'Undefined index')
+        'treino_acrobacia' => 0,
+        'outros_acrobacia' => 0,
+        'treino_adestramento' => 0,
+        'outros_adestramento' => 0,
+        'treino_atletismo' => 0,
+        'outros_atletismo' => 0,
+        'treino_atuacao' => 0,
+        'outros_atuacao' => 0,
+        'treino_cavalgar' => 0,
+        'outros_cavalgar' => 0,
+        'treino_conhecimento' => 0,
+        'outros_conhecimento' => 0,
+        'treino_cura' => 0,
+        'outros_cura' => 0,
+        'treino_diplomacia' => 0,
+        'outros_diplomacia' => 0,
+        'treino_enganacao' => 0,
+        'outros_enganacao' => 0,
+        'treino_fortitude' => 0,
+        'outros_fortitude' => 0,
+        'treino_furtividade' => 0,
+        'outros_furtividade' => 0,
+        'treino_guerra' => 0,
+        'outros_guerra' => 0,
+        'treino_iniciativa' => 0,
+        'outros_iniciativa' => 0,
+        'treino_intimidacao' => 0,
+        'outros_intimidacao' => 0,
+        'treino_intuicao' => 0,
+        'outros_intuicao' => 0,
+        'treino_investigacao' => 0,
+        'outros_investigacao' => 0,
+        'treino_jogatina' => 0,
+        'outros_jogatina' => 0,
+        'treino_ladinagem' => 0,
+        'outros_ladinagem' => 0,
+        'treino_luta' => 0,
+        'outros_luta' => 0,
+        'treino_misticismo' => 0,
+        'outros_misticismo' => 0,
+        'treino_nobreza' => 0,
+        'outros_nobreza' => 0,
+        'treino_oficio' => 0,
+        'outros_oficio' => 0,
+        'treino_percepcao' => 0,
+        'outros_percepcao' => 0,
+        'treino_pilotagem' => 0,
+        'outros_pilotagem' => 0,
+        'treino_pontaria' => 0,
+        'outros_pontaria' => 0,
+        'treino_reflexos' => 0,
+        'outros_reflexos' => 0,
+        'treino_religiao' => 0,
+        'outros_religiao' => 0,
+        'treino_sobrevivencia' => 0,
+        'outros_sobrevivencia' => 0,
+        'treino_vontade' => 0,
+        'outros_vontade' => 0
+    );
+
+    $poderes_personagem_t20 = array();
+    $inventario_personagem_t20 = array();
 }
 
-// --- CARREGAR DADOS DE REGRAS T20 ---
-// Raças
-$racas_t20 = [];
-$sql_racas = "SELECT id, nome, ajustes_atributos, habilidade_1_nome, habilidade_1_desc, habilidade_2_nome, habilidade_2_desc, habilidade_3_nome, habilidade_3_desc FROM t20_racas ORDER BY nome ASC";
-$resultado_racas = $conn->query($sql_racas);
-if ($resultado_racas) {
-    while ($linha = $resultado_racas->fetch_assoc()) {
-        $racas_t20[$linha['id']] = $linha;
-    }
-}
+// --- CARREGAR DADOS GERAIS DO JOGO (Para Modais e Selects) ---
 
-$classes_t20 = [];
-$sql_classes = "SELECT id, nome, pv_inicial, pv_por_nivel, pm_por_nivel FROM t20_classes ORDER BY nome ASC";
-$resultado_classes = $conn->query($sql_classes);
-if ($resultado_classes) {
-    while ($linha = $resultado_classes->fetch_assoc()) {
-        $classes_t20[$linha['id']] = $linha;
-    }
-}
-
-$origens_t20 = [];
-$sql_origens = "SELECT id, nome, poder_1_nome, poder_1_desc, poder_2_nome, poder_2_desc, poder_3_nome, poder_3_desc FROM t20_origens ORDER BY nome ASC";
-$resultado_origens = $conn->query($sql_origens);
-if (!$resultado_origens) {
-    echo "<!-- ERRO FATAL: Falha na consulta SQL das Origens: " . $conn->error . " -->";
-} else {
-    while ($linha = $resultado_origens->fetch_assoc()) {
-        $origens_t20[$linha['id']] = $linha;
-    }
-}
-
-$divindades_t20 = [];
-$sql_divindades = "SELECT id, nome, energia FROM t20_divindades ORDER BY nome ASC";
-$resultado_divindades = $conn->query($sql_divindades);
-if ($resultado_divindades) {
-    while ($linha = $resultado_divindades->fetch_assoc()) {
-        $divindades_t20[$linha['id']] = $linha;
-    }
-}
-
-$poderes_divinos_t20 = [];
-$sql_poderes_divinos = "SELECT id, nome, descricao FROM t20_poderes_divinos";
-$resultado_poderes_divinos = $conn->query($sql_poderes_divinos);
-if ($resultado_poderes_divinos) {
-    while ($linha = $resultado_poderes_divinos->fetch_assoc()) {
-        $poderes_divinos_t20[$linha['id']] = $linha;
-    }
-}
-
-// Carrega a tabela de LIGAÇÃO (quais deuses têm quais poderes)
-$divindade_poderes_links = [];
-$sql_links = "SELECT divindade_id, poder_divino_id FROM t20_divindade_poderes";
-$resultado_links = $conn->query($sql_links);
-if ($resultado_links) {
-    while ($linha = $resultado_links->fetch_assoc()) {
-        $divindade_poderes_links[] = $linha;
-    }
-}
-
-$habilidades_classe_auto_t20 = [];
-$sql_habilidades_auto = "SELECT id, classe_id, nivel_obtido, nome, descricao FROM t20_habilidades_classe_auto ORDER BY classe_id, nivel_obtido ASC";
-$resultado_habilidades_auto = $conn->query($sql_habilidades_auto);
-if ($resultado_habilidades_auto) {
-    while ($linha = $resultado_habilidades_auto->fetch_assoc()) {
-        $habilidades_classe_auto_t20[] = $linha; // Guarda como uma lista
-    }
-}
-
-$poderes_classe_t20 = [];
-$sql_poderes_classe = "SELECT id, classe_id, nome, descricao, pre_requisito FROM t20_poderes_classe ORDER BY nome ASC";
-$resultado_poderes_classe = $conn->query($sql_poderes_classe);
-if ($resultado_poderes_classe) {
-    while ($linha = $resultado_poderes_classe->fetch_assoc()) {
-        $poderes_classe_t20[] = $linha;
-    }
-}
-
-$poderes_gerais_t20 = [];
-$sql_poderes_gerais = "SELECT id, nome, descricao, categoria, pre_requisito FROM t20_poderes_gerais ORDER BY categoria, nome ASC";
-$resultado_poderes_gerais = $conn->query($sql_poderes_gerais);
-if ($resultado_poderes_gerais) {
-    while ($linha = $resultado_poderes_gerais->fetch_assoc()) {
-        $poderes_gerais_t20[] = $linha;
-    }
-}
-
-$poderes_personagem_t20 = [];
-if (!$is_new_t20) { // Só carrega se o personagem já existir
-    $sql_poderes_salvos = "SELECT poder_id, tipo_poder FROM personagem_t20_poderes WHERE personagem_id = ?";
-    $stmt_ps = $conn->prepare($sql_poderes_salvos);
-    $stmt_ps->bind_param("i", $id_t20); // Usa o ID do personagem T20
-    $stmt_ps->execute();
-    $res_ps = $stmt_ps->get_result();
-    if ($res_ps) {
-        while ($linha = $res_ps->fetch_assoc()) {
-            $poderes_personagem_t20[] = $linha; // Guarda {poder_id: X, tipo_poder: 'classe'}
-        }
-    }
-    $stmt_ps->close();
-}
-
-$itens_t20 = [];
-$sql_itens = "SELECT id, nome, tipo, preco, espacos, bonus_carga, dano, critico, alcance, tipo_dano, bonus_defesa, penalidade_armadura, descricao FROM t20_itens ORDER BY nome ASC";
-$resultado_itens = $conn->query($sql_itens);
-if ($resultado_itens) {
-    while ($linha = $resultado_itens->fetch_assoc()) {
-        $itens_t20[$linha['id']] = $linha; // Guarda por ID para fácil acesso
-    }
-}
-
-$inventario_personagem_t20 = [];
-if (!$is_new_t20) { // Só carrega se o personagem já existir
-    $sql_inv_salvo = "SELECT item_id, quantidade, equipado FROM personagem_t20_inventario WHERE personagem_id = ?";
-    $stmt_inv = $conn->prepare($sql_inv_salvo);
-    $stmt_inv->bind_param("i", $id_t20); // Usa o ID do personagem T20
-    $stmt_inv->execute();
-    $res_inv = $stmt_inv->get_result();
-    if ($res_inv) {
-        while ($linha = $res_inv->fetch_assoc()) {
-            // Adiciona a informação completa do item ao inventário
-            if (isset($itens_t20[$linha['item_id']])) {
-                $item_completo = $itens_t20[$linha['item_id']];
-                $item_completo['quantidade'] = $linha['quantidade'];
-                $item_completo['equipado'] = $linha['equipado'];
-                $inventario_personagem_t20[] = $item_completo;
-            }
-        }
-    }
-    $stmt_inv->close();
-}
-
-// Função simples para calcular modificador (útil no PHP e JS)
-function calcular_modificador($atributo_valor)
+function fetch_all_assoc_by_id($result)
 {
-    return floor(($atributo_valor - 10) / 2);
+    $data = array();
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[$row['id']] = $row;
+        }
+    }
+    return $data;
 }
+
+// Racas
+$result_racas = $conn->query("SELECT * FROM t20_racas");
+$racas_t20 = fetch_all_assoc_by_id($result_racas);
+
+// Classes
+$result_classes = $conn->query("SELECT * FROM t20_classes");
+$classes_t20 = fetch_all_assoc_by_id($result_classes);
+
+// Origens
+$result_origens = $conn->query("SELECT * FROM t20_origens");
+$origens_t20 = fetch_all_assoc_by_id($result_origens);
+
+// Divindades
+$result_divindades = $conn->query("SELECT * FROM t20_divindades");
+$divindades_t20 = fetch_all_assoc_by_id($result_divindades);
+
+// Poderes Divinos (e links)
+$result_poderes_divinos = $conn->query("SELECT * FROM t20_poderes_divinos");
+$poderes_divinos_t20 = fetch_all_assoc_by_id($result_poderes_divinos);
+$result_divindade_links = $conn->query("SELECT * FROM t20_divindade_poderes");
+$divindade_poderes_links = $result_divindade_links ? $result_divindade_links->fetch_all(MYSQLI_ASSOC) : array();
+
+// Poderes e Habilidades de Classe
+$result_hab_auto = $conn->query("SELECT * FROM t20_habilidades_classe_auto");
+$habilidades_classe_auto_t20 = $result_hab_auto ? $result_hab_auto->fetch_all(MYSQLI_ASSOC) : array();
+$result_poderes_classe = $conn->query("SELECT * FROM t20_poderes_classe");
+$poderes_classe_t20 = $result_poderes_classe ? $result_poderes_classe->fetch_all(MYSQLI_ASSOC) : array();
+
+// Poderes Gerais
+$result_poderes_gerais = $conn->query("SELECT * FROM t20_poderes_gerais");
+$poderes_gerais_t20 = $result_poderes_gerais ? $result_poderes_gerais->fetch_all(MYSQLI_ASSOC) : array();
+
+// Itens (Todos os itens, incluindo homebrew (user_id IS NULL OR user_id = $user_id))
+// Carrega tanto os itens oficiais (user_id NULL) quanto os homebrew do usuário
+$stmt_itens = $conn->prepare("SELECT * FROM t20_itens WHERE user_id IS NULL OR user_id = ?");
+$stmt_itens->bind_param("i", $user_id);
+$stmt_itens->execute();
+$result_itens = $stmt_itens->get_result();
+$itens_t20 = fetch_all_assoc_by_id($result_itens);
+$stmt_itens->close();
+
+$conn->close();
 
 ?>
 <!DOCTYPE html>

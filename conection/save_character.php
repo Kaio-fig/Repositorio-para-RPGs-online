@@ -1,12 +1,12 @@
 <?php
 // Inicia a sessão para podermos verificar o login do usuário
 session_start();
+date_default_timezone_set('UTC');
 
 // 1. CHECAGENS DE SEGURANÇA E CONEXÃO
 // ======================================================
 if (!isset($_SESSION['user_id'])) {
-    // Para testes, vamos definir um user_id padrão. Remova ou comente esta linha em produção.
-    $_SESSION['user_id'] = 1;
+    $_SESSION['user_id'] = 1; // Para testes
     // die("Acesso negado. Você precisa estar logado para salvar um personagem.");
 }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -32,7 +32,12 @@ $intelecto = isset($_POST['intelecto']) ? intval($_POST['intelecto']) : 1;
 $vigor = isset($_POST['vigor']) ? intval($_POST['vigor']) : 1;
 $presenca = isset($_POST['presenca']) ? intval($_POST['presenca']) : 1;
 
-$inventario_ids = isset($_POST['inventario']) ? $_POST['inventario'] : [];
+$inventario_ids = isset($_POST['inventario_ids']) ? $_POST['inventario_ids'] : [];
+$poderes_classe_ids = isset($_POST['poderes_classe']) ? $_POST['poderes_classe'] : [];
+$poderes_paranormais_ids = isset($_POST['poderes_paranormais']) ? $_POST['poderes_paranormais'] : [];
+// *** NOVO: Rituais ***
+$rituais_ids = isset($_POST['rituais_ids']) ? $_POST['rituais_ids'] : [];
+
 
 // 3. LÓGICA DE UPLOAD DA IMAGEM
 // ======================================================
@@ -72,13 +77,12 @@ $tudo_ok = true;
 // 4. OPERAÇÃO NO BANCO DE DADOS (INSERT ou UPDATE)
 // ======================================================
 if ($personagem_id) {
-    // ATUALIZAR PERSONAGEM EXISTENTE
+    // ATUALIZAR
     $sql = "UPDATE personagens_op SET nome=?, nex=?, classe_id=?, origem_id=?, trilha_id=?, patente=?, forca=?, agilidade=?, intelecto=?, vigor=?, presenca=?, imagem=? WHERE id=? AND user_id=?";
     $stmt = $conn->prepare($sql);
-    // CORREÇÃO FINAL DA STRING DE TIPOS (14 caracteres para 14 parâmetros)
     $stmt->bind_param("siiiisiiiiisii", $nome, $nex, $classe_id, $origem_id, $trilha_id, $patente, $forca, $agilidade, $intelecto, $vigor, $presenca, $nome_imagem_final, $personagem_id, $user_id);
 } else {
-    // CRIAR NOVO PERSONAGEM
+    // CRIAR
     $sql = "INSERT INTO personagens_op (user_id, nome, nex, classe_id, origem_id, trilha_id, patente, forca, agilidade, intelecto, vigor, presenca, imagem) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isiiiisiiiiis", $user_id, $nome, $nex, $classe_id, $origem_id, $trilha_id, $patente, $forca, $agilidade, $intelecto, $vigor, $presenca, $nome_imagem_final);
@@ -88,7 +92,6 @@ if (!$stmt->execute()) {
     $tudo_ok = false;
     echo "Erro ao salvar dados do personagem: " . $stmt->error;
 }
-
 if (!$personagem_id) {
     $personagem_id = $conn->insert_id;
 }
@@ -99,10 +102,7 @@ $stmt->close();
 if ($tudo_ok) {
     $stmt_delete_inv = $conn->prepare("DELETE FROM inventario_op WHERE personagem_id = ?");
     $stmt_delete_inv->bind_param("i", $personagem_id);
-    if (!$stmt_delete_inv->execute()) {
-        $tudo_ok = false;
-        echo "Erro ao limpar inventário antigo: " . $stmt_delete_inv->error;
-    }
+    if (!$stmt_delete_inv->execute()) { $tudo_ok = false; echo "Erro ao limpar inventário: " . $stmt_delete_inv->error; }
     $stmt_delete_inv->close();
 }
 
@@ -112,26 +112,84 @@ if ($tudo_ok && !empty($inventario_ids)) {
     foreach ($inventario_ids as $item_id) {
         $item_id_int = intval($item_id);
         $stmt_insert_item->bind_param("ii", $personagem_id, $item_id_int);
-        if (!$stmt_insert_item->execute()) {
-            $tudo_ok = false;
-            echo "Erro ao inserir novo item no inventário: " . $stmt_insert_item->error;
-            break; 
-        }
+        if (!$stmt_insert_item->execute()) { $tudo_ok = false; echo "Erro ao inserir item: " . $stmt_insert_item->error; break; }
     }
     $stmt_insert_item->close();
 }
 
+// 6. ATUALIZAR OS PODERES
+// ======================================================
+if ($tudo_ok) {
+    $stmt_delete_poderes = $conn->prepare("DELETE FROM personagens_op_poderes WHERE personagem_id = ?");
+    $stmt_delete_poderes->bind_param("i", $personagem_id);
+    if (!$stmt_delete_poderes->execute()) { $tudo_ok = false; echo "Erro ao limpar poderes: " . $stmt_delete_poderes->error; }
+    $stmt_delete_poderes->close();
+}
+
+if ($tudo_ok && !empty($poderes_classe_ids)) {
+    $sql_insert_poder = "INSERT INTO personagens_op_poderes (personagem_id, poder_id, tipo_poder) VALUES (?, ?, 'classe')";
+    $stmt_insert_poder = $conn->prepare($sql_insert_poder);
+    foreach ($poderes_classe_ids as $poder_id) {
+        $poder_id_int = intval($poder_id);
+        $stmt_insert_poder->bind_param("ii", $personagem_id, $poder_id_int);
+        if (!$stmt_insert_poder->execute()) { $tudo_ok = false; echo "Erro ao inserir poder de classe: " . $stmt_insert_poder->error; break; }
+    }
+    $stmt_insert_poder->close();
+}
+
+if ($tudo_ok && !empty($poderes_paranormais_ids)) {
+    $sql_insert_poder = "INSERT INTO personagens_op_poderes (personagem_id, poder_id, tipo_poder) VALUES (?, ?, 'paranormal')";
+    $stmt_insert_poder = $conn->prepare($sql_insert_poder);
+    foreach ($poderes_paranormais_ids as $poder_id) {
+        $poder_id_int = intval($poder_id);
+        $stmt_insert_poder->bind_param("ii", $personagem_id, $poder_id_int);
+        if (!$stmt_insert_poder->execute()) { $tudo_ok = false; echo "Erro ao inserir poder paranormal: " . $stmt_insert_poder->error; break; }
+    }
+    $stmt_insert_poder->close();
+}
+
+// 7. *** NOVO: ATUALIZAR OS RITUAIS ***
+// ======================================================
+if ($tudo_ok) {
+    // 7a. Limpa todos os rituais antigos
+    $stmt_delete_rituais = $conn->prepare("DELETE FROM personagens_op_rituais WHERE personagem_id = ?");
+    $stmt_delete_rituais->bind_param("i", $personagem_id);
+    if (!$stmt_delete_rituais->execute()) {
+        $tudo_ok = false;
+        echo "Erro ao limpar rituais antigos: " . $stmt_delete_rituais->error;
+    }
+    $stmt_delete_rituais->close();
+}
+
+// 7b. Insere os novos rituais
+if ($tudo_ok && !empty($rituais_ids)) {
+    $sql_insert_ritual = "INSERT INTO personagens_op_rituais (personagem_id, ritual_id) VALUES (?, ?)";
+    $stmt_insert_ritual = $conn->prepare($sql_insert_ritual);
+    foreach ($rituais_ids as $ritual_id) {
+        $ritual_id_int = intval($ritual_id);
+        $stmt_insert_ritual->bind_param("ii", $personagem_id, $ritual_id_int);
+        if (!$stmt_insert_ritual->execute()) {
+            $tudo_ok = false;
+            echo "Erro ao inserir ritual: " . $stmt_insert_ritual->error;
+            break;
+        }
+    }
+    $stmt_insert_ritual->close();
+}
+
+
 // --- FINALIZAÇÃO DA TRANSAÇÃO ---
 if ($tudo_ok) {
-    $conn->commit();
+    $conn->commit(); // Salva as mudanças
     $conn->autocommit(TRUE);
     $conn->close();
     header("Location: ../templates/meus_personagens.php?personagem_id=" . $personagem_id . "&status=salvo");
     exit();
 } else {
-    $conn->rollback();
+    $conn->rollback(); // Desfaz as mudanças
     $conn->autocommit(TRUE);
     $conn->close();
+    echo "Ocorreu um erro. A transação foi revertida. Verifique as mensagens de erro (se houver).";
     exit();
 }
 ?>

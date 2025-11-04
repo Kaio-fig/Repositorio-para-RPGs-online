@@ -7,10 +7,17 @@
     --background-color: #f9f9f9;
     --text-color: #333;
     --border-color: #ddd;
+    --danger-color: #f44336; 
+    
+    /* --- NOVAS: Cores dos Elementos --- */
+    --cor-sangue: #c0392b;
+    --cor-energia: var(--primary-color); /* Roxo */
+    --cor-morte: #2c3e50;
+    --cor-conhecimento: #f39c12;
+    --cor-medo: #7f8c8d; /* Cinza/Nenhum */
 }
 
 /* --- CORREÇÃO DE FONTE E ACENTUAÇÃO --- */
-/* Aplicando uma fonte universal e garantindo que todos os elementos a herdem corretamente. */
 html,
 body,
 input,
@@ -23,7 +30,6 @@ h4,
 h5,
 h6 {
     font-family: Arial, Helvetica, sans-serif;
-    /* Pilha de fontes universal com suporte garantido a acentos */
 }
 
 * {
@@ -37,7 +43,6 @@ body {
     color: var(--text-color);
     padding: 20px;
     font-size: 16px;
-    /* Definindo um tamanho base para consistência */
 }
 
 .container {
@@ -144,10 +149,11 @@ h2 {
     gap: 5px;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Permite que as abas quebrem em telas menores */
 }
 
 .tab-button {
-    padding: 12px 25px;
+    padding: 12px 20px; /* Um pouco menos de padding para caber "Rituais" */
     cursor: pointer;
     border: 1px solid transparent;
     border-bottom: none;
@@ -174,9 +180,7 @@ h2 {
 .tab-content.active {
     display: block;
     overflow: visible;
-    /* IMPORTANTE: Garante que o conteúdo não seja cortado */
     min-height: 300px;
-    /* Garante uma altura mínima para a aba */
 }
 
 .atributos-grid {
@@ -201,7 +205,6 @@ h2 {
     font-size: 2.5rem;
     text-align: center;
     font-weight: bold;
-    /* Adicione esta propriedade para centralizar o texto no select em alguns navegadores */
     text-align-last: center;
 }
 
@@ -210,8 +213,10 @@ h2 {
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    align-items: flex-end;
 }
 
 .info-poderes strong {
@@ -220,21 +225,98 @@ h2 {
 
 #dt-rituais-span {
     font-weight: bold;
+    font-size: 1.2rem;
 }
 
-.lista-poderes {
-    min-height: 50px;
-    overflow: visible;
+#dt-rituais-container {
+    text-align: center;
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
 }
 
-.lista-poderes .poder-item {
+/* --- ESTILOS PARA SEÇÕES DE PODERES E RITUAIS --- */
+.poderes-secao {
+    margin-bottom: 25px;
+}
+
+.poderes-secao h3 {
+    color: var(--dark-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.poder-item,
+.ritual-card { /* Aplicando o mesmo estilo para rituais */
     background-color: #fff;
     border: 1px solid var(--border-color);
     padding: 15px;
     margin-bottom: 10px;
-    border-left: 4px solid var(--primary-color);
+    border-left: 4px solid var(--primary-color); /* Cor padrão */
     border-radius: 4px;
+    position: relative; 
+    padding-right: 45px; /* Espaço para o botão 'X' */
 }
+
+/* --- NOVO: Colore o card do ritual baseado no elemento --- */
+.ritual-card.Sangue { border-left-color: var(--cor-sangue); }
+.ritual-card.Energia { border-left-color: var(--cor-energia); }
+.ritual-card.Morte { border-left-color: var(--cor-morte); }
+.ritual-card.Conhecimento { border-left-color: var(--cor-conhecimento); }
+.ritual-card.Medo { border-left-color: var(--cor-medo); }
+
+.ritual-card h4 {
+    color: var(--dark-color); /* Cor padrão do título */
+}
+/* Colore o H4 do ritual */
+.ritual-card.Sangue h4 { color: var(--cor-sangue); }
+.ritual-card.Energia h4 { color: var(--cor-energia); }
+.ritual-card.Morte h4 { color: var(--cor-morte); }
+.ritual-card.Conhecimento h4 { color: var(--cor-conhecimento); }
+.ritual-card.Medo h4 { color: var(--cor-medo); }
+
+
+/* Botão de Remover */
+.btn-remover-poder {
+    position: absolute;
+    top: 50%; 
+    transform: translateY(-50%);
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background-color: #eee;
+    color: #555;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 28px; 
+}
+
+.btn-remover-poder:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+/* Oculta o botão em poderes que não podem ser removidos */
+.poder-trilha-item .btn-remover-poder,
+.poder-inicial-item .btn-remover-poder,
+#poder-origem-container .poder-item .btn-remover-poder {
+    display: none;
+}
+/* Ajusta o padding para poderes não-removíveis */
+.poder-trilha-item,
+.poder-inicial-item,
+#poder-origem-container .poder-item {
+    padding-right: 15px; 
+}
+
 
 /* --- ESTILOS PARA A ABA DE EQUIPAMENTO --- */
 .info-equipamento {
@@ -312,7 +394,6 @@ h2 {
 .item-row {
     display: grid;
     grid-template-columns: 1fr 50px 50px 50px;
-    /* Nome | Cat. | Esp. | Ações */
     gap: 15px;
     padding: 12px 15px;
     align-items: center;
@@ -337,7 +418,6 @@ h2 {
 
 .btn-remover-item:hover {
     background-color: #c0392b;
-    /* Vermelho ao passar o mouse */
     color: white;
 }
 
@@ -347,7 +427,6 @@ h2 {
 }
 
 .item-row:nth-child(even) {
-    /* "Zebra striping" para facilitar a leitura */
     background-color: #f9f9f9;
 }
 
@@ -376,53 +455,54 @@ h2 {
     padding-top: 20px;
 }
 
-/* Ajuste para que o botão de ação não ocupe a largura toda por padrão */
 .btn-acao {
     width: auto;
     padding: 12px 30px;
-    /* Mais preenchimento lateral */
     display: inline-flex;
-    /* Para alinhar o ícone com o texto */
     align-items: center;
     justify-content: center;
     gap: 8px;
-    /* Espaço entre o ícone e o texto */
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all 0.2s ease-in-out;
+}
+.btn-acao:hover {
+    background-color: #5a1281;
 }
 
-/* Novo estilo para o botão secundário (Voltar) */
 .btn-acao.btn-secondary {
     background-color: transparent;
-    color: var(--primary-color);
-    border: 2px solid var(--primary-color);
+    color: var(--dark-color);
+    border-color: var(--border-color);
 }
 
 .btn-acao.btn-secondary:hover {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    border-color: #c0c0c0;
 }
 
 /* --- SEÇÃO DE PERÍCIAS COM CORREÇÕES --- */
 .pericias-container {
     display: grid;
-    /* Aumentando o espaço mínimo para cada coluna, dando mais "respiro" */
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 30px;
-    /* Aumentando o espaço entre as colunas */
 }
 
 .pericia-coluna h3 {
     font-weight: 600;
-    /* Usando um peso numérico para melhor compatibilidade de negrito */
     color: var(--text-color);
     margin-bottom: 10px;
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 5px;
     text-transform: uppercase;
-    /* Garante que o texto seja maiúsculo como na imagem */
     letter-spacing: normal;
-    /* Garante que não haja espaçamento estranho */
     font-size: 1rem;
-    /* Tamanho da fonte reduzido e padronizado */
 }
 
 .pericia-item {
@@ -443,7 +523,6 @@ h2 {
     white-space: nowrap;
 }
 
-/* Fonte um pouco menor */
 .pericia-nome span {
     color: var(--primary-color);
     font-weight: bold;
@@ -475,19 +554,22 @@ h2 {
     z-index: 1000;
     align-items: center;
     justify-content: center;
+    padding: 20px; /* Adiciona padding para evitar que o modal cole nas bordas */
 }
 
 .modal-content {
     background: white;
     border-radius: 8px;
     padding: 30px;
-    width: 90%;
+    width: 100%; /* Ajustado para 100% */
     max-width: 700px;
+    display: flex; /* Adicionado para controle de altura */
+    flex-direction: column; /* Adicionado */
+    max-height: 90vh; /* Adicionado: Limita a altura máxima */
 }
 
 .modal-content.modal-itens {
     max-width: 800px;
-    /* Um pouco maior para a lista de itens */
 }
 
 .modal-filtros {
@@ -506,6 +588,7 @@ h2 {
     display: flex;
     gap: 10px;
     justify-content: center;
+    flex-wrap: wrap; 
 }
 
 .filtro-tipo-item {
@@ -560,17 +643,26 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+    flex-shrink: 0; /* Impede que o botão encolha */
 }
 
 .btn-adicionar:hover {
     background-color: var(--secondary-color);
 }
 
+.btn-adicionar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
 .lista-modal {
-    max-height: 400px;
+    max-height: 400px; /* Altura fixa anterior */
     overflow-y: auto;
     padding-right: 15px;
     margin-top: 20px;
+    flex-grow: 1; /* Adicionado: Faz a lista ocupar o espaço disponível */
+    min-height: 200px; /* Adicionado: Garante uma altura mínima */
 }
 
 .poder-item-modal {
@@ -582,6 +674,10 @@ h2 {
     justify-content: space-between;
     align-items: center;
 }
+.poder-item-modal > div { /* Div do texto */
+     max-width: 80%; /* Evita que o texto empurre o botão */
+}
+
 
 .poder-item-modal h4 {
     color: var(--primary-color);
@@ -596,7 +692,21 @@ h2 {
 .poder-item-modal button {
     padding: 8px 12px;
     cursor: pointer;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    flex-shrink: 0; /* Impede que o botão encolha */
 }
+.poder-item-modal button:hover {
+    background-color: var(--secondary-color);
+}
+.poder-item-modal button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 
 /* Estilo especial para a opção Transcender */
 .poder-transcender-opcao {
@@ -609,6 +719,13 @@ h2 {
 .poder-transcender-opcao p {
     color: #f0f0f0;
 }
+.poder-transcender-opcao button {
+    background-color: var(--primary-color);
+}
+.poder-transcender-opcao button:hover {
+    background-color: var(--secondary-color);
+}
+
 
 /* Estilo para o conteúdo do modal de Transcender */
 .modal-transcender-content {
@@ -626,42 +743,35 @@ h2 {
     text-shadow: 0 0 5px var(--primary-color);
 }
 
-/* 2. Ajusta a grade dos poderes paranormais */
 #lista-poderes-transcender {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* Duas colunas */
     gap: 15px;
     max-height: 400px;
     overflow-y: auto;
     padding: 5px;
 }
 
-/* 3. Estiliza os cards de poder com as cores dos elementos */
 .poder-paranormal-card {
     padding: 15px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    background-color: var(--cor-elemento);
-    /* DIV com a cor do elemento */
+    /* --- CORREÇÃO: Usa a variável CSS definida no :root --- */
+    background-color: var(--cor-elemento); 
     border: 1px solid var(--cor-elemento);
 }
 
-/* 4. Adiciona o efeito de HOVER */
 .poder-paranormal-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     filter: brightness(1.1);
-    /* Deixa a cor um pouco mais viva no hover */
 }
 
-/* 5. Deixa a fonte dos cards branca para contraste */
 .poder-paranormal-card h4,
 .poder-paranormal-card p {
     color: #ffffff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    /* Sombra para legibilidade */
 }
 
 .poder-paranormal-card h4 {
@@ -675,29 +785,54 @@ h2 {
     line-height: 1.5;
 }
 
-/* 6. Define a variável de cor para cada elemento */
-.poder-paranormal-card.Conhecimento {
-    --cor-elemento: #f39c12;
+/* Estilo para poder já adicionado */
+.poder-paranormal-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(80%);
+}
+.poder-paranormal-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
+    filter: grayscale(80%);
+}
+.poder-paranormal-card.disabled h4::after {
+    content: " (Adicionado)";
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
 }
 
-/* Laranja/Amarelo */
-.poder-paranormal-card.Sangue {
-    --cor-elemento: #c0392b;
+/* --- ATUALIZADO: Define a variável de cor para cada elemento --- */
+.poder-paranormal-card.Conhecimento { --cor-elemento: var(--cor-conhecimento); }
+.poder-paranormal-card.Sangue { --cor-elemento: var(--cor-sangue); }
+.poder-paranormal-card.Energia { --cor-elemento: var(--cor-energia); }
+.poder-paranormal-card.Morte { --cor-elemento: var(--cor-morte); }
+.poder-paranormal-card.Nenhum { --cor-elemento: var(--cor-medo); }
+
+/* --- NOVO: Estilos da Aba Rituais --- */
+.ritual-limites-display {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.ritual-limites-display .limite-box {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    text-align: center;
+}
+.ritual-limites-display .limite-box span {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #6c757d;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+.ritual-limites-display .limite-box strong {
+    font-size: 1.8rem;
+    color: var(--primary-color);
 }
 
-/* Vermelho */
-.poder-paranormal-card.Energia {
-    --cor-elemento: var(--primary-color);
-}
-
-/* Roxo */
-.poder-paranormal-card.Morte {
-    --cor-elemento: #2c3e50;
-}
-
-/* Preto/Azul escuro */
-.poder-paranormal-card.Nenhum {
-    --cor-elemento: #7f8c8d;
-}
-
-/* Cinza */
