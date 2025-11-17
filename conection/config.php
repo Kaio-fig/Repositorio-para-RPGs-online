@@ -1,6 +1,6 @@
 <?php
 $host = "localhost";
 $user = "root"; 
-$pass = "usbw"; 
+$pass = ""; 
 $dbname = "arca_do_aventureiro";
 ?>

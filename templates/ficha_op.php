@@ -1,24 +1,26 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 
 session_start();
-// Autenticação
-// if (!isset($_SESSION['user_id'])) { header("Location: ../login.php"); exit(); }
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../templates/login.php");
+    exit();
+}
 require_once '../conection/db_connect.php';
+
 
 // --- LÓGICA PARA CARREGAR OU CRIAR UM PERSONAGEM PARA EXIBIÇÃO ---
 $personagem = null;
 $is_new = true;
 $id = 0; // Inicializa o ID
-$user_id_placeholder = 1; // Substitua por $_SESSION['user_id']
+$user_id = $_SESSION['user_id'];
 
 if (isset($_GET['personagem_id'])) {
     $id = intval($_GET['personagem_id']);
 
     if ($id > 0) {
         $stmt = $conn->prepare("SELECT * FROM personagens_op WHERE id = ? AND user_id = ?");
-        $stmt->bind_param("ii", $id, $user_id_placeholder);
+        $stmt->bind_param("ii", $id, $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
@@ -177,7 +179,7 @@ $patentes = [
 $todos_itens_op = [];
 $sql_todos_itens = "SELECT id, nome, tipo_item_id, categoria, espacos, descricao, defesa_bonus FROM itens_op WHERE user_id IS NULL OR user_id = ?";
 $stmt_itens = $conn->prepare($sql_todos_itens);
-$stmt_itens->bind_param("i", $user_id_placeholder);
+$stmt_itens->bind_param("i", $user_id);
 $stmt_itens->execute();
 $resultado_todos_itens = $stmt_itens->get_result();
 if ($resultado_todos_itens) {

@@ -6,8 +6,7 @@ date_default_timezone_set('UTC');
 // 1. CHECAGENS DE SEGURANÇA E CONEXÃO
 // ======================================================
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Para testes
-    // die("Acesso negado. Você precisa estar logado para salvar um personagem.");
+    die("Acesso negado. Você precisa estar logado para salvar um personagem.");
 }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die("Método de requisição inválido.");
@@ -18,7 +17,6 @@ require_once 'db_connect.php';
 // ======================================================
 $personagem_id = isset($_POST['personagem_id']) && !empty($_POST['personagem_id']) ? intval($_POST['personagem_id']) : null;
 $user_id = $_SESSION['user_id'];
-
 $nome = isset($_POST['nome']) ? strip_tags($_POST['nome']) : 'Sem Nome';
 $nex = isset($_POST['nex']) ? intval($_POST['nex']) : 5;
 $classe_id = isset($_POST['classe_id']) ? intval($_POST['classe_id']) : null;
@@ -35,7 +33,6 @@ $presenca = isset($_POST['presenca']) ? intval($_POST['presenca']) : 1;
 $inventario_ids = isset($_POST['inventario_ids']) ? $_POST['inventario_ids'] : [];
 $poderes_classe_ids = isset($_POST['poderes_classe']) ? $_POST['poderes_classe'] : [];
 $poderes_paranormais_ids = isset($_POST['poderes_paranormais']) ? $_POST['poderes_paranormais'] : [];
-// *** NOVO: Rituais ***
 $rituais_ids = isset($_POST['rituais_ids']) ? $_POST['rituais_ids'] : [];
 
 
@@ -60,7 +57,9 @@ if (isset($_FILES['imagem_personagem']) && $_FILES['imagem_personagem']['error']
     $novo_nome_imagem = uniqid('char_', true) . '.' . $extensao;
     $caminho_final = $upload_dir . $novo_nome_imagem;
 
-    if (!is_dir($upload_dir)) { mkdir($upload_dir, 0755, true); }
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
 
     if (move_uploaded_file($arquivo_temporario, $caminho_final)) {
         if ($nome_imagem_final && $nome_imagem_final !== 'default.jpg' && file_exists($upload_dir . $nome_imagem_final)) {
@@ -72,7 +71,7 @@ if (isset($_FILES['imagem_personagem']) && $_FILES['imagem_personagem']['error']
 
 // Desliga o autocommit para iniciar a transação
 $conn->autocommit(FALSE);
-$tudo_ok = true; 
+$tudo_ok = true;
 
 // 4. OPERAÇÃO NO BANCO DE DADOS (INSERT ou UPDATE)
 // ======================================================
@@ -93,7 +92,7 @@ if (!$stmt->execute()) {
     echo "Erro ao salvar dados do personagem: " . $stmt->error;
 }
 if (!$personagem_id) {
-    $personagem_id = $conn->insert_id;
+    $personagem_id = $conn->insert_id; // Pega o ID do novo personagem
 }
 $stmt->close();
 
@@ -102,7 +101,10 @@ $stmt->close();
 if ($tudo_ok) {
     $stmt_delete_inv = $conn->prepare("DELETE FROM inventario_op WHERE personagem_id = ?");
     $stmt_delete_inv->bind_param("i", $personagem_id);
-    if (!$stmt_delete_inv->execute()) { $tudo_ok = false; echo "Erro ao limpar inventário: " . $stmt_delete_inv->error; }
+    if (!$stmt_delete_inv->execute()) {
+        $tudo_ok = false;
+        echo "Erro ao limpar inventário: " . $stmt_delete_inv->error;
+    }
     $stmt_delete_inv->close();
 }
 
@@ -112,7 +114,11 @@ if ($tudo_ok && !empty($inventario_ids)) {
     foreach ($inventario_ids as $item_id) {
         $item_id_int = intval($item_id);
         $stmt_insert_item->bind_param("ii", $personagem_id, $item_id_int);
-        if (!$stmt_insert_item->execute()) { $tudo_ok = false; echo "Erro ao inserir item: " . $stmt_insert_item->error; break; }
+        if (!$stmt_insert_item->execute()) {
+            $tudo_ok = false;
+            echo "Erro ao inserir item: " . $stmt_insert_item->error;
+            break;
+        }
     }
     $stmt_insert_item->close();
 }
@@ -122,7 +128,10 @@ if ($tudo_ok && !empty($inventario_ids)) {
 if ($tudo_ok) {
     $stmt_delete_poderes = $conn->prepare("DELETE FROM personagens_op_poderes WHERE personagem_id = ?");
     $stmt_delete_poderes->bind_param("i", $personagem_id);
-    if (!$stmt_delete_poderes->execute()) { $tudo_ok = false; echo "Erro ao limpar poderes: " . $stmt_delete_poderes->error; }
+    if (!$stmt_delete_poderes->execute()) {
+        $tudo_ok = false;
+        echo "Erro ao limpar poderes: " . $stmt_delete_poderes->error;
+    }
     $stmt_delete_poderes->close();
 }
 
@@ -132,7 +141,11 @@ if ($tudo_ok && !empty($poderes_classe_ids)) {
     foreach ($poderes_classe_ids as $poder_id) {
         $poder_id_int = intval($poder_id);
         $stmt_insert_poder->bind_param("ii", $personagem_id, $poder_id_int);
-        if (!$stmt_insert_poder->execute()) { $tudo_ok = false; echo "Erro ao inserir poder de classe: " . $stmt_insert_poder->error; break; }
+        if (!$stmt_insert_poder->execute()) {
+            $tudo_ok = false;
+            echo "Erro ao inserir poder de classe: " . $stmt_insert_poder->error;
+            break;
+        }
     }
     $stmt_insert_poder->close();
 }
@@ -143,12 +156,16 @@ if ($tudo_ok && !empty($poderes_paranormais_ids)) {
     foreach ($poderes_paranormais_ids as $poder_id) {
         $poder_id_int = intval($poder_id);
         $stmt_insert_poder->bind_param("ii", $personagem_id, $poder_id_int);
-        if (!$stmt_insert_poder->execute()) { $tudo_ok = false; echo "Erro ao inserir poder paranormal: " . $stmt_insert_poder->error; break; }
+        if (!$stmt_insert_poder->execute()) {
+            $tudo_ok = false;
+            echo "Erro ao inserir poder paranormal: " . $stmt_insert_poder->error;
+            break;
+        }
     }
     $stmt_insert_poder->close();
 }
 
-// 7. *** NOVO: ATUALIZAR OS RITUAIS ***
+// 7. ATUALIZAR OS RITUAIS
 // ======================================================
 if ($tudo_ok) {
     // 7a. Limpa todos os rituais antigos
@@ -183,7 +200,8 @@ if ($tudo_ok) {
     $conn->commit(); // Salva as mudanças
     $conn->autocommit(TRUE);
     $conn->close();
-    header("Location: ../templates/meus_personagens.php?personagem_id=" . $personagem_id . "&status=salvo");
+    // Redireciona de volta para a lista, informando que foi salvo
+    header("Location: ../templates/meus_personagens.php?status=salvo");
     exit();
 } else {
     $conn->rollback(); // Desfaz as mudanças
@@ -192,5 +210,3 @@ if ($tudo_ok) {
     echo "Ocorreu um erro. A transação foi revertida. Verifique as mensagens de erro (se houver).";
     exit();
 }
-?>
-
