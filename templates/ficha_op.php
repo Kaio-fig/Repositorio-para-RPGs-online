@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 require_once '../conection/db_connect.php';
 
-
 // --- LÓGICA PARA CARREGAR OU CRIAR UM PERSONAGEM PARA EXIBIÇÃO ---
 $personagem = null;
 $is_new = true;
