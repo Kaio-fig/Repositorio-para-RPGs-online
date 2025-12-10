@@ -1,0 +1,838 @@
+/* --- GERAL E PADRÃO VISUAL --- */
+:root {
+    --primary-color: #6a1b9a;
+    --secondary-color: #9c27b0;
+    --dark-color: #2c2c2c;
+    --light-color: #f5f5f5;
+    --background-color: #f9f9f9;
+    --text-color: #333;
+    --border-color: #ddd;
+    --danger-color: #f44336; 
+    
+    /* --- NOVAS: Cores dos Elementos --- */
+    --cor-sangue: #c0392b;
+    --cor-energia: var(--primary-color); /* Roxo */
+    --cor-morte: #2c3e50;
+    --cor-conhecimento: #f39c12;
+    --cor-medo: #7f8c8d; /* Cinza/Nenhum */
+}
+
+/* --- CORREÇÃO DE FONTE E ACENTUAÇÃO --- */
+html,
+body,
+input,
+select,
+button,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+    font-size: 16px;
+}
+
+.container {
+    width: 95%;
+    max-width: 1400px;
+    margin: 20px auto;
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(106, 27, 154, 0.3);
+}
+
+h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* --- LAYOUT DA FICHA --- */
+.ficha-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+}
+
+.coluna-esquerda {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.bloco-personagem {
+    text-align: center;
+}
+
+.personagem-imagem {
+    width: 100%;
+    height: 280px;
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.personagem-imagem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bloco-status {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.status-box {
+    background-color: var(--light-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.status-box label {
+    font-weight: bold;
+    color: #555;
+}
+
+.status-box .valor {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.status-box .maximo {
+    color: #777;
+}
+
+.abas-nav {
+    display: flex;
+    gap: 5px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Permite que as abas quebrem em telas menores */
+}
+
+.tab-button {
+    padding: 12px 20px; /* Um pouco menos de padding para caber "Rituais" */
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background-color: transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #888;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    bottom: -1px;
+}
+
+.tab-button.active {
+    background-color: white;
+    border-color: var(--border-color);
+    color: var(--primary-color);
+    border-bottom-color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    overflow: visible;
+    min-height: 300px;
+}
+
+.atributos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.atributo-box {
+    text-align: center;
+}
+
+.atributo-box input {
+    font-size: 2.5rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+.atributo-box input,
+.atributo-box select {
+    font-size: 2.5rem;
+    text-align: center;
+    font-weight: bold;
+    text-align-last: center;
+}
+
+.info-poderes {
+    background-color: var(--light-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.info-poderes strong {
+    color: var(--primary-color);
+}
+
+#dt-rituais-span {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+#dt-rituais-container {
+    text-align: center;
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* --- ESTILOS PARA SEÇÕES DE PODERES E RITUAIS --- */
+.poderes-secao {
+    margin-bottom: 25px;
+}
+
+.poderes-secao h3 {
+    color: var(--dark-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.poder-item,
+.ritual-card { /* Aplicando o mesmo estilo para rituais */
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--primary-color); /* Cor padrão */
+    border-radius: 4px;
+    position: relative; 
+    padding-right: 45px; /* Espaço para o botão 'X' */
+}
+
+/* --- NOVO: Colore o card do ritual baseado no elemento --- */
+.ritual-card.Sangue { border-left-color: var(--cor-sangue); }
+.ritual-card.Energia { border-left-color: var(--cor-energia); }
+.ritual-card.Morte { border-left-color: var(--cor-morte); }
+.ritual-card.Conhecimento { border-left-color: var(--cor-conhecimento); }
+.ritual-card.Medo { border-left-color: var(--cor-medo); }
+
+.ritual-card h4 {
+    color: var(--dark-color); /* Cor padrão do título */
+}
+/* Colore o H4 do ritual */
+.ritual-card.Sangue h4 { color: var(--cor-sangue); }
+.ritual-card.Energia h4 { color: var(--cor-energia); }
+.ritual-card.Morte h4 { color: var(--cor-morte); }
+.ritual-card.Conhecimento h4 { color: var(--cor-conhecimento); }
+.ritual-card.Medo h4 { color: var(--cor-medo); }
+
+
+/* Botão de Remover */
+.btn-remover-poder {
+    position: absolute;
+    top: 50%; 
+    transform: translateY(-50%);
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background-color: #eee;
+    color: #555;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 28px; 
+}
+
+.btn-remover-poder:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+/* Oculta o botão em poderes que não podem ser removidos */
+.poder-trilha-item .btn-remover-poder,
+.poder-inicial-item .btn-remover-poder,
+#poder-origem-container .poder-item .btn-remover-poder {
+    display: none;
+}
+/* Ajusta o padding para poderes não-removíveis */
+.poder-trilha-item,
+.poder-inicial-item,
+#poder-origem-container .poder-item {
+    padding-right: 15px; 
+}
+
+
+/* --- ESTILOS PARA A ABA DE EQUIPAMENTO --- */
+.info-equipamento {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    gap: 20px;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.patente-container label,
+.espacos-container span,
+.limites-categoria span {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #6c757d;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.espacos-container strong {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.limites-grid {
+    display: flex;
+    gap: 10px;
+}
+
+.limite-box {
+    flex: 1;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.limite-box strong {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--dark-color);
+}
+
+.stat-inventario {
+    text-align: center;
+}
+
+.stat-inventario span {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+.stat-inventario strong {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+
+.lista-itens {
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.item-row {
+    display: grid;
+    grid-template-columns: 1fr 50px 50px 50px;
+    gap: 15px;
+    padding: 12px 15px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.item-acoes {
+    text-align: center;
+}
+
+.btn-remover-item {
+    background-color: #e4e6eb;
+    color: #4b4f56;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-remover-item:hover {
+    background-color: #c0392b;
+    color: white;
+}
+
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-row:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.item-row.header {
+    background-color: var(--dark-color);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.item-cat,
+.item-esp {
+    text-align: center;
+    font-weight: bold;
+}
+
+/* --- ESTILOS PARA OS BOTÕES DO RODAPÉ DA FICHA --- */
+.botoes-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.btn-acao {
+    width: auto;
+    padding: 12px 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: all 0.2s ease-in-out;
+}
+.btn-acao:hover {
+    background-color: #5a1281;
+}
+
+.btn-acao.btn-secondary {
+    background-color: transparent;
+    color: var(--dark-color);
+    border-color: var(--border-color);
+}
+
+.btn-acao.btn-secondary:hover {
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    border-color: #c0c0c0;
+}
+
+/* --- SEÇÃO DE PERÍCIAS COM CORREÇÕES --- */
+.pericias-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+}
+
+.pericia-coluna h3 {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: normal;
+    font-size: 1rem;
+}
+
+.pericia-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.pericia-item:last-child {
+    border-bottom: none;
+}
+
+.pericia-nome {
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.pericia-nome span {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.pericia-input-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.pericia-input {
+    width: 60px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 5px;
+}
+
+/* --- ESTILOS PARA O MODAL DE PODERES --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* Adiciona padding para evitar que o modal cole nas bordas */
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%; /* Ajustado para 100% */
+    max-width: 700px;
+    display: flex; /* Adicionado para controle de altura */
+    flex-direction: column; /* Adicionado */
+    max-height: 90vh; /* Adicionado: Limita a altura máxima */
+}
+
+.modal-content.modal-itens {
+    max-width: 800px;
+}
+
+.modal-filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-filtros input[type="text"] {
+    font-size: 1.1rem;
+    padding: 12px;
+}
+
+.modal-botoes-filtro {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap; 
+}
+
+.filtro-tipo-item {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--light-color);
+    color: var(--text-color);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.filtro-tipo-item:hover {
+    background-color: #e0e0e0;
+}
+
+.filtro-tipo-item.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Lista de itens dentro do modal */
+.item-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.item-modal:last-child {
+    border-bottom: none;
+}
+
+.item-modal-info h4 {
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.item-modal-info p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.btn-adicionar {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+
+.btn-adicionar:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-adicionar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+.lista-modal {
+    max-height: 400px; /* Altura fixa anterior */
+    overflow-y: auto;
+    padding-right: 15px;
+    margin-top: 20px;
+    flex-grow: 1; /* Adicionado: Faz a lista ocupar o espaço disponível */
+    min-height: 200px; /* Adicionado: Garante uma altura mínima */
+}
+
+.poder-item-modal {
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.poder-item-modal > div { /* Div do texto */
+     max-width: 80%; /* Evita que o texto empurre o botão */
+}
+
+
+.poder-item-modal h4 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.poder-item-modal p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.poder-item-modal button {
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+.poder-item-modal button:hover {
+    background-color: var(--secondary-color);
+}
+.poder-item-modal button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
+/* Estilo especial para a opção Transcender */
+.poder-transcender-opcao {
+    background-color: #1a1a1a;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.poder-transcender-opcao h4,
+.poder-transcender-opcao p {
+    color: #f0f0f0;
+}
+.poder-transcender-opcao button {
+    background-color: var(--primary-color);
+}
+.poder-transcender-opcao button:hover {
+    background-color: var(--secondary-color);
+}
+
+
+/* Estilo para o conteúdo do modal de Transcender */
+.modal-transcender-content {
+    background-color: #1a1a1a;
+    border-color: #444;
+}
+
+.modal-transcender-content h2,
+.modal-transcender-content p {
+    color: #f0f0f0;
+}
+
+.modal-transcender-content h2 {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+#lista-poderes-transcender {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.poder-paranormal-card {
+    padding: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    /* --- CORREÇÃO: Usa a variável CSS definida no :root --- */
+    background-color: var(--cor-elemento); 
+    border: 1px solid var(--cor-elemento);
+}
+
+.poder-paranormal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.poder-paranormal-card h4,
+.poder-paranormal-card p {
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.poder-paranormal-card h4 {
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding-bottom: 5px;
+}
+
+.poder-paranormal-card p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Estilo para poder já adicionado */
+.poder-paranormal-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    filter: grayscale(80%);
+}
+.poder-paranormal-card.disabled:hover {
+    transform: none;
+    box-shadow: none;
+    filter: grayscale(80%);
+}
+.poder-paranormal-card.disabled h4::after {
+    content: " (Adicionado)";
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* --- ATUALIZADO: Define a variável de cor para cada elemento --- */
+.poder-paranormal-card.Conhecimento { --cor-elemento: var(--cor-conhecimento); }
+.poder-paranormal-card.Sangue { --cor-elemento: var(--cor-sangue); }
+.poder-paranormal-card.Energia { --cor-elemento: var(--cor-energia); }
+.poder-paranormal-card.Morte { --cor-elemento: var(--cor-morte); }
+.poder-paranormal-card.Nenhum { --cor-elemento: var(--cor-medo); }
+
+/* --- NOVO: Estilos da Aba Rituais --- */
+.ritual-limites-display {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.ritual-limites-display .limite-box {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    text-align: center;
+}
+.ritual-limites-display .limite-box span {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #6c757d;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+.ritual-limites-display .limite-box strong {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
